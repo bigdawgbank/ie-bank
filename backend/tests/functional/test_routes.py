@@ -33,4 +33,30 @@ def test_create_account(testing_client):
     response = testing_client.post(
         "/accounts", json={"name": "John Doe", "currency": "€", "country": "Sweden"}
     )
-    assert response.status_code == 200
+    assert response.status_code == 201
+
+
+def test_create_bad_account(testing_client):
+    """
+    GIVEN a Flask application
+    WHEN an account is created with invalid data
+    THEN check that the response status code is 400
+    """
+
+    response = testing_client.post(
+        "/accounts", json={"currency": "€", "country": "Sweden"}
+    )
+    assert response.status_code == 400
+    assert response.json.get("error") == "Name cannot be empty."
+
+    response = testing_client.post(
+        "/accounts", json={"name": "John Doe", "currency": None, "country": "Sweden"}
+    )
+    assert response.status_code == 400
+    assert response.json.get("error") == "Currency cannot be empty or None."
+
+    response = testing_client.post(
+        "/accounts", json={"name": "John Doe", "currency": "€", "country": ""}
+    )
+    assert response.status_code == 400
+    assert response.json.get("error") == "Country cannot be empty."
