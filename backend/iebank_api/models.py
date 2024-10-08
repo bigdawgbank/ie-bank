@@ -19,10 +19,15 @@ class Account(db.Model):
         return "<Event %r>" % self.account_number
 
     def __init__(self, name, currency, country):
+        if not name:
+            raise ValueError("Name cannot be empty.")
         self.name = name
-        self.account_number = "".join(random.choices(string.digits, k=20))
+        if currency is None or currency.strip() == "":
+            raise ValueError("Currency cannot be empty or None.")
         self.currency = currency
+        if not country:
+            raise ValueError("Country cannot be empty.")
+        self.country = country
+        self.account_number = "".join(random.choices(string.digits, k=20))
         self.balance = 0.0
         self.status = "Active"
-        self.country = country
-

@@ -3,7 +3,7 @@
 The new functionality that the business analysts want
 consists of:
 
-- [ ] The web application must show a home page when
+- [x] The web application must show a home page when
       they enter to the root URL of the current web site.
 - [ ] The web application must allow the user to add a new
       field into bank accounts data: country. The users must

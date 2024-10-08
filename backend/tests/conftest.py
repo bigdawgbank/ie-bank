@@ -1,14 +1,14 @@
 import pytest
-from iebank_api.models import Account
-from iebank_api import db, app
 
+from iebank_api import app, db
+from iebank_api.models import Account
 
 
 @pytest.fixture
-def testing_client(scope='module'):
+def testing_client(scope="module"):
     with app.app_context():
         db.create_all()
-        account = Account('Test Account', '€')
+        account = Account("Test Account", "€", "Africa")
         db.session.add(account)
         db.session.commit()
 
@@ -17,3 +17,4 @@ def testing_client(scope='module'):
 
     with app.app_context():
         db.drop_all()
+
