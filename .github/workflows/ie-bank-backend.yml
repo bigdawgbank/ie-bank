@@ -49,7 +49,7 @@ jobs:
 
     - name: Test with pytest
       run: |
-        python -m pytest --cov=backend/ -v  # Make sure the test path is correct for your backend
+        python -m pytest backend/ -v  # Make sure the test path is correct for your backend
 
     - name: Upload artifact for deployment jobs
       uses: actions/upload-artifact@v4
