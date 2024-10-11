@@ -6,23 +6,22 @@
       "value": "nonprod"
     },
     "postgreSQLServerName": {
-      "value": "dkumlin-dbsrv-dev"
+      "value": "dkumlin-dbsrv-uat"
     },
     "postgreSQLDatabaseName": {
-      "value": "dkumlin-db-dev"
+      "value": "dkumlin-db-uat"
     },
     "appServicePlanName": {
-      "value": "dkumlin-asp-dev"
+      "value": "dkumlin-asp-uat"
     },
     "appServiceAPIAppName": {
-      "value": "dkumlin-be-dev"
+      "value": "dkumlin-be-uat"
     },
     "appServiceAppName": {
-      "value": "dkumlin-fe-dev"
+      "value": "dkumlin-fe-uat"
     },
     "location": {
       "value": "North Europe"
     }
   }
 }
-
