@@ -1,16 +1,15 @@
 name: ie-bank-infra
 
 on:
-  workflow_dispatch:  # Manually triggered workflow
+  workflow_dispatch:
   push:
-    paths:
-      - 'infra/**'  # Trigger only when changes occur in the infra folder
-      - '!infra/scripts/**'  # Exclude any changes in the scripts folder
+      paths:
+        - '!/infra/scripts/**'
 
 env:
-  RESOURCE_GROUP_DEV: BCSAI2024-DEVOPS-STUDENTS-B-DEV
+  RESOURCE_GROUP_DEV: BCSAI2024-DEVOPS-PROFESSORS
   SUBSCRIPTION_ID_DEV: e0b9cada-61bc-4b5a-bd7a-52c606726b3b
-  USER_ALIAS: dkumlin
+  USER_ALIAS: jseijas
 
 jobs:
   build:
@@ -18,14 +17,14 @@ jobs:
     steps:
 
       # Checkout code
-    - uses: actions/checkout@v3  # Ensure correct version
+    - uses: actions/checkout@main
 
-      # Lint Bicep code
+      # Lint Bicep code 
     - name: Run Bicep linter
-      run: |
-        az bicep build --file ./infra/main.bicep  # Adjust path to infra folder
+      run: az bicep build --file ./infra/main.bicep
 
   deploy-dev:
+#   if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     needs: build
     environment:
@@ -34,19 +33,19 @@ jobs:
     steps:
 
       # Checkout code
-    - uses: actions/checkout@v3
-
+    - uses: actions/checkout@main
+    
       # Log into Azure
     - uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       # Deploy Bicep file
-    - name: Deploy Bicep file to Azure
+    - name: deploy
       uses: azure/arm-deploy@v1
       with:
         subscriptionId: ${{ env.SUBSCRIPTION_ID_DEV }}
         resourceGroupName: ${{ env.RESOURCE_GROUP_DEV }}
-        template: ./infra/main.bicep  # Path updated for infra folder
+        template: ./infra/main.bicep
         parameters: ./infra/parameters/dev.parameters.json appServiceAPIEnvVarENV=${{ vars.ENV }} appServiceAPIEnvVarDBHOST=${{ vars.DBHOST }} appServiceAPIEnvVarDBNAME=${{ vars.DBNAME }} appServiceAPIEnvVarDBPASS=${{ secrets.DBPASS }} appServiceAPIDBHostDBUSER=${{ secrets.DBUSER }} appServiceAPIDBHostFLASK_APP=${{ vars.FLASK_APP }} appServiceAPIDBHostFLASK_DEBUG=${{ vars.FLASK_DEBUG }}
         deploymentName: ${{ env.USER_ALIAS }}

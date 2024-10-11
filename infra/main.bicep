@@ -1,97 +1,109 @@
-param location string = resourceGroup().location
-param appServicePlanName string
-param appServiceAppName string
-param appServiceAPIAppName string
-param appServiceAPIEnvVarENV string
-param appServiceAPIEnvVarDBHOST string
-param appServiceAPIEnvVarDBNAME string
-@secure()
-param appServiceAPIEnvVarDBPASS string
-param appServiceAPIDBHostDBUSER string
-param appServiceAPIDBHostFLASK_APP string
-param appServiceAPIDBHostFLASK_DEBUG string
+@sys.description('The environment type (nonprod or prod)')
 @allowed([
   'nonprod'
   'prod'
 ])
-param environmentType string
+param environmentType string = 'nonprod'
+@sys.description('The PostgreSQL Server name')
+@minLength(3)
+@maxLength(24)
+param postgreSQLServerName string = 'ie-bank-db-server-dev'
+@sys.description('The PostgreSQL Database name')
+@minLength(3)
+@maxLength(24)
+param postgreSQLDatabaseName string = 'ie-bank-db'
+@sys.description('The App Service Plan name')
+@minLength(3)
+@maxLength(24)
+param appServicePlanName string = 'ie-bank-app-sp-dev'
+@sys.description('The Web App name (frontend)')
+@minLength(3)
+@maxLength(24)
+param appServiceAppName string = 'ie-bank-dev'
+@sys.description('The API App name (backend)')
+@minLength(3)
+@maxLength(24)
+param appServiceAPIAppName string = 'ie-bank-api-dev'
+@sys.description('The Azure location where the resources will be deployed')
+param location string = resourceGroup().location
+@sys.description('The value for the environment variable ENV')
+param appServiceAPIEnvVarENV string
+@sys.description('The value for the environment variable DBHOST')
+param appServiceAPIEnvVarDBHOST string
+@sys.description('The value for the environment variable DBNAME')
+param appServiceAPIEnvVarDBNAME string
+@sys.description('The value for the environment variable DBPASS')
+@secure()
+param appServiceAPIEnvVarDBPASS string
+@sys.description('The value for the environment variable DBUSER')
+param appServiceAPIDBHostDBUSER string
+@sys.description('The value for the environment variable FLASK_APP')
+param appServiceAPIDBHostFLASK_APP string
+@sys.description('The value for the environment variable FLASK_DEBUG')
+param appServiceAPIDBHostFLASK_DEBUG string
 
-var appServicePlanSkuName = (environmentType == 'prod') ? 'B1' : 'B1' //modify according to desired capacity
-
-resource appServicePlan 'Microsoft.Web/serverFarms@2022-03-01' = {
-  name: appServicePlanName
+resource postgresSQLServer 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
+  name: postgreSQLServerName
   location: location
   sku: {
-    name: appServicePlanSkuName
+    name: 'Standard_B1ms'
+    tier: 'Burstable'
   }
-  kind: 'linux'
   properties: {
-    reserved: true
+    administratorLogin: 'iebankdbadmin'
+    administratorLoginPassword: 'IE.Bank.DB.Admin.Pa$$'
+    createMode: 'Default'
+    highAvailability: {
+      mode: 'Disabled'
+      standbyAvailabilityZone: ''
+    }
+    storage: {
+      storageSizeGB: 32
+    }
+    backup: {
+      backupRetentionDays: 7
+      geoRedundantBackup: 'Disabled'
+    }
+    version: '15'
   }
-}
 
-resource appServiceAPIApp 'Microsoft.Web/sites@2022-03-01' = {
-  name: appServiceAPIAppName
-  location: location
-  properties: {
-    serverFarmId: appServicePlan.id
-    httpsOnly: true
-    siteConfig: {
-      linuxFxVersion: 'PYTHON|3.11'
-      alwaysOn: false
-      ftpsState: 'FtpsOnly'
-      appSettings: [
-        {
-          name: 'ENV'
-          value: appServiceAPIEnvVarENV
-        }
-        {
-          name: 'DBHOST'
-          value: appServiceAPIEnvVarDBHOST
-        }
-        {
-          name: 'DBNAME'
-          value: appServiceAPIEnvVarDBNAME
-        }
-        {
-          name: 'DBPASS'
-          value: appServiceAPIEnvVarDBPASS
-        }
-        {
-          name: 'DBUSER'
-          value: appServiceAPIDBHostDBUSER
-        }
-        {
-          name: 'FLASK_APP'
-          value: appServiceAPIDBHostFLASK_APP
-        }
-        {
-          name: 'FLASK_DEBUG'
-          value: appServiceAPIDBHostFLASK_DEBUG
-        }
-        {
-          name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
-          value: 'true'
-        }
-      ]
+  resource postgresSQLServerFirewallRules 'firewallRules@2022-12-01' = {
+    name: 'AllowAllAzureServicesAndResourcesWithinAzureIps'
+    properties: {
+      endIpAddress: '0.0.0.0'
+      startIpAddress: '0.0.0.0'
     }
   }
 }
 
-resource appServiceApp 'Microsoft.Web/sites@2022-03-01' = {
-  name: appServiceAppName
-  location: location
+resource postgresSQLDatabase 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2022-12-01' = {
+  name: postgreSQLDatabaseName
+  parent: postgresSQLServer
   properties: {
-    serverFarmId: appServicePlan.id
-    httpsOnly: true
-    siteConfig: {
-      linuxFxVersion: 'NODE|18-lts'
-      alwaysOn: false
-      ftpsState: 'FtpsOnly'
-      appCommandLine: 'pm2 serve /home/site/wwwroot --spa --no-daemon'
-      appSettings: []
-    }
+    charset: 'UTF8'
+    collation: 'en_US.UTF8'
   }
 }
 
-output appServiceAppHostName string = appServiceApp.properties.defaultHostName
+module appService 'modules/app-service.bicep' = {
+  name: 'appService'
+  params: {
+    location: location
+    environmentType: environmentType
+    appServiceAppName: appServiceAppName
+    appServiceAPIAppName: appServiceAPIAppName
+    appServicePlanName: appServicePlanName
+    appServiceAPIDBHostDBUSER: appServiceAPIDBHostDBUSER
+    appServiceAPIDBHostFLASK_APP: appServiceAPIDBHostFLASK_APP
+    appServiceAPIDBHostFLASK_DEBUG: appServiceAPIDBHostFLASK_DEBUG
+    appServiceAPIEnvVarDBHOST: appServiceAPIEnvVarDBHOST
+    appServiceAPIEnvVarDBNAME: appServiceAPIEnvVarDBNAME
+    appServiceAPIEnvVarDBPASS: appServiceAPIEnvVarDBPASS
+    appServiceAPIEnvVarENV: appServiceAPIEnvVarENV
+  }
+  dependsOn: [
+    postgresSQLDatabase
+  ]
+}
+
+output appServiceAppHostName string = appService.outputs.appServiceAppHostName
