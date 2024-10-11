@@ -1,0 +1,36 @@
+name: ie-bank-empty-retakers-rg
+
+on:
+  push:
+    paths:
+      - 'infra/scripts/**'  # Trigger only with changes in the scripts folder under infra
+      - '.github/workflows/ie-bank-empty-retakers-rg.yml'  # Trigger on changes to this workflow file
+  schedule:
+    - cron: '59 21 * * *'  # Trigger at 21:59 UTC every day (equivalent to 23:59 CEST)
+  workflow_dispatch:  # Allows for manual triggering
+
+env:
+  RESOURCE_GROUP_RETAKERS: BCSAI2024-DEVOPS-RETAKERS-DEV
+  SUBSCRIPTION_ID_DEV: e0b9cada-61bc-4b5a-bd7a-52c606726b3b  # Ensure the correct subscription ID is set
+
+jobs:
+  remove-resource-groups:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout code
+      - uses: actions/checkout@v3  # Ensure the latest checkout action
+
+      # Log into Azure
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          enable-AzPSSession: true
+
+      # Empty resource group - Retakers
+      - name: Empty resource group - Retakers
+        uses: azure/powershell@v2
+        with:
+          inlineScript: |
+            ./infra/scripts/empty-resource-group -ResourceGroupName "${{ env.RESOURCE_GROUP_RETAKERS }}" -SubscriptionId "${{ env.SUBSCRIPTION_ID_DEV }}"
+          azPSVersion: "latest"

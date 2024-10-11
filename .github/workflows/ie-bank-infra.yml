@@ -1,0 +1,61 @@
+name: ie-bank-infra
+
+on:
+  workflow_dispatch:  # Manually triggered workflow
+  push:
+    paths:
+      - 'infra/**'  # Trigger only when changes occur in the infra folder
+      - '!infra/scripts/**'  # Exclude any changes in the scripts folder
+
+env:
+  RESOURCE_GROUP_DEV: BCSAI2024-DEVOPS-PROFESSORS
+  SUBSCRIPTION_ID_DEV: e0b9cada-61bc-4b5a-bd7a-52c606726b3b
+  USER_ALIAS: dkumlin
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      # Checkout code
+    - uses: actions/checkout@v3  # Ensure correct version
+
+      # Lint Bicep code
+    - name: Run Bicep linter
+      run: |
+        az bicep build --file ./infra/main.bicep  # Adjust path to infra folder
+
+  deploy-dev:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'Development'
+
+    steps:
+
+      # Checkout code
+    - uses: actions/checkout@v3
+
+      # Log into Azure
+    - uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # Deploy Bicep file
+    - name: Deploy Bicep file to Azure
+      uses: azure/arm-deploy@v1
+      with:
+        subscriptionId: ${{ env.SUBSCRIPTION_ID_DEV }}
+        resourceGroupName: ${{ env.RESOURCE_GROUP_DEV }}
+        template: ./infra/main.bicep  # Path updated for infra folder
+        parameters: ./infra/parameters/dev.parameters.json  # Adjusted parameters path
+        deploymentName: ${{ env.USER_ALIAS }}-deployment
+        # Adding environment variables for appService configuration
+        parameters: |
+          appServiceAPIEnvVarENV=${{ vars.ENV }}
+          appServiceAPIEnvVarDBHOST=${{ vars.DBHOST }}
+          appServiceAPIEnvVarDBNAME=${{ vars.DBNAME }}
+          appServiceAPIEnvVarDBPASS=${{ secrets.DBPASS }}
+          appServiceAPIDBHostDBUSER=${{ secrets.DBUSER }}
+          appServiceAPIDBHostFLASK_APP=${{ vars.FLASK_APP }}
+          appServiceAPIDBHostFLASK_DEBUG=${{ vars.FLASK_DEBUG }}
