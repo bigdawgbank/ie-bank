@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid min-vh-100 py-5">
+  <div class="container-fluid min-vh-100 py-6">
     <div class="row h-100">
       <div class="col-12 text-center my-auto">
         <h1>
