@@ -18,6 +18,7 @@ class Account(db.Model):
     def __repr__(self):
         return "<Event %r>" % self.account_number
 
+    # Have value checks for application
     def __init__(self, name, currency, country):
         if not name:
             raise ValueError("Name cannot be empty.")
