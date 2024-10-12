@@ -31,8 +31,8 @@ jobs:
   deploy-dev:
     runs-on: ubuntu-latest
     needs: build
-    environment:
-      name: 'Development'
+    environment: Development
+
     steps:
       - uses: actions/checkout@v3
       - uses: azure/login@v2
@@ -66,8 +66,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     if: github.event_name == 'pull_request' && github.base_ref == 'main' || github.ref == 'refs/heads/main'
-    environment:
-      name: 'UAT'
+    environment: UAT
+
     steps:
       - uses: actions/checkout@v3
       - uses: azure/login@v2
