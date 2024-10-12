@@ -3,8 +3,8 @@
     <div class="row h-100">
       <div class="col-12 text-center my-auto">
         <h1>
-          Welcome to the IE bank management
-          <span class="text-primary">system.</span>
+          Welcome to the IE Bank Management
+          <span class="text-primary">System.</span>
         </h1>
         <a role="button" href="/accounts" class="btn btn-primary mt-3">
           Go to accounts →
