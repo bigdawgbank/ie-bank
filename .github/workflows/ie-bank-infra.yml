@@ -42,6 +42,14 @@ jobs:
     - uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Debug
+      run: |
+        echo "ENV: ${{ vars.ENV }}"
+        echo "DBHOST: ${{ vars.DBHOST }}"
+        echo "DBNAME: ${{ vars.DBNAME }}"
+        echo "FLASK_APP: ${{ vars.FLASK_APP }}"
+        echo "FLASK_DEBUG: ${{ vars.FLASK_DEBUG }}"
      
     - name: deploy
       uses: azure/arm-deploy@v1
