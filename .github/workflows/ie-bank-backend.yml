@@ -3,14 +3,22 @@ on:
   push:
     paths: 
       - 'backend/**'
+    branches:
+      - '*'  # This will run on any branch
   pull_request:
     branches: [ "main" ]
+    paths:
+      - 'backend/**'
   workflow_dispatch:
+
 permissions:
   contents: read
   id-token: write
+
 env:
   BACKEND_WEBAPP_DEV: dkumlin-be-dev
+  BACKEND_WEBAPP_UAT: dkumlin-be-uat  # Add this line for UAT webapp name
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -44,7 +52,8 @@ jobs:
       with:
         name: python-app
         path: backend
-  deploy:
+
+  deploy-dev:
     runs-on: ubuntu-latest
     needs: build
     environment:
@@ -66,3 +75,81 @@ jobs:
       with:
         app-name: ${{ env.BACKEND_WEBAPP_DEV }}
         package: .
+    - name: Configure App Settings
+      uses: azure/appservice-settings@v1
+      with:
+        app-name: ${{ env.BACKEND_WEBAPP_DEV }}
+        app-settings-json: |
+          [
+            {
+              "name": "ENV",
+              "value": "dev"
+            },
+            {
+              "name": "DBUSER",
+              "value": "${{ vars.DBUSER }}"
+            },
+            {
+              "name": "DBPASS",
+              "value": "${{ secrets.DBPASS }}"
+            },
+            {
+              "name": "DBHOST",
+              "value": "${{ vars.DBHOST }}"
+            },
+            {
+              "name": "DBNAME",
+              "value": "${{ vars.DBNAME }}"
+            }
+          ]
+
+  deploy-uat:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'pull_request' && github.ref == 'refs/heads/main'
+    environment:
+      name: 'UAT'
+      url: ${{ steps.deploy-to-webapp-uat.outputs.webapp-url }}
+    steps:
+    - name: Download artifact from build job
+      uses: actions/download-artifact@v4
+      with:
+        name: python-app
+        path: .
+    
+    - uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: 'Deploy to Azure Web App (UAT)'
+      uses: azure/webapps-deploy@v2
+      id: deploy-to-webapp-uat
+      with:
+        app-name: ${{ env.BACKEND_WEBAPP_UAT }}
+        package: .
+    - name: Configure App Settings (UAT)
+      uses: azure/appservice-settings@v1
+      with:
+        app-name: ${{ env.BACKEND_WEBAPP_UAT }}
+        app-settings-json: |
+          [
+            {
+              "name": "ENV",
+              "value": "uat"
+            },
+            {
+              "name": "DBUSER",
+              "value": "${{ vars.DBUSER }}"
+            },
+            {
+              "name": "DBPASS",
+              "value": "${{ secrets.DBPASS }}"
+            },
+            {
+              "name": "DBHOST",
+              "value": "${{ vars.DBHOST }}"
+            },
+            {
+              "name": "DBNAME",
+              "value": "${{ vars.DBNAME }}"
+            }
+          ]

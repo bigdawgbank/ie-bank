@@ -1,10 +1,18 @@
 name: ie-bank-infra
-
 on:
-  workflow_dispatch:
+  workflow_dispatch:  # This allows manual triggering
   push:
-      paths:
-        - '!/infra/scripts/**'
+    branches:
+      - '*'  # This will run on any branch
+    paths:
+      - 'infra/**'
+      - '!infra/scripts/**'
+  pull_request:
+    branches:
+      - main  # This will run on pull requests to main
+    paths:
+      - 'infra/**'
+      - '!infra/scripts/**'
 
 env:
   RESOURCE_GROUP_DEV: BCSAI2024-DEVOPS-STUDENTS-B-DEV
@@ -15,31 +23,25 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-
       # Checkout code
     - uses: actions/checkout@main
-
       # Lint Bicep code 
     - name: Run Bicep linter
       run: az bicep build --file ./infra/main.bicep
 
   deploy-dev:
-#   if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
     needs: build
     environment:
       name: 'Development'
-
-    steps:
-
       # Checkout code
+    steps:
     - uses: actions/checkout@main
     
       # Log into Azure
     - uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-
       # Deploy Bicep file
     - name: deploy
       uses: azure/arm-deploy@v1
@@ -48,4 +50,27 @@ jobs:
         resourceGroupName: ${{ env.RESOURCE_GROUP_DEV }}
         template: ./infra/main.bicep
         parameters: ./infra/parameters/dev.parameters.json appServiceAPIEnvVarENV=${{ vars.ENV }} appServiceAPIEnvVarDBHOST=${{ vars.DBHOST }} appServiceAPIEnvVarDBNAME=${{ vars.DBNAME }} appServiceAPIEnvVarDBPASS=${{ secrets.DBPASS }} appServiceAPIDBHostDBUSER=${{ secrets.DBUSER }} appServiceAPIDBHostFLASK_APP=${{ vars.FLASK_APP }} appServiceAPIDBHostFLASK_DEBUG=${{ vars.FLASK_DEBUG }}
+        deploymentName: ${{ env.USER_ALIAS }}
+
+  deploy-uat:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'pull_request' && github.ref == 'refs/heads/main'
+    environment:
+      name: 'UAT'
+    steps:
+    - uses: actions/checkout@main
+    
+      # Log into Azure
+    - uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      # Deploy Bicep file
+    - name: deploy
+      uses: azure/arm-deploy@v1
+      with:
+        subscriptionId: ${{ env.SUBSCRIPTION_ID_DEV }}
+        resourceGroupName: ${{ env.RESOURCE_GROUP_DEV }}
+        template: ./infra/main.bicep
+        parameters: ./infra/parameters/uat.parameters.json appServiceAPIEnvVarENV=${{ vars.ENV }} appServiceAPIEnvVarDBHOST=${{ vars.DBHOST }} appServiceAPIEnvVarDBNAME=${{ vars.DBNAME }} appServiceAPIEnvVarDBPASS=${{ secrets.DBPASS }} appServiceAPIDBHostDBUSER=${{ secrets.DBUSER }} appServiceAPIDBHostFLASK_APP=${{ vars.FLASK_APP }} appServiceAPIDBHostFLASK_DEBUG=${{ vars.FLASK_DEBUG }}
         deploymentName: ${{ env.USER_ALIAS }}
