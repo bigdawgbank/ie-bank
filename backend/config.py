@@ -30,6 +30,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
 
 
+# Custom config for only uat
 class UATConfig(Config):
     SQLALCHEMY_DATABASE_URI = "postgresql://{dbuser}:{dbpass}@{dbhost}/{dbname}".format(
         dbuser=os.getenv("DBUSER"),
