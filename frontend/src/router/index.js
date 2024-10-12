@@ -13,11 +13,6 @@ const routes = [
     component: Home,
   },
   {
-    path: "/skull",
-    name: "Skull",
-    component: Skull,
-  },
-  {
     path: "/accounts",
     name: "AppAccounts",
     component: AppAccounts,
