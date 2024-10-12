@@ -23,64 +23,75 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # Checkout code
-    - uses: actions/checkout@main
-      # Lint Bicep code 
-    - name: Run Bicep linter
-      run: az bicep build --file ./infra/main.bicep
+      - uses: actions/checkout@v3
+      - name: Run Bicep linter
+        run: az bicep build --file ./infra/main.bicep
 
   deploy-dev:
     runs-on: ubuntu-latest
     needs: build
     environment:
       name: 'Development'
-      # Checkout code
     steps:
-
-    - uses: actions/checkout@main
-      
-    - uses: azure/login@v2
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - name: Debug
-      run: |
-        echo "ENV: ${{ vars.ENV }}"
-        echo "DBHOST: ${{ vars.DBHOST }}"
-        echo "DBNAME: ${{ vars.DBNAME }}"
-        echo "FLASK_APP: ${{ vars.FLASK_APP }}"
-        echo "FLASK_DEBUG: ${{ vars.FLASK_DEBUG }}"
-        echo "DBUSER: ${{ secrets.DBUSER }}"
-        echo "DBPASS: ${{ secrets.DBPASS }}"
-     
-    - name: deploy
-      uses: azure/arm-deploy@v1
-      with:
-        subscriptionId: ${{ env.SUBSCRIPTION_ID_DEV }}
-        resourceGroupName: ${{ env.RESOURCE_GROUP_DEV }}
-        template: ./infra/main.bicep
-        parameters: ./infra/parameters/dev.parameters.json appServiceAPIEnvVarENV=${{ vars.ENV }} appServiceAPIEnvVarDBHOST=${{ vars.DBHOST }} appServiceAPIEnvVarDBNAME=${{ vars.DBNAME }} appServiceAPIEnvVarDBPASS=${{ secrets.DBPASS }} appServiceAPIDBHostDBUSER=${{ secrets.DBUSER }} appServiceAPIDBHostFLASK_APP=${{ vars.FLASK_APP }} appServiceAPIDBHostFLASK_DEBUG=${{ vars.FLASK_DEBUG }}
-        deploymentName: ${{ env.USER_ALIAS }}
+      - uses: actions/checkout@v3
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Debug
+        run: |
+          echo "ENV: ${{ vars.ENV }}"
+          echo "DBHOST: ${{ vars.DBHOST }}"
+          echo "DBNAME: ${{ vars.DBNAME }}"
+          echo "FLASK_APP: ${{ vars.FLASK_APP }}"
+          echo "FLASK_DEBUG: ${{ vars.FLASK_DEBUG }}"
+      - name: Deploy to Development
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ env.SUBSCRIPTION_ID_DEV }}
+          resourceGroupName: ${{ env.RESOURCE_GROUP_DEV }}
+          template: ./infra/main.bicep
+          parameters: >
+            ./infra/parameters/dev.parameters.json 
+            appServiceAPIEnvVarENV=${{ vars.ENV }} 
+            appServiceAPIEnvVarDBHOST=${{ vars.DBHOST }} 
+            appServiceAPIEnvVarDBNAME=${{ vars.DBNAME }} 
+            appServiceAPIEnvVarDBPASS=${{ secrets.DBPASS }} 
+            appServiceAPIDBHostDBUSER=${{ secrets.DBUSER }} 
+            appServiceAPIDBHostFLASK_APP=${{ vars.FLASK_APP }} 
+            appServiceAPIDBHostFLASK_DEBUG=${{ vars.FLASK_DEBUG }}
+          deploymentName: ${{ env.USER_ALIAS }}-dev
 
   deploy-uat:
     runs-on: ubuntu-latest
     needs: build
-    if: github.event_name == 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'pull_request' && github.base_ref == 'main' || github.ref == 'refs/heads/main'
     environment:
       name: 'UAT'
     steps:
-
-    - uses: actions/checkout@main
-    
-    - uses: azure/login@v2
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - name: deploy
-      uses: azure/arm-deploy@v1
-      with:
-        subscriptionId: ${{ env.SUBSCRIPTION_ID_DEV }}
-        resourceGroupName: ${{ env.RESOURCE_GROUP_DEV }}
-        template: ./infra/main.bicep
-        parameters: ./infra/parameters/uat.parameters.json appServiceAPIEnvVarENV=${{ vars.ENV }} appServiceAPIEnvVarDBHOST=${{ vars.DBHOST }} appServiceAPIEnvVarDBNAME=${{ vars.DBNAME }} appServiceAPIEnvVarDBPASS=${{ secrets.DBPASS }} appServiceAPIDBHostDBUSER=${{ secrets.DBUSER }} appServiceAPIDBHostFLASK_APP=${{ vars.FLASK_APP }} appServiceAPIDBHostFLASK_DEBUG=${{ vars.FLASK_DEBUG }}
-        deploymentName: ${{ env.USER_ALIAS }}
+      - uses: actions/checkout@v3
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Debug
+        run: |
+          echo "ENV: ${{ vars.ENV_UAT }}"
+          echo "DBHOST: ${{ vars.DBHOST_UAT }}"
+          echo "DBNAME: ${{ vars.DBNAME_UAT }}"
+          echo "FLASK_APP: ${{ vars.FLASK_APP_UAT }}"
+          echo "FLASK_DEBUG: ${{ vars.FLASK_DEBUG_UAT }}"
+      - name: Deploy to UAT
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ env.SUBSCRIPTION_ID_DEV }}
+          resourceGroupName: ${{ env.RESOURCE_GROUP_DEV }}
+          template: ./infra/main.bicep
+          parameters: >
+            ./infra/parameters/uat.parameters.json 
+            appServiceAPIEnvVarENV=${{ vars.ENV_UAT }} 
+            appServiceAPIEnvVarDBHOST=${{ vars.DBHOST_UAT }} 
+            appServiceAPIEnvVarDBNAME=${{ vars.DBNAME_UAT }} 
+            appServiceAPIEnvVarDBPASS=${{ secrets.DBPASS_UAT }} 
+            appServiceAPIDBHostDBUSER=${{ secrets.DBUSER_UAT }} 
+            appServiceAPIDBHostFLASK_APP=${{ vars.FLASK_APP_UAT }} 
+            appServiceAPIDBHostFLASK_DEBUG=${{ vars.FLASK_DEBUG_UAT }}
+          deploymentName: ${{ env.USER_ALIAS }}-uat
