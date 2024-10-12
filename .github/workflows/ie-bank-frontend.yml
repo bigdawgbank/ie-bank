@@ -81,7 +81,7 @@ jobs:
   deploy-uat:
     runs-on: ubuntu-latest
     needs: build
-    if: github.event_name == 'pull_request' && github.base_ref == 'main' || github.ref == 'refs/heads/main'
+    if: github.event_name == 'pull_request' && github.ref == 'refs/heads/main'
     environment:
       name: 'UAT'
       url: ${{ steps.deploy-to-webapp-uat.outputs.webapp-url }}
