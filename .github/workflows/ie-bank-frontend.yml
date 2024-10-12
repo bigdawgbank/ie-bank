@@ -75,6 +75,10 @@ jobs:
               {
                 "name": "VUE_APP_ROOT_API",
                 "value": "${{ vars.VUE_APP_ROOT_API }}"
+              },
+              {
+                "name": "VUE_APP_ROOT_API",
+                "value": "${{ vars.BASE_URL }}"
               }
             ]
 
@@ -113,5 +117,9 @@ jobs:
               {
                 "name": "VUE_APP_ROOT_API",
                 "value": "${{ vars.VUE_APP_ROOT_API }}"
+              },
+              {
+                "name": "VUE_APP_ROOT_API",
+                "value": "${{ vars.BASE_URL }}"
               }
             ]

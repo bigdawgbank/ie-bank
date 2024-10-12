@@ -192,6 +192,7 @@ export default {
       axios
         .get(path)
         .then((response) => {
+          console.log(response);
           this.accounts = response.data.accounts;
         })
         .catch((error) => {
@@ -205,6 +206,7 @@ export default {
       axios
         .post(path, payload)
         .then((response) => {
+          console.log(response);
           this.RESTgetAccounts();
           // For message alert
           this.message = "Account Created succesfully!";
