@@ -2,19 +2,19 @@ name: ie-bank-frontend
 on:
   push:
     paths:
-      - 'frontend/**'  # Trigger only when frontend folder changes
+      - 'frontend/**'
     branches:
-      - '*'  # This will run on any branch
+      - '*'
   pull_request:
     branches:
-      - main  # This will run on pull requests to main
+      - main
     paths:
       - 'frontend/**'
-  workflow_dispatch:  # This allows manual triggering
+  workflow_dispatch:
 
 env:
   FRONTEND_WEBAPP_DEV: dkumlin-fe-dev
-  FRONTEND_WEBAPP_UAT: dkumlin-fe-uat  # Add this line for UAT webapp name
+  FRONTEND_WEBAPP_UAT: dkumlin-fe-uat
 
 jobs:
   build:
@@ -31,6 +31,7 @@ jobs:
         env:
           NODE_ENV: ${{ vars.NODE_ENV }}
           VUE_APP_ROOT_API: ${{ vars.VUE_APP_ROOT_API }}
+          BASE_URL: ${{ vars.BASE_URL }}
         run: |
           cd frontend
           npm ci
@@ -62,25 +63,6 @@ jobs:
         with:
           app-name: ${{ env.FRONTEND_WEBAPP_DEV }}
           package: .
-      - name: Configure App Settings
-        uses: azure/appservice-settings@v1
-        with:
-          app-name: ${{ env.FRONTEND_WEBAPP_DEV }}
-          app-settings-json: |
-            [
-              {
-                "name": "NODE_ENV",
-                "value": "${{ vars.NODE_ENV }}"
-              },
-              {
-                "name": "VUE_APP_ROOT_API",
-                "value": "${{ vars.VUE_APP_ROOT_API }}"
-              },
-              {
-                "name": "BASE_URL",
-                "value": "${{ vars.BASE_URL }}"
-              }
-            ]
 
   deploy-uat:
     if: github.event_name == 'pull_request' && github.base_ref == 'main'
@@ -104,22 +86,3 @@ jobs:
         with:
           app-name: ${{ env.FRONTEND_WEBAPP_UAT }}
           package: .
-      - name: Configure App Settings (UAT)
-        uses: azure/appservice-settings@v1
-        with:
-          app-name: ${{ env.FRONTEND_WEBAPP_UAT }}
-          app-settings-json: |
-            [
-              {
-                "name": "NODE_ENV",
-                "value": "${{ vars.NODE_ENV }}"
-              },
-              {
-                "name": "VUE_APP_ROOT_API",
-                "value": "${{ vars.VUE_APP_ROOT_API }}"
-              },
-              {
-                "name": "BASE_URL",
-                "value": "${{ vars.BASE_URL }}"
-              }
-            ]
