@@ -36,6 +36,7 @@ def test_create_account(testing_client):
     assert response.status_code == 201
 
 
+# Custom test
 def test_create_bad_account(testing_client):
     """
     GIVEN a Flask application
