@@ -47,13 +47,13 @@ param appServiceAPIEnvVarDBNAME string
 param appServiceAPIEnvVarDBPASS string
 
 @description('The value for the environment variable DBUSER')
-param appServiceAPIEnvVarDBUSER string
+param appServiceAPIDBHostDBUSER string
 
 @description('The value for the environment variable FLASK_APP')
-param appServiceAPIEnvVarFLASK_APP string
+param appServiceAPIDBHostFLASK_APP string
 
 @description('The value for the environment variable FLASK_DEBUG')
-param appServiceAPIEnvVarFLASK_DEBUG string
+param appServiceAPIDBHostFLASK_DEBUG string
 
 // Use Key Vault for administrator login password later
 module postgresSQLServerModule 'modules/postgre-sql-server.bicep' = {
@@ -112,15 +112,15 @@ module appServiceBE 'modules/app-service-be.bicep' = {
       }
       {
         name: 'DBUSER'
-        value: appServiceAPIEnvVarDBUSER
+        value: appServiceAPIDBHostDBUSER
       }
       {
         name: 'FLASK_APP'
-        value: appServiceAPIEnvVarFLASK_APP
+        value: appServiceAPIDBHostFLASK_APP
       }
       {
         name: 'FLASK_DEBUG'
-        value: appServiceAPIEnvVarFLASK_DEBUG
+        value: appServiceAPIDBHostFLASK_DEBUG
       }
     ]
   }
