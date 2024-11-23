@@ -22,6 +22,15 @@
     },
     "location": {
       "value": "North Europe"
+    },
+    "containerRegistryName": {
+        "value": "dkumlinacrdev"
+    },
+    "dockerRegistryImageName": {
+        "value": "dkumlin-be-dev"
+    },
+    "dockerRegistryImageTag": {
+        "value": "latest"
     }
   }
 }

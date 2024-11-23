@@ -55,6 +55,17 @@ param appServiceAPIDBHostFLASK_APP string
 @description('The value for the environment variable FLASK_DEBUG')
 param appServiceAPIDBHostFLASK_DEBUG string
 
+@description('Name of the Azure Container Registry')
+param containerRegistryName string
+
+@description('Name of the Docker image')
+param dockerRegistryImageName string
+
+@description('Tag of the Docker image, the version')
+param dockerRegistryImageTag string
+
+var skuName = (environmentType == 'prod') ? 'B1' : 'B1' //modify according to desired capacity
+
 // Use Key Vault for administrator login password later
 module postgresSQLServerModule 'modules/postgre-sql-server.bicep' = {
   name: 'postgresSQLServerModule'
@@ -82,7 +93,16 @@ module appServicePlanModule 'modules/app-service-plan.bicep' = {
   params: {
     appServicePlanName: appServicePlanName
     location: location
-    environmentType: environmentType
+    skuName: skuName
+  }
+}
+
+// Module: Container Registry
+module containerRegistryModule 'modules/container-registry.bicep' = {
+  name: 'containerRegistryModule'
+  params: {
+    name: containerRegistryName
+    location: location
   }
 }
 
@@ -93,6 +113,11 @@ module appServiceBE 'modules/app-service-be.bicep' = {
     appServiceAPIAppName: appServiceAPIAppName
     location: location
     appServicePlanId: appServicePlanModule.outputs.appServicePlanId
+    dockerRegistryServerUserName: containerRegistryModule.outputs.containerRegistryUserName
+    dockerRegistryServerPassword: containerRegistryModule.outputs.containerRegistryPassword0
+    dockerRegistryImageTag: dockerRegistryImageTag
+    dockerRegistryImageName: dockerRegistryImageName
+    containerRegistryName: containerRegistryName
     appSettings: [
       {
         name: 'ENV'
