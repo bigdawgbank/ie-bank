@@ -1,5 +1,4 @@
 import pytest
-
 from iebank_api import app, db
 from iebank_api.models import Account
 
@@ -17,4 +16,3 @@ def testing_client(scope="module"):
 
     with app.app_context():
         db.drop_all()
-

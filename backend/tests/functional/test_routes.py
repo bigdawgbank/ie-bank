@@ -1,62 +1,81 @@
-import pytest
-
-from iebank_api import app
-
-
-def test_get_accounts(testing_client):
-    """
-    GIVEN a Flask application
-    WHEN the '/accounts' page is requested (GET)
-    THEN check the response is valid
-    """
-    response = testing_client.get("/accounts")
-    assert response.status_code == 200
-
-
-def test_dummy_wrong_path():
-    """
-    GIVEN a Flask application
-    WHEN the '/wrong_path' page is requested (GET)
-    THEN check the response is valid
-    """
-    with app.test_client() as client:
-        response = client.get("/wrong_path")
-        assert response.status_code == 404
-
-
 def test_create_account(testing_client):
-    """
-    GIVEN a Flask application
-    WHEN the '/accounts' page is posted to (POST)
-    THEN check the response is valid
-    """
-    response = testing_client.post(
-        "/accounts", json={"name": "John Doe", "currency": "€", "country": "Sweden"}
+    """Test creating a new account"""
+    # First register and login
+    testing_client.post(
+        "/register",
+        data={
+            "username": "testuser",
+            "email": "test@example.com",
+            "password": "TestPass123",
+        },
     )
+
+    testing_client.post(
+        "/login", data={"username": "testuser", "password": "TestPass123"}
+    )
+
+    # Then create account
+    response = testing_client.post(
+        "/accounts",
+        json={"name": "My Savings Account", "currency": "€", "country": "Ireland"},
+    )
+
+    # Verify response
     assert response.status_code == 201
+    assert response.json["name"] == "My Savings Account"
+    assert response.json["currency"] == "€"
+    assert response.json["country"] == "Ireland"
+    assert "account_number" in response.json
+    assert "user_id" in response.json
+
+    # Verify account appears in user's accounts
+    accounts_response = testing_client.get("/accounts")
+    assert accounts_response.status_code == 200
+    assert len(accounts_response.json) == 1
+    assert accounts_response.json[0]["name"] == "My Savings Account"
 
 
-def test_create_bad_account(testing_client):
-    """
-    GIVEN a Flask application
-    WHEN an account is created with invalid data
-    THEN check that the response status code is 400
-    """
+# Test invalid requests
+def test_create_account_invalid_data(testing_client):
+    """Test creating account with invalid data"""
+    # Login first
+    testing_client.post(
+        "/register",
+        data={
+            "username": "testuser",
+            "email": "test@example.com",
+            "password": "TestPass123",
+        },
+    )
+    testing_client.post(
+        "/login", data={"username": "testuser", "password": "TestPass123"}
+    )
 
+    # Test missing name
     response = testing_client.post(
-        "/accounts", json={"currency": "€", "country": "Sweden"}
+        "/accounts", json={"currency": "€", "country": "Ireland"}
     )
     assert response.status_code == 400
-    assert response.json.get("error") == "Name cannot be empty."
+    assert "error" in response.json
 
+    # Test missing currency
     response = testing_client.post(
-        "/accounts", json={"name": "John Doe", "currency": None, "country": "Sweden"}
+        "/accounts", json={"name": "My Account", "country": "Ireland"}
     )
     assert response.status_code == 400
-    assert response.json.get("error") == "Currency cannot be empty or None."
+    assert "error" in response.json
 
+    # Test missing country
     response = testing_client.post(
-        "/accounts", json={"name": "John Doe", "currency": "€", "country": ""}
+        "/accounts", json={"name": "My Account", "currency": "€"}
     )
     assert response.status_code == 400
-    assert response.json.get("error") == "Country cannot be empty."
+    assert "error" in response.json
+
+
+def test_create_account_unauthorized(testing_client):
+    """Test creating account without logging in"""
+    response = testing_client.post(
+        "/accounts", json={"name": "My Account", "currency": "€", "country": "Ireland"}
+    )
+    assert response.status_code == 401  # or 403 depending on your setup

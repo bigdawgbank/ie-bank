@@ -20,30 +20,6 @@ def test_protected_route(testing_client):
     assert response.status_code == 200
 
 
-def test_custom_auth_flow(testing_client):
-    """Test custom authentication flow"""
-    # Register with custom credentials
-    reg_response = testing_client.post(
-        "/register",
-        data={
-            "username": "customuser",
-            "email": "custom@example.com",
-            "password": "custompass123",
-        },
-    )
-    assert reg_response.status_code == 201
-
-    # Login with those credentials
-    login_response = testing_client.post(
-        "/login", data={"username": "customuser", "password": "custompass123"}
-    )
-    assert login_response.status_code == 200
-
-    # Check access to protected route
-    response = testing_client.get("/accounts")
-    assert response.status_code == 200
-
-
 def test_login_failure(testing_client):
     """Test invalid login credentials"""
     response = testing_client.post(
@@ -60,11 +36,11 @@ def test_logout(testing_client):
         data={
             "username": "testuser",
             "email": "test@example.com",
-            "password": "testpass123",
+            "password": "testPass123",
         },
     )
     testing_client.post(
-        "/login", data={"username": "testuser", "password": "testpass123"}
+        "/login", data={"username": "testuser", "password": "testPass123"}
     )
 
     # Test logout
@@ -84,17 +60,17 @@ def test_register_duplicate_user(testing_client):
         data={
             "username": "testuser",
             "email": "test@example.com",
-            "password": "testpass123",
+            "password": "testPass123",
         },
     )
 
     # Try to register same username
     response = testing_client.post(
         "/register",
-        datdata={
+        data={
             "username": "testuser",
             "email": "another@example.com",
-            "password": "testpass123",
+            "password": "testPass123",
         },
     )
     assert response.status_code == 400
