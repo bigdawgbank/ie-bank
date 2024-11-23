@@ -39,7 +39,6 @@ class Account(db.Model):
             self.user_id = user.id
 
 
-# TODO: Add fk here to the user that could be nullable to allow a user to manage accounts
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
