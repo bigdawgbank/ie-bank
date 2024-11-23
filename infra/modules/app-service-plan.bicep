@@ -7,19 +7,18 @@ param appServicePlanName string
 param location string = resourceGroup().location
 
 @allowed([
-  'nonprod'
-  'prod'
-])
-@description('The environment type (nonprod or prod)')
-param environmentType string = 'nonprod'
+  'B1'
+  'F1'
+  ])
+  param skuName string
 
-var appServicePlanSkuName = (environmentType == 'prod') ? 'B1' : 'B1' // Modify according to desired capacity
+
 
 resource appServicePlan 'Microsoft.Web/serverFarms@2022-03-01' = {
   name: appServicePlanName
   location: location
   sku: {
-    name: appServicePlanSkuName
+    name: skuName
   }
   kind: 'linux'
   properties: {

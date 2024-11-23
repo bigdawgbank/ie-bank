@@ -12,6 +12,26 @@ param appServicePlanId string
 @description('Environment variables for the Backend API App')
 param appSettings array
 
+param containerRegistryName string
+
+@secure()
+param dockerRegistryServerUserName string
+
+@secure()
+param dockerRegistryServerPassword string
+
+param dockerRegistryImageName string
+
+param dockerRegistryImageTag string
+
+param appCommandLine string =''
+
+var dockerAppSettings = [
+  { name: 'DOCKER_REGISTRY_SERVER_URL', value: 'https://${containerRegistryName}.azurecr.io' }
+  { name: 'DOCKER_REGISTRY_SERVER_USERNAME', value: dockerRegistryServerUserName }
+  { name: 'DOCKER_REGISTRY_SERVER_PASSWORD', value: dockerRegistryServerPassword }
+  ]
+
 resource appServiceAPIApp 'Microsoft.Web/sites@2022-03-01' = {
   name: appServiceAPIAppName
   location: location
@@ -19,15 +39,12 @@ resource appServiceAPIApp 'Microsoft.Web/sites@2022-03-01' = {
     serverFarmId: appServicePlanId
     httpsOnly: true
     siteConfig: {
-      linuxFxVersion: 'PYTHON|3.11'
+      linuxFxVersion: 'DOCKER|${containerRegistryName}.azurecr.io/${dockerRegistryImageName}:${dockerRegistryImageTag}'
       alwaysOn: false
       ftpsState: 'FtpsOnly'
-      appSettings: concat(appSettings, [
-        {
-          name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
-          value: 'true'
-        }
-      ])
+      appCommandLine: appCommandLine
+      appSettings: union(appSettings, dockerAppSettings)
+
     }
   }
 }
