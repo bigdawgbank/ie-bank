@@ -27,7 +27,7 @@
         "value": "dkumlinacrdev"
     },
     "dockerRegistryImageName": {
-        "value": "dkumlinacrdev.azurecr.io/dkumlin-be-dev:latest"
+        "value": "dkumlin-be-dev"
     },
     "dockerRegistryImageTag": {
         "value": "latest"
