@@ -9,6 +9,12 @@ param location string = resourceGroup().location
 @description('The App Service Plan ID for the Frontend Web App')
 param appServicePlanId string
 
+@description('Application Insights Instrumentation Key for monitoring')
+param appInsightsInstrumentationKey string
+
+@description('Application Insights Connection String for monitoring')
+param appInsightsConnectionString string
+
 resource appServiceApp 'Microsoft.Web/sites@2022-03-01' = {
   name: appServiceAppName
   location: location
@@ -20,7 +26,16 @@ resource appServiceApp 'Microsoft.Web/sites@2022-03-01' = {
       alwaysOn: false
       ftpsState: 'FtpsOnly'
       appCommandLine: 'pm2 serve /home/site/wwwroot --spa --no-daemon'
-      appSettings: []
+      appSettings: [
+        {
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: appInsightsInstrumentationKey
+        }
+        {
+          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+          value: appInsightsConnectionString
+        }
+      ]
     }
   }
 }

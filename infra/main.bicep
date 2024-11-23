@@ -64,6 +64,15 @@ param dockerRegistryImageName string
 @description('Tag of the Docker image, the version')
 param dockerRegistryImageTag string
 
+@description('The name of the Log Analytics Workspace')
+param logAnalyticsWorkspaceName string
+
+@description('The name of the Application Insights resource')
+param appInsightsName string 
+
+
+var logAnalyticsWorkspaceId = resourceId('Microsoft.OperationalInsights/workspaces', logAnalyticsWorkspaceName)
+
 var skuName = (environmentType == 'prod') ? 'B1' : 'B1' //modify according to desired capacity
 
 // Use Key Vault for administrator login password later
@@ -84,6 +93,26 @@ module postgresSQLDatabaseModule 'modules/postgre-sql-db.bicep' = {
   }
   dependsOn: [
     postgresSQLServerModule
+  ]
+}
+
+// Deploy Log Analytics Workspace
+module logAnalytics 'modules/azure-log-analytics.bicep' = {
+  name: 'logAnalytics'
+  params: {
+    location: location
+    name: logAnalyticsWorkspaceName
+  }
+}
+module appInsights 'modules/app-insights.bicep' = {
+  name: 'appInsights'
+  params: {
+    location: location
+    appInsightsName: appInsightsName
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+  }
+  dependsOn: [
+    logAnalytics
   ]
 }
 
@@ -147,10 +176,20 @@ module appServiceBE 'modules/app-service-be.bicep' = {
         name: 'FLASK_DEBUG'
         value: appServiceAPIDBHostFLASK_DEBUG
       }
+      {
+        name: 'APP_INSIGHTS_INSTRUMENTATION_KEY'
+        value: appInsights.outputs.appInsightsInstrumentationKey
+      }
+      {
+        name: 'APPLICATION_INSIGHTS_CONNECTION_STRING'
+        value: appInsights.outputs.appInsightsConnectionString
+
+      }
     ]
   }
   dependsOn: [
     appServicePlanModule
+    containerRegistryModule
   ]
 }
 
@@ -161,9 +200,14 @@ module appServiceFE 'modules/app-service-fe.bicep' = {
     appServiceAppName: appServiceAppName
     location: location
     appServicePlanId: appServicePlanModule.outputs.appServicePlanId
+    appInsightsInstrumentationKey: appInsights.outputs.appInsightsInstrumentationKey
+    appInsightsConnectionString: appInsights.outputs.appInsightsConnectionString
+
   }
   dependsOn: [
     appServicePlanModule
+    appInsights
+    containerRegistryModule
   ]
 }
 
