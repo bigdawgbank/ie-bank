@@ -2,7 +2,9 @@ import os
 
 from dotenv import load_dotenv
 from flask import Flask
+from flask_bcrypt import Bcrypt
 from flask_cors import CORS
+from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -27,8 +29,11 @@ else:
     app.config.from_object("config.ProductionConfig")
 
 db = SQLAlchemy(app)
+login_manager = LoginManager(app)
+bcrypt = Bcrypt(app)
 
-from iebank_api.models import Account
+
+from iebank_api.models import Account, User
 
 with app.app_context():
     db.create_all()
