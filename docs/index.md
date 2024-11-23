@@ -6,7 +6,7 @@ Welcome to the BigDawg IE Bank Application Documentation Page!
 
 ## Project Description
 
-The BigDawg IE Bank Application builds upon the success of the previous IE Bank Application developed during the first phase of the project. For the next phase, we aim to deliver a **Minimum Viable Product (MVP)** that includes additional features like: **Admin Portal**: A user management system enabling administrators to create, update, and delete users. **User Portal Enhancements**: Registration forms, bank account linking, and money transfer functionalities. **Secure Deployment**: Following DevOps best practices to automate CI/CD pipelines and ensure a robust DTAP (Development, Test, Acceptance, Production) workflow. This project emphasizes modularity, scalability, and security, ensuring compliance with financial industry standards and providing seamless user experiences.
+The BigDawg IE Bank Application builds upon the success of the previous IE Bank Application developed during the first phase of the project. For the next phase, we aim to deliver a **Minimum Viable Product (MVP)** that includes additional features like the Admin Portal which is a user management system enabling administrators to create, update, and delete users, User Portal Enhancements which include Registration forms, bank account linking, and money transfer functionalities and Secure Deployment, which entails following DevOps best practices to automate CI/CD pipelines and ensure a robust DTAP (Development, Test, Acceptance, Production) workflow. This project emphasizes modularity, scalability, and security, ensuring compliance with financial industry standards and providing seamless user experiences.
 
 ---
 
