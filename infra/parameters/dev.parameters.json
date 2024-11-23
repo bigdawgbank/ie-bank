@@ -24,14 +24,25 @@
       "value": "North Europe"
     },
     "containerRegistryName": {
-        "value": "dkumlinacrdev"
+      "value": "dkumlinacrdev"
     },
     "dockerRegistryImageName": {
-        "value": "dkumlin-be-dev"
+      "value": "dkumlin-be-dev"
     },
     "dockerRegistryImageTag": {
-        "value": "latest"
+      "value": "latest"
+    },
+    "keyVaultName": {
+      "value": "dkumlin-keyVault-dev"
+    },
+    "keyVaultRoleAssignments": {
+      "value": [
+        {
+          "principalId": "daa3436a-d1fb-44fe-b34b-053db433cdb7",
+          "roleDefinitionIdOrName": "Key Vault Administrator",
+          "principalType": "Group"
+        }
+      ]
     }
   }
 }
-
