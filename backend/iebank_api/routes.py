@@ -1,12 +1,12 @@
 from flask import jsonify, request
-from flask_login import login_required, login_user, logout_user
+from flask_login import current_user, login_required, login_user, logout_user
 from iebank_api import app, bcrypt, db, login_manager
 from iebank_api.models import Account, User
 
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return db.session.get(User, int(user_id))
 
 
 @app.route("/register", methods=["POST"])
@@ -34,9 +34,9 @@ def register():
         return jsonify({"message": "Password must contain a number"}), 400
 
     # Check if user exists
-    if User.query.filter_by(username=username).first() and User.query.filter_by(
-        email=email
-    ):
+    if db.session.query(User).filter_by(username=username).first() and db.session.query(
+        User
+    ).filter_by(email=email):
         return jsonify({"message": "User already exists"}), 400
 
     # Create new user
@@ -52,11 +52,11 @@ def register():
 def login():
     username = request.form.get("username")
     password = request.form.get("password")
-    user = User.query.filter_by(username=username).first()
+    user = db.session.query(User).filter_by(username=username).first()
     if user and bcrypt.check_password_hash(user.password_hash, password):
         login_user(user)
         return jsonify({"message": "Login successful"}), 201
-    return jsonify({"message": "Account does not exist"}), 403
+    return jsonify({"message": "Account does not exist"}), 401
 
 
 @app.route("/logout", methods=["POST"])
@@ -74,9 +74,9 @@ def create_account():
     if not data:
         return jsonify({"message": "Provide data"}), 400
 
-    name = data["name"]
-    currency = data["currency"]
-    country = data["country"]
+    name = data.get("name")
+    currency = data.get("currency")
+    country = data.get("country")
 
     if not name:
         return jsonify({"error": "Name cannot be empty."}), 400
@@ -85,34 +85,47 @@ def create_account():
     if not country:
         return jsonify({"error": "Country cannot be empty."}), 400
 
-    account = Account(name, currency, country)
-
+    # Create account and associate with current user
+    account = Account(name, currency, country, current_user)
     db.session.add(account)
     db.session.commit()
+
     return jsonify(format_account(account)), 201
 
 
 @app.route("/accounts", methods=["GET"])
 @login_required
 def get_accounts():
-    accounts = Account.query.all()
-    return jsonify({"accounts": [format_account(account) for account in accounts]}), 200
+    # Only get accounts belonging to current user
+    accounts = db.session.query(Account).filter_by(user_id=current_user.id).all()
+    return jsonify([format_account(account) for account in accounts]), 200
 
 
 @app.route("/accounts/<int:id>", methods=["GET"])
 @login_required
 def get_account(id):
-    account = Account.query.get(id)
+    account = Account.query.get_or_404(id)
+    # Check if account belongs to current user
+    if account.user_id != current_user.id:
+        return jsonify({"error": "Unauthorized"}), 403
     return jsonify(format_account(account)), 200
 
 
 @app.route("/accounts/<int:id>", methods=["PUT"])
 @login_required
 def update_account(id):
-    account = Account.query.get(id)
-    name = request.json.get("name")
+    account = db.session.get(Account, id)
+    if not account:
+        return jsonify({"error": "Account not found"}), 404
+    # Check if account belongs to current user
+    if account.user_id != current_user.id:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    data = request.json
+    name = data.get("name")
     if not name:
         return jsonify({"error": "Name cannot be empty"}), 400
+
     account.name = name
     db.session.commit()
     return jsonify(format_account(account)), 200
@@ -121,9 +134,11 @@ def update_account(id):
 @app.route("/accounts/<int:id>", methods=["DELETE"])
 @login_required
 def delete_account(id):
-    account = Account.query.get(id)
-    if not account:
-        return jsonify({"error": "Account cannot be empty"}), 400
+    account = Account.query.get_or_404(id)
+    # Check if account belongs to current user
+    if account.user_id != current_user.id:
+        return jsonify({"error": "Unauthorized"}), 403
+
     db.session.delete(account)
     db.session.commit()
     return jsonify(format_account(account)), 200
@@ -138,5 +153,25 @@ def format_account(account):
         "currency": account.currency,
         "status": account.status,
         "country": account.country,
-        "created_at": account.created_at,
+        "created_at": account.created_at.isoformat(),
+        "user_id": account.user_id,  # Added user_id to response
     }
+
+
+# Optional: Add route to get user profile with accounts
+@app.route("/profile", methods=["GET"])
+@login_required
+def get_profile():
+    return (
+        jsonify(
+            {
+                "id": current_user.id,
+                "username": current_user.username,
+                "email": current_user.email,
+                "accounts": [
+                    format_account(account) for account in current_user.get_accounts()
+                ],
+            }
+        ),
+        200,
+    )
