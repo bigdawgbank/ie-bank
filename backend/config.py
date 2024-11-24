@@ -20,6 +20,7 @@ class LocalConfig(Config):
     DEBUG = True
 
 
+# Use for both uat and dev
 class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = "postgresql://{dbuser}:{dbpass}@{dbhost}/{dbname}".format(
         dbuser=os.getenv("DBUSER"),
