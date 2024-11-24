@@ -31,7 +31,13 @@
     },
     "dockerRegistryImageTag": {
         "value": "latest"
-    }
+    },
+    "logAnalyticsWorkspaceName": {
+      "value": "dkumlin-logAnalyticsWorkspace-dev" 
+    },
+    "appInsightsName": {
+      "value": "dkumlin-appInsights-dev"
+  } 
   }
 }
 

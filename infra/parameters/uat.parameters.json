@@ -22,6 +22,22 @@
     },
     "location": {
       "value": "North Europe"
-    }
+    },
+    "containerRegistryName": {
+        "value": "dkumlinacruat"
+    },
+    "dockerRegistryImageName": {
+        "value": "dkumlin-be-uat"
+    },
+    "dockerRegistryImageTag": {
+        "value": "latest"
+    },
+    "logAnalyticsWorkspaceName": {
+      "value": "dkumlin-logAnalyticsWorkspace-uat" 
+    },
+    "appInsightsName": {
+      "value": "dkumlin-appInsights-uat"
+  } 
   }
 }
+
