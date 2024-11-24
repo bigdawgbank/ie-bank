@@ -1,0 +1,44 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "environmentType": {
+        "value": "nonprod"
+      },
+      "postgreSQLServerName": {
+        "value": "dkumlin-dbsrv-prod"
+      },
+      "postgreSQLDatabaseName": {
+        "value": "dkumlin-db-prod"
+      },
+      "appServicePlanName": {
+        "value": "dkumlin-asp-prod"
+      },
+      "appServiceAPIAppName": {
+        "value": "dkumlin-be-prod"
+      },
+      "appServiceAppName": {
+        "value": "dkumlin-fe-prod"
+      },
+      "location": {
+        "value": "North Europe"
+      },
+      "containerRegistryName": {
+          "value": "dkumlinacrprod"
+      },
+      "dockerRegistryImageName": {
+          "value": "dkumlin-be-prod"
+      },
+      "dockerRegistryImageTag": {
+          "value": "latest"
+      },
+      "logAnalyticsWorkspaceName": {
+        "value": "dkumlin-logAnalyticsWorkspace-prod" 
+      },
+      "appInsightsName": {
+        "value": "dkumlin-appInsights-prod"
+    } 
+    }
+  }
+  
+  
