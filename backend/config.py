@@ -31,4 +31,5 @@ class DevelopmentConfig(Config):
 
 
 class ProductionConfig(Config):
-    pass
+    SQLALCHEMY_DATABASE_URI = "sqlite:///local.db"
+    DEBUG = True
