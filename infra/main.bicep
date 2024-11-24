@@ -72,6 +72,9 @@ param keyVaultName string = 'ie-bank-kv-dev'
 @description('The arrays of role assignments for the Key Vault')
 param keyVaultRoleAssignments array = []
 
+var acrUsernameSecretName = 'acr-username'
+var acrPassword0SecretName = 'acr-password0'
+var acrPassword1SecretName = 'acr-password1'
 
 module keyVault 'modules/keyvault.bicep' = {
   name: 'keyVault'
@@ -119,7 +122,15 @@ module containerRegistryModule 'modules/container-registry.bicep' = {
   params: {
     name: containerRegistryName
     location: location
+    keyVaultResourceId: resourceId('Microsoft.KeyVault/vaults', keyVaultName)
+    keyVaultSecretNameAdminUsername: acrUsernameSecretName
+    keyVaultSecretNameAdminPassword0: acrPassword0SecretName
+    keyVaultSecretNameAdminPassword1: acrPassword1SecretName
   }
+}
+
+resource keyVaultReference 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: keyVaultName
 }
 
 // Module: Backend API App Service
@@ -129,11 +140,11 @@ module appServiceBE 'modules/app-service-be.bicep' = {
     appServiceAPIAppName: appServiceAPIAppName
     location: location
     appServicePlanId: appServicePlanModule.outputs.appServicePlanId
-    dockerRegistryServerUserName: containerRegistryModule.outputs.containerRegistryUserName
-    dockerRegistryServerPassword: containerRegistryModule.outputs.containerRegistryPassword0
-    dockerRegistryImageTag: dockerRegistryImageTag
-    dockerRegistryImageName: dockerRegistryImageName
     containerRegistryName: containerRegistryName
+    dockerRegistryServerUserName: keyVaultReference.getSecret(acrUsernameSecretName)
+    dockerRegistryServerPassword: keyVaultReference.getSecret(acrPassword0SecretName)
+    dockerRegistryImageName: dockerRegistryImageName
+    dockerRegistryImageTag: dockerRegistryImageTag
     appSettings: [
       {
         name: 'ENV'
