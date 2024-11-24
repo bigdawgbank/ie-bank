@@ -1,8 +1,10 @@
 import random
+import re
 import string
 from datetime import datetime, timezone
 
 from flask_login import UserMixin
+
 from iebank_api import bcrypt, db
 
 
@@ -46,24 +48,52 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(256), nullable=False)
     accounts = db.relationship("Account", backref="owner", lazy="dynamic")
 
-    def __repr__(self):
-        return f"<User {self.username}>"
-
     def __init__(self, username, email, password):
-        if not username:
+        # Validate username
+        if not username or username.strip() == "":
             raise ValueError("Username cannot be empty")
+
+        # Validate email
         if not email:
             raise ValueError("Email cannot be empty")
+
+        # Validate password
         if not password:
             raise ValueError("Password cannot be empty")
+        if len(password) < 8:
+            raise ValueError("Password must be at least 8 characters")
+        if not any(c.isupper() for c in password):
+            raise ValueError("Password must contain uppercase letter")
+        if not any(c.islower() for c in password):
+            raise ValueError("Password must contain lowercase letter")
+        if not any(c.isdigit() for c in password):
+            raise ValueError("Password must contain a number")
+
+        # Check for duplicate email
+        if db.session.query(User).filter_by(email=email).first():
+            raise ValueError("Email already registered")
+
         self.username = username
         self.email = email
         self.set_password(password)
 
     def set_password(self, password):
+        """Set hashed password."""
+        if not password:
+            raise ValueError("Password cannot be empty")
+        if len(password) < 8:
+            raise ValueError("Password must be at least 8 characters")
+        if not any(c.isupper() for c in password):
+            raise ValueError("Password must contain uppercase letter")
+        if not any(c.islower() for c in password):
+            raise ValueError("Password must contain lowercase letter")
+        if not any(c.isdigit() for c in password):
+            raise ValueError("Password must contain a number")
+
         self.password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
 
     def check_password(self, password):
+        """Check password against hash."""
         return bcrypt.check_password_hash(self.password_hash, password)
 
     def create_account(self, name, currency, country):

@@ -34,19 +34,23 @@ def register():
     if not any(c.isdigit() for c in password):
         return jsonify({"message": "Password must contain a number"}), 400
 
-    # Check if user exists
-    if db.session.query(User).filter_by(username=username).first() and db.session.query(
-        User
-    ).filter_by(email=email):
-        return jsonify({"message": "User already exists"}), 400
+    try:
+        # Try to create new user
+        new_user = User(username=username, email=email, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({"message": "User registered successfully"}), 201
 
-    # Create new user
-    new_user = User(username=username, email=email, password=password)
-    print(f"new_user{new_user}")
-    db.session.add(new_user)
-    db.session.commit()
+    except ValueError as e:
+        # Handle validation errors from the model
+        db.session.rollback()
+        return jsonify({"message": str(e)}), 400
 
-    return jsonify({"message": "User registered successfully"}), 201
+    except Exception as e:
+        # Handle any other unexpected errors
+        db.session.rollback()
+        print(f"Registration error: {str(e)}")
+        return jsonify({"message": "Registration failed"}), 500
 
 
 @app.route("/login", methods=["POST"])
