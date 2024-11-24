@@ -68,8 +68,7 @@ param dockerRegistryImageTag string
 param logAnalyticsWorkspaceName string
 
 @description('The name of the Application Insights resource')
-param appInsightsName string 
-
+param appInsightsName string
 
 var logAnalyticsWorkspaceId = resourceId('Microsoft.OperationalInsights/workspaces', logAnalyticsWorkspaceName)
 
@@ -147,6 +146,8 @@ module appServiceBE 'modules/app-service-be.bicep' = {
     dockerRegistryImageTag: dockerRegistryImageTag
     dockerRegistryImageName: dockerRegistryImageName
     containerRegistryName: containerRegistryName
+    instrumentationKey: appInsights.outputs.insightsConnectionString
+    insightsConnectionString: appInsights.outputs.instrumentationKey
     appSettings: [
       {
         name: 'ENV'
@@ -176,15 +177,6 @@ module appServiceBE 'modules/app-service-be.bicep' = {
         name: 'FLASK_DEBUG'
         value: appServiceAPIDBHostFLASK_DEBUG
       }
-      {
-        name: 'APP_INSIGHTS_INSTRUMENTATION_KEY'
-        value: appInsights.outputs.appInsightsInstrumentationKey
-      }
-      {
-        name: 'APPLICATION_INSIGHTS_CONNECTION_STRING'
-        value: appInsights.outputs.appInsightsConnectionString
-
-      }
     ]
   }
   dependsOn: [
@@ -200,9 +192,8 @@ module appServiceFE 'modules/app-service-fe.bicep' = {
     appServiceAppName: appServiceAppName
     location: location
     appServicePlanId: appServicePlanModule.outputs.appServicePlanId
-    appInsightsInstrumentationKey: appInsights.outputs.appInsightsInstrumentationKey
-    appInsightsConnectionString: appInsights.outputs.appInsightsConnectionString
-
+    instrumentationKey: appInsights.outputs.instrumentationKey
+    insightsConnectionString: appInsights.outputs.insightsConnectionString
   }
   dependsOn: [
     appServicePlanModule

@@ -10,10 +10,17 @@ param location string = resourceGroup().location
 param appServicePlanId string
 
 @description('Application Insights Instrumentation Key for monitoring')
-param appInsightsInstrumentationKey string
+param instrumentationKey string
 
 @description('Application Insights Connection String for monitoring')
-param appInsightsConnectionString string
+param insightsConnectionString string
+
+var appInsigthsSettings = [
+  { name: 'APPINSIGHTS_INSTRUMENTATIONKEY', value: instrumentationKey }
+  { name: 'APPLICATIONINSIGHTS_CONNECTION_STRING', value:insightsConnectionString }
+  { name: 'ApplicationInsightsAgent_EXTENSION_VERSION',value: '~3' }
+  { name: 'XDT_MicrosoftApplicationInsights_NodeJS', value:'1' }
+  ]
 
 resource appServiceApp 'Microsoft.Web/sites@2022-03-01' = {
   name: appServiceAppName
@@ -26,16 +33,12 @@ resource appServiceApp 'Microsoft.Web/sites@2022-03-01' = {
       alwaysOn: false
       ftpsState: 'FtpsOnly'
       appCommandLine: 'pm2 serve /home/site/wwwroot --spa --no-daemon'
-      appSettings: [
+      appSettings: union(appInsigthsSettings, [
         {
-          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: appInsightsInstrumentationKey
+          name: 'WEBSITE_NODE_DEFAULT_VERSION'
+          value: '18.4.0'
         }
-        {
-          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-          value: appInsightsConnectionString
-        }
-      ]
+      ])
     }
   }
 }
