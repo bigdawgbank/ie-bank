@@ -1,5 +1,6 @@
 from flask import jsonify, request
 from flask_login import current_user, login_required, login_user, logout_user
+
 from iebank_api import app, bcrypt, db, login_manager
 from iebank_api.models import Account, User
 
@@ -55,7 +56,7 @@ def login():
     user = db.session.query(User).filter_by(username=username).first()
     if user and bcrypt.check_password_hash(user.password_hash, password):
         login_user(user)
-        return jsonify({"message": "Login successful"}), 201
+        return jsonify({"message": "Login successful"}), 200
     return jsonify({"message": "Account does not exist"}), 401
 
 
@@ -64,6 +65,13 @@ def login():
 def logout():
     logout_user()
     return jsonify({"message": "Logged out successfully"}), 200
+
+
+@app.route("/session", methods=["GET"])
+def check_session():
+    if current_user.is_authenticated:
+        return jsonify({"authenticated": True}), 200
+    return jsonify({"message": False}), 401
 
 
 @app.route("/accounts", methods=["POST"])
@@ -98,7 +106,7 @@ def create_account():
 def get_accounts():
     # Only get accounts belonging to current user
     accounts = db.session.query(Account).filter_by(user_id=current_user.id).all()
-    return jsonify([format_account(account) for account in accounts]), 200
+    return jsonify({"accounts": [format_account(account) for account in accounts]}), 200
 
 
 @app.route("/accounts/<int:id>", methods=["GET"])
@@ -134,7 +142,9 @@ def update_account(id):
 @app.route("/accounts/<int:id>", methods=["DELETE"])
 @login_required
 def delete_account(id):
-    account = Account.query.get_or_404(id)
+    account = db.session.get(Account, id)
+    if not account:
+        return jsonify({"error": "Account not found"}), 404
     # Check if account belongs to current user
     if account.user_id != current_user.id:
         return jsonify({"error": "Unauthorized"}), 403

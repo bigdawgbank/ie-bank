@@ -37,6 +37,6 @@ from iebank_api.models import Account, User
 
 with app.app_context():
     db.create_all()
-CORS(app)
+CORS(app, supports_credentials=True)
 
 from iebank_api import routes
