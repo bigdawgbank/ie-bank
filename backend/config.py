@@ -28,3 +28,7 @@ class DevelopmentConfig(Config):
         dbname=os.getenv("DBNAME"),
     )
     DEBUG = True
+
+
+class ProductionConfig(Config):
+    pass
