@@ -1,4 +1,3 @@
-
 @description('Location of the resource')
 param location string
 
@@ -14,8 +13,15 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   kind: 'web'
   properties: {
     Application_Type: 'web'
-    WorkspaceResourceId: logAnalyticsWorkspaceId //link from application insights to log analytics
+    Flow_Type: 'Bluefield'
+    WorkspaceResourceId: logAnalyticsWorkspaceId
+    RetentionInDays: 90
+    IngestionMode: 'LogAnalytics'
+    publicNetworkAccessForIngestion: 'Enabled'
+    publicNetworkAccessForQuery: 'Enabled'
   }
 }
-output appInsightsInstrumentationKey string = appInsights.properties.InstrumentationKey
-output appInsightsConnectionString string = appInsights.properties.ConnectionString
+
+output id string = appInsights.id
+output instrumentationKey string = appInsights.properties.InstrumentationKey
+output insightsConnectionString string = appInsights.properties.ConnectionString
