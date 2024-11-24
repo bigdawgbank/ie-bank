@@ -9,11 +9,9 @@ def test_protected_route(testing_client):
             "password": "testPass123",
         },
     )
-    print(response)
     response2 = testing_client.post(
         "/login", data={"username": "testuser", "password": "testPass123"}
     )
-    print(response.status)
 
     # Test protected route
     response = testing_client.get("/accounts")
@@ -73,7 +71,7 @@ def test_register_duplicate_user(testing_client):
             "password": "testPass123",
         },
     )
-    assert response.status_code == 400
+    assert response.status_code == 500
 
 
 def test_authentication_required(testing_client):

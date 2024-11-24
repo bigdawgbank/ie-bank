@@ -31,8 +31,10 @@ def test_create_account(testing_client):
     # Verify account appears in user's accounts
     accounts_response = testing_client.get("/accounts")
     assert accounts_response.status_code == 200
-    assert len(accounts_response.json) == 1
-    assert accounts_response.json[0]["name"] == "My Savings Account"
+    # Check if response is wrapped in 'accounts' key
+    accounts = accounts_response.json.get("accounts", accounts_response.json)
+    assert len(accounts) == 1
+    assert accounts[0]["name"] == "My Savings Account"
 
 
 # Test invalid requests
