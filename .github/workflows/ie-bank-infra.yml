@@ -37,7 +37,10 @@ jobs:
         run: |
             echo "Validating Bicep deployment..."
             for file in $(find ./infra -name '*.bicep'); do
-              az deployment group what-if --resource-group $RESOURCE_GROUP_DEV --template-file $file || exit 1
+                    az deployment group what-if \
+                    --resource-group $RESOURCE_GROUP_DEV \
+                    --template-file $file \
+                    --parameters @./infra/parameters/dev.parameters.json || exit 1
             done
             echo "Deployment validation completed successfully!"
         
