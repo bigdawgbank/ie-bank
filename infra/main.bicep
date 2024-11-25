@@ -1,109 +1,206 @@
-@sys.description('The environment type (nonprod or prod)')
+@description('The environment type (nonprod or prod)')
 @allowed([
   'nonprod'
   'prod'
 ])
 param environmentType string = 'nonprod'
-@sys.description('The PostgreSQL Server name')
+
+@description('The PostgreSQL Server name')
 @minLength(3)
 @maxLength(24)
 param postgreSQLServerName string = 'ie-bank-db-server-dev'
-@sys.description('The PostgreSQL Database name')
+
+@description('The PostgreSQL Database name')
 @minLength(3)
 @maxLength(24)
 param postgreSQLDatabaseName string = 'ie-bank-db'
-@sys.description('The App Service Plan name')
+
+@description('The App Service Plan name')
 @minLength(3)
 @maxLength(24)
 param appServicePlanName string = 'ie-bank-app-sp-dev'
-@sys.description('The Web App name (frontend)')
+
+@description('The Web App name (frontend)')
 @minLength(3)
 @maxLength(24)
 param appServiceAppName string = 'ie-bank-dev'
-@sys.description('The API App name (backend)')
+
+@description('The API App name (backend)')
 @minLength(3)
 @maxLength(24)
 param appServiceAPIAppName string = 'ie-bank-api-dev'
-@sys.description('The Azure location where the resources will be deployed')
+
+@description('The Azure location where the resources will be deployed')
 param location string = resourceGroup().location
-@sys.description('The value for the environment variable ENV')
+
+@description('The value for the environment variable ENV')
 param appServiceAPIEnvVarENV string
-@sys.description('The value for the environment variable DBHOST')
+
+@description('The value for the environment variable DBHOST')
 param appServiceAPIEnvVarDBHOST string
-@sys.description('The value for the environment variable DBNAME')
+
+@description('The value for the environment variable DBNAME')
 param appServiceAPIEnvVarDBNAME string
-@sys.description('The value for the environment variable DBPASS')
+
+@description('The value for the environment variable DBPASS')
 @secure()
 param appServiceAPIEnvVarDBPASS string
-@sys.description('The value for the environment variable DBUSER')
+
+@description('The value for the environment variable DBUSER')
 param appServiceAPIDBHostDBUSER string
-@sys.description('The value for the environment variable FLASK_APP')
+
+@description('The value for the environment variable FLASK_APP')
 param appServiceAPIDBHostFLASK_APP string
-@sys.description('The value for the environment variable FLASK_DEBUG')
+
+@description('The value for the environment variable FLASK_DEBUG')
 param appServiceAPIDBHostFLASK_DEBUG string
 
-resource postgresSQLServer 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01' = {
-  name: postgreSQLServerName
-  location: location
-  sku: {
-    name: 'Standard_B1ms'
-    tier: 'Burstable'
-  }
-  properties: {
-    administratorLogin: 'iebankdbadmin'
-    administratorLoginPassword: 'IE.Bank.DB.Admin.Pa$$'
-    createMode: 'Default'
-    highAvailability: {
-      mode: 'Disabled'
-      standbyAvailabilityZone: ''
-    }
-    storage: {
-      storageSizeGB: 32
-    }
-    backup: {
-      backupRetentionDays: 7
-      geoRedundantBackup: 'Disabled'
-    }
-    version: '15'
-  }
+@description('Name of the Azure Container Registry')
+param containerRegistryName string
 
-  resource postgresSQLServerFirewallRules 'firewallRules@2022-12-01' = {
-    name: 'AllowAllAzureServicesAndResourcesWithinAzureIps'
-    properties: {
-      endIpAddress: '0.0.0.0'
-      startIpAddress: '0.0.0.0'
-    }
-  }
-}
+@description('Name of the Docker image')
+param dockerRegistryImageName string
 
-resource postgresSQLDatabase 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2022-12-01' = {
-  name: postgreSQLDatabaseName
-  parent: postgresSQLServer
-  properties: {
-    charset: 'UTF8'
-    collation: 'en_US.UTF8'
-  }
-}
+@description('Tag of the Docker image, the version')
+param dockerRegistryImageTag string
 
-module appService 'modules/app-service.bicep' = {
-  name: 'appService'
+@description('The name of the Log Analytics Workspace')
+param logAnalyticsWorkspaceName string
+
+@description('The name of the Application Insights resource')
+param appInsightsName string
+
+var logAnalyticsWorkspaceId = resourceId('Microsoft.OperationalInsights/workspaces', logAnalyticsWorkspaceName)
+
+var skuName = (environmentType == 'prod') ? 'B1' : 'B1' //modify according to desired capacity
+
+// Use Key Vault for administrator login password later
+module postgresSQLServerModule 'modules/postgre-sql-server.bicep' = {
+  name: 'postgresSQLServerModule'
   params: {
+    postgreSQLServerName: postgreSQLServerName
     location: location
-    environmentType: environmentType
-    appServiceAppName: appServiceAppName
-    appServiceAPIAppName: appServiceAPIAppName
-    appServicePlanName: appServicePlanName
-    appServiceAPIDBHostDBUSER: appServiceAPIDBHostDBUSER
-    appServiceAPIDBHostFLASK_APP: appServiceAPIDBHostFLASK_APP
-    appServiceAPIDBHostFLASK_DEBUG: appServiceAPIDBHostFLASK_DEBUG
-    appServiceAPIEnvVarDBHOST: appServiceAPIEnvVarDBHOST
-    appServiceAPIEnvVarDBNAME: appServiceAPIEnvVarDBNAME
-    appServiceAPIEnvVarDBPASS: appServiceAPIEnvVarDBPASS
-    appServiceAPIEnvVarENV: appServiceAPIEnvVarENV
+    administratorLoginPassword: 'IE.Bank.DB.Admin.Pa$$'
+  }
+}
+
+module postgresSQLDatabaseModule 'modules/postgre-sql-db.bicep' = {
+  name: 'postgresSQLDatabaseModule'
+  params: {
+    postgreSQLDatabaseName: postgreSQLDatabaseName
+    postgreSQLServerName: postgreSQLServerName
   }
   dependsOn: [
-    postgresSQLDatabase
+    postgresSQLServerModule
   ]
 }
 
-output appServiceAppHostName string = appService.outputs.appServiceAppHostName
+// Deploy Log Analytics Workspace
+module logAnalytics 'modules/azure-log-analytics.bicep' = {
+  name: 'logAnalytics'
+  params: {
+    location: location
+    name: logAnalyticsWorkspaceName
+  }
+}
+module appInsights 'modules/app-insights.bicep' = {
+  name: 'appInsights'
+  params: {
+    location: location
+    appInsightsName: appInsightsName
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+  }
+  dependsOn: [
+    logAnalytics
+  ]
+}
+
+// Module: App Service Plan
+module appServicePlanModule 'modules/app-service-plan.bicep' = {
+  name: 'appServicePlanModule'
+  params: {
+    appServicePlanName: appServicePlanName
+    location: location
+    skuName: skuName
+  }
+}
+
+// Module: Container Registry
+module containerRegistryModule 'modules/container-registry.bicep' = {
+  name: 'containerRegistryModule'
+  params: {
+    name: containerRegistryName
+    location: location
+  }
+}
+
+// Module: Backend API App Service
+module appServiceBE 'modules/app-service-be.bicep' = {
+  name: 'appServiceBE'
+  params: {
+    appServiceAPIAppName: appServiceAPIAppName
+    location: location
+    appServicePlanId: appServicePlanModule.outputs.appServicePlanId
+    dockerRegistryServerUserName: containerRegistryModule.outputs.containerRegistryUserName
+    dockerRegistryServerPassword: containerRegistryModule.outputs.containerRegistryPassword0
+    dockerRegistryImageTag: dockerRegistryImageTag
+    dockerRegistryImageName: dockerRegistryImageName
+    containerRegistryName: containerRegistryName
+    instrumentationKey: appInsights.outputs.insightsConnectionString
+    insightsConnectionString: appInsights.outputs.instrumentationKey
+    appSettings: [
+      {
+        name: 'ENV'
+        value: appServiceAPIEnvVarENV
+      }
+      {
+        name: 'DBHOST'
+        value: appServiceAPIEnvVarDBHOST
+      }
+      {
+        name: 'DBNAME'
+        value: appServiceAPIEnvVarDBNAME
+      }
+      {
+        name: 'DBPASS'
+        value: appServiceAPIEnvVarDBPASS
+      }
+      {
+        name: 'DBUSER'
+        value: appServiceAPIDBHostDBUSER
+      }
+      {
+        name: 'FLASK_APP'
+        value: appServiceAPIDBHostFLASK_APP
+      }
+      {
+        name: 'FLASK_DEBUG'
+        value: appServiceAPIDBHostFLASK_DEBUG
+      }
+    ]
+  }
+  dependsOn: [
+    appServicePlanModule
+    containerRegistryModule
+  ]
+}
+
+// Module: Frontend Web App Service
+module appServiceFE 'modules/app-service-fe.bicep' = {
+  name: 'appServiceFE'
+  params: {
+    appServiceAppName: appServiceAppName
+    location: location
+    appServicePlanId: appServicePlanModule.outputs.appServicePlanId
+    instrumentationKey: appInsights.outputs.instrumentationKey
+    insightsConnectionString: appInsights.outputs.insightsConnectionString
+  }
+  dependsOn: [
+    appServicePlanModule
+    appInsights
+    containerRegistryModule
+  ]
+}
+
+output frontendAppHostName string = appServiceFE.outputs.frontendAppHostName
+output backendAppHostName string = appServiceBE.outputs.backendAppHostName
