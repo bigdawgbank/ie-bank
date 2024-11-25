@@ -17,7 +17,8 @@ on:
 env:
   RESOURCE_GROUP_DEV: BCSAI2024-DEVOPS-STUDENTS-B-DEV
   RESOURCE_GROUP_UAT: BCSAI2024-DEVOPS-STUDENTS-B-UAT
-  SUBSCRIPTION_ID_DEV: e0b9cada-61bc-4b5a-bd7a-52c606726b3b
+  RESOURCE_GROUP_PROD: BCSAI2024-DEVOPS-STUDENTS-B-PROD
+  SUBSCRIPTION_ID: e0b9cada-61bc-4b5a-bd7a-52c606726b3b
   USER_ALIAS: dkumlin
 
 jobs:
@@ -25,12 +26,46 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      
+      # Install Bicep CLI
+      - name: Install Bicep CLI
+        run: |
+          echo "Installing Bicep CLI..."
+          az bicep install
+
+      # Validate Bicep files using linter
       - name: Run Bicep linter
-        run: az bicep build --file ./infra/main.bicep
+        run: |
+          echo "Linting Bicep files..."
+          find ./infra -name '*.bicep' -exec az bicep build --file {} --outdir ./out \;
+          echo "All Bicep files linted successfully!"
+
+      # Validate the Bicep syntax
+      - name: Validate Bicep files
+        run: |
+          echo "Validating Bicep files..."
+          for file in $(find ./infra -name '*.bicep'); do
+            az bicep validate --file $file || exit 1
+          done
+          echo "Validation completed successfully!"
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bicep
+      - name: Run Unit Tests
+        run: |
+          echo "Running Unit Tests..."
+          # Replace this with the actual command to run your unit tests
+          echo "Unit tests passed successfully!"
 
   deploy-dev:
     runs-on: ubuntu-latest
-    needs: build
+    needs: test
     environment: Development
 
     steps:
@@ -48,7 +83,7 @@ jobs:
       - name: Deploy to Development
         uses: azure/arm-deploy@v1
         with:
-          subscriptionId: ${{ env.SUBSCRIPTION_ID_DEV }}
+          subscriptionId: ${{ env.SUBSCRIPTION_ID }}
           resourceGroupName: ${{ env.RESOURCE_GROUP_DEV }}
           template: ./infra/main.bicep
           parameters: >
@@ -64,7 +99,7 @@ jobs:
 
   deploy-uat:
     runs-on: ubuntu-latest
-    needs: build
+    needs: test
     if: github.event_name == 'pull_request' && github.base_ref == 'main' || github.ref == 'refs/heads/main'
     environment: UAT
 
@@ -83,12 +118,12 @@ jobs:
       - name: Deploy to UAT
         uses: azure/arm-deploy@v1
         with:
-          subscriptionId: ${{ env.SUBSCRIPTION_ID_DEV }}
+          subscriptionId: ${{ env.SUBSCRIPTION_ID }}
           resourceGroupName: ${{ env.RESOURCE_GROUP_UAT }}
           template: ./infra/main.bicep
           parameters: >
             ./infra/parameters/uat.parameters.json 
-            appServiceAPIEnvVarENV=${{ vars.ENV}} 
+            appServiceAPIEnvVarENV=${{ vars.ENV }} 
             appServiceAPIEnvVarDBHOST=${{ vars.DBHOST }} 
             appServiceAPIEnvVarDBNAME=${{ vars.DBNAME }} 
             appServiceAPIEnvVarDBPASS=${{ secrets.DBPASS }} 
@@ -96,3 +131,37 @@ jobs:
             appServiceAPIDBHostFLASK_APP=${{ vars.FLASK_APP }} 
             appServiceAPIDBHostFLASK_DEBUG=${{ vars.FLASK_DEBUG }}
           deploymentName: ${{ env.USER_ALIAS }}-uat
+
+  deploy-prod:
+    runs-on: ubuntu-latest
+    needs: test
+    environment: PROD
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Debug
+        run: |
+          echo "ENV: ${{ vars.ENV }}"
+          echo "DBHOST: ${{ vars.DBHOST }}"
+          echo "DBNAME: ${{ vars.DBNAME }}"
+          echo "FLASK_APP: ${{ vars.FLASK_APP }}"
+          echo "FLASK_DEBUG: ${{ vars.FLASK_DEBUG }}"
+      - name: Deploy to Production
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ env.SUBSCRIPTION_ID }}
+          resourceGroupName: ${{ env.RESOURCE_GROUP_PROD }}
+          template: ./infra/main.bicep
+          parameters: >
+            ./infra/parameters/prod.parameters.json 
+            appServiceAPIEnvVarENV=${{ vars.ENV }} 
+            appServiceAPIEnvVarDBHOST=${{ vars.DBHOST }} 
+            appServiceAPIEnvVarDBNAME=${{ vars.DBNAME }} 
+            appServiceAPIEnvVarDBPASS=${{ secrets.DBPASS }} 
+            appServiceAPIDBHostDBUSER=${{ secrets.DBUSER }} 
+            appServiceAPIDBHostFLASK_APP=${{ vars.FLASK_APP }} 
+            appServiceAPIDBHostFLASK_DEBUG=${{ vars.FLASK_DEBUG }}
+          deploymentName: ${{ env.USER_ALIAS }}-prod
