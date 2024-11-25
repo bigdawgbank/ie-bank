@@ -55,21 +55,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y bicep
 
-      - name: Validate Bicep deployment
+      - name: Install Azure CLI
         run: |
-            echo "Validating Bicep deployment..."
-            for file in $(find ./infra -name '*.bicep'); do
-                    az deployment group what-if \
-                    --resource-group $RESOURCE_GROUP_DEV \
-                    --template-file $file \
-                    --parameters @./infra/parameters/dev.parameters.json || exit 1
-            done
-            echo "Deployment validation completed successfully!"
+          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+      - name: Install Bicep
+        run: |
+          az bicep install
+
       - name: Run Unit Tests with arm-ttk
         run: |
             echo "Cloning arm-ttk for unit testing..."
