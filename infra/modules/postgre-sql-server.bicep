@@ -63,7 +63,7 @@ resource postgresSQLServerFirewallRule 'Microsoft.DBforPostgreSQL/flexibleServer
 }
 
 resource postgreSQLAdministrators 'Microsoft.DBforPostgreSQL/flexibleServers/administrators@2022-12-01' = {
-  name: postgreSQLAdminServicePrincipalObjectId
+  name: '${postgreSQLServerName}/${postgreSQLAdminServicePrincipalObjectId}'
   properties: {
     principalName: postgreSQLAdminServicePrincipalName
     principalType: 'ServicePrincipal'
