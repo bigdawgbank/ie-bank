@@ -1,13 +1,8 @@
 from flask import jsonify, request
-from flask_login import current_user, login_required, login_user, logout_user
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 
-from iebank_api import app, bcrypt, db, login_manager
+from iebank_api import app, bcrypt, db
 from iebank_api.models import Account, User
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return db.session.get(User, int(user_id))
 
 
 @app.route("/register", methods=["POST"])
@@ -57,30 +52,19 @@ def register():
 def login():
     username = request.form.get("username")
     password = request.form.get("password")
+
     user = db.session.query(User).filter_by(username=username).first()
     if user and bcrypt.check_password_hash(user.password_hash, password):
-        login_user(user)
-        return jsonify({"message": "Login successful"}), 200
-    return jsonify({"message": "Account does not exist"}), 401
-
-
-@app.route("/logout", methods=["POST"])
-@login_required
-def logout():
-    logout_user()
-    return jsonify({"message": "Logged out successfully"}), 200
-
-
-@app.route("/session", methods=["GET"])
-def check_session():
-    if current_user.is_authenticated:
-        return jsonify({"authenticated": True}), 200
-    return jsonify({"message": False}), 401
+        access_token = create_access_token(identity=str(user.id))
+        return jsonify({"token": access_token}), 200
+    return jsonify({"message": "Invalid credentials"}), 401
 
 
 @app.route("/accounts", methods=["POST"])
-@login_required
+@jwt_required()
 def create_account():
+    user_id = get_jwt_identity()
+    user = db.session.get(User, user_id)
     data = request.json
 
     if not data:
@@ -98,7 +82,7 @@ def create_account():
         return jsonify({"error": "Country cannot be empty."}), 400
 
     # Create account and associate with current user
-    account = Account(name, currency, country, current_user)
+    account = Account(name, currency, country, user)
     db.session.add(account)
     db.session.commit()
 
@@ -106,31 +90,34 @@ def create_account():
 
 
 @app.route("/accounts", methods=["GET"])
-@login_required
+@jwt_required()
 def get_accounts():
+    user_id = get_jwt_identity()
     # Only get accounts belonging to current user
-    accounts = db.session.query(Account).filter_by(user_id=current_user.id).all()
+    accounts = db.session.query(Account).filter_by(user_id=user_id).all()
     return jsonify({"accounts": [format_account(account) for account in accounts]}), 200
 
 
 @app.route("/accounts/<int:id>", methods=["GET"])
-@login_required
+@jwt_required()
 def get_account(id):
+    user_id = get_jwt_identity()
     account = Account.query.get_or_404(id)
     # Check if account belongs to current user
-    if account.user_id != current_user.id:
+    if account.user_id != user_id:
         return jsonify({"error": "Unauthorized"}), 403
     return jsonify(format_account(account)), 200
 
 
 @app.route("/accounts/<int:id>", methods=["PUT"])
-@login_required
+@jwt_required()
 def update_account(id):
+    user_id = get_jwt_identity()
     account = db.session.get(Account, id)
     if not account:
         return jsonify({"error": "Account not found"}), 404
     # Check if account belongs to current user
-    if account.user_id != current_user.id:
+    if account.user_id != user_id:
         return jsonify({"error": "Unauthorized"}), 403
 
     data = request.json
@@ -144,13 +131,14 @@ def update_account(id):
 
 
 @app.route("/accounts/<int:id>", methods=["DELETE"])
-@login_required
+@jwt_required()
 def delete_account(id):
+    user_id = get_jwt_identity()
     account = db.session.get(Account, id)
     if not account:
         return jsonify({"error": "Account not found"}), 404
     # Check if account belongs to current user
-    if account.user_id != current_user.id:
+    if account.user_id != user_id:
         return jsonify({"error": "Unauthorized"}), 403
 
     db.session.delete(account)
@@ -174,17 +162,16 @@ def format_account(account):
 
 # Optional: Add route to get user profile with accounts
 @app.route("/profile", methods=["GET"])
-@login_required
+@jwt_required()
 def get_profile():
+    user_id = get_jwt_identity()
+    user = db.session.get(User, user_id)
     return (
         jsonify(
             {
-                "id": current_user.id,
-                "username": current_user.username,
-                "email": current_user.email,
-                "accounts": [
-                    format_account(account) for account in current_user.get_accounts()
-                ],
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
             }
         ),
         200,

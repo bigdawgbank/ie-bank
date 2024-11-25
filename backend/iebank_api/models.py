@@ -1,9 +1,6 @@
 import random
-import re
 import string
 from datetime import datetime, timezone
-
-from flask_login import UserMixin
 
 from iebank_api import bcrypt, db
 
@@ -41,7 +38,7 @@ class Account(db.Model):
             self.user_id = user.id
 
 
-class User(UserMixin, db.Model):
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
