@@ -33,21 +33,29 @@ jobs:
           echo "Installing Bicep CLI..."
           az bicep install
 
-      # Validate Bicep files using linter
-      - name: Run Bicep linter
+      - name: Validate Bicep deployment
         run: |
-          echo "Linting Bicep files..."
-          find ./infra -name '*.bicep' -exec az bicep build --file {} --outdir ./out \;
-          echo "All Bicep files linted successfully!"
-
-      # Validate the Bicep syntax
-      - name: Validate Bicep files
+            echo "Validating Bicep deployment..."
+            for file in $(find ./infra -name '*.bicep'); do
+              az deployment group what-if --resource-group $RESOURCE_GROUP_DEV --template-file $file || exit 1
+            done
+            echo "Deployment validation completed successfully!"
+        
+      - name: Install PowerShell Core (required for arm-ttk)
         run: |
-          echo "Validating Bicep files..."
-          for file in $(find ./infra -name '*.bicep'); do
-            az bicep validate --file $file || exit 1
-          done
-          echo "Validation completed successfully!"
+              sudo apt-get update
+              sudo apt-get install -y wget apt-transport-https software-properties-common
+              wget -q https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb
+              sudo dpkg -i packages-microsoft-prod.deb
+              sudo apt-get update
+              sudo apt-get install -y powershell
+        
+      - name: Run Unit Tests with arm-ttk
+        run: |
+            echo "Cloning arm-ttk for unit testing..."
+            git clone https://github.com/Azure/arm-ttk.git
+            echo "Running arm-ttk tests..."
+            pwsh ./arm-ttk/arm-ttk.ps1 ./infra/**/*.bicep || exit 1
   test:
     runs-on: ubuntu-latest
     needs: build
