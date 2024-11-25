@@ -5,6 +5,21 @@
 ])
 param environmentType string = 'nonprod'
 
+@description('The PostgreSQL Server name')
+@minLength(3)
+@maxLength(24)
+param postgreSQLServerName string = 'ie-bank-db-server-dev'
+
+@description('The PostgreSQL Database name')
+@minLength(3)
+@maxLength(24)
+param postgreSQLDatabaseName string = 'ie-bank-db'
+
+@description('The App Service Plan name')
+@minLength(3)
+@maxLength(24)
+param appServicePlanName string = 'ie-bank-app-sp-dev'
+
 @description('The Web App name (frontend)')
 @minLength(3)
 @maxLength(24)
@@ -15,22 +30,51 @@ param appServiceAppName string = 'ie-bank-dev'
 @maxLength(24)
 param appServiceAPIAppName string = 'ie-bank-api-dev'
 
-param postgreSQLServerName string = 'ie-bank-db-server-dev'
-param postgreSQLDatabaseName string = 'ie-bank-db'
-param appServicePlanName string = 'ie-bank-app-sp-dev'
+@description('The Azure location where the resources will be deployed')
 param location string = resourceGroup().location
-param appServiceWebsiteBeAppSettings array
+
+@description('The value for the environment variable ENV')
+param appServiceAPIEnvVarENV string
+
+@description('The value for the environment variable DBHOST')
+param appServiceAPIEnvVarDBHOST string
+
+@description('The value for the environment variable DBNAME')
+param appServiceAPIEnvVarDBNAME string
+
+@description('The value for the environment variable DBPASS')
+@secure()
+param appServiceAPIEnvVarDBPASS string
+
+@description('The value for the environment variable DBUSER')
+param appServiceAPIDBHostDBUSER string
+
+@description('The value for the environment variable FLASK_APP')
+param appServiceAPIDBHostFLASK_APP string
+
+@description('The value for the environment variable FLASK_DEBUG')
+param appServiceAPIDBHostFLASK_DEBUG string
+
+@description('Name of the Azure Container Registry')
 param containerRegistryName string
+
+@description('Name of the Docker image')
 param dockerRegistryImageName string
-param dockerRegistryImageTag string = 'latest'
-param appServiceWebsiteBEName string = 'ie-bank-api-dev'
+
+@description('Tag of the Docker image, the version')
+param dockerRegistryImageTag string
+
+@description('Name of the Key Vault')
 param keyVaultName string = 'dkmulin-kv-dev'
+
+@description('Role assignments for the Key Vault')
 param keyVaultRoleAssignments array = []
 
-var skuName = (environmentType == 'prod') ? 'B1' : 'B1' //modify according to desired capacity
 var acrUsernameSecretName = 'acr-username'
 var acrPassword0SecretName = 'acr-password0'
 var acrPassword1SecretName = 'acr-password1'
+
+var skuName = (environmentType == 'prod') ? 'B1' : 'B1' //modify according to desired capacity
 
 module keyVault 'modules/keyvault.bicep' = {
   name: 'keyVault'
@@ -48,7 +92,7 @@ module postgresSQLServerModule 'modules/postgre-sql-server.bicep' = {
     postgreSQLServerName: postgreSQLServerName
     location: location
     postgreSQLAdminServicePrincipalObjectId: appServiceBE.outputs.systemAssignedIdentityPrincipalId
-    postgreSQLAdminServicePrincipalName: appServiceWebsiteBEName
+    postgreSQLAdminServicePrincipalName: appServiceAPIAppName
   }
   dependsOn: [
     appServiceBE
@@ -100,13 +144,41 @@ module appServiceBE 'modules/app-service-be.bicep' = {
     appServiceAPIAppName: appServiceAPIAppName
     location: location
     appServicePlanId: appServicePlanModule.outputs.appServicePlanId
-    appCommandLine: ''
-    appSettings: appServiceWebsiteBeAppSettings
     containerRegistryName: containerRegistryName
     dockerRegistryServerUserName: keyVaultReference.getSecret(acrUsernameSecretName)
     dockerRegistryServerPassword: keyVaultReference.getSecret(acrPassword0SecretName)
-    dockerRegistryImageName: dockerRegistryImageName
     dockerRegistryImageTag: dockerRegistryImageTag
+    dockerRegistryImageName: dockerRegistryImageName
+    appSettings: [
+      {
+        name: 'ENV'
+        value: appServiceAPIEnvVarENV
+      }
+      {
+        name: 'DBHOST'
+        value: appServiceAPIEnvVarDBHOST
+      }
+      {
+        name: 'DBNAME'
+        value: appServiceAPIEnvVarDBNAME
+      }
+      {
+        name: 'DBPASS'
+        value: appServiceAPIEnvVarDBPASS
+      }
+      {
+        name: 'DBUSER'
+        value: appServiceAPIDBHostDBUSER
+      }
+      {
+        name: 'FLASK_APP'
+        value: appServiceAPIDBHostFLASK_APP
+      }
+      {
+        name: 'FLASK_DEBUG'
+        value: appServiceAPIDBHostFLASK_DEBUG
+      }
+    ]
   }
   dependsOn: [
     appServicePlanModule
