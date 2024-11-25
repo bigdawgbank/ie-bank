@@ -43,16 +43,10 @@ router.beforeEach(async (to, from, next) => {
   // Check if the route requires authentication
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     // Make a simple request to any protected endpoint
-    try {
-      // This will succeed if we have a valid session cookie
-      const response = await authService.checkSession();
-      if (response.authenticated) {
-        next();
-      } else {
-        next("/login");
-      }
-    } catch (error) {
-      next("/login"); // Error occurred, redirect to login
+    if (authService.checkSession()) {
+      next();
+    } else {
+      next("/login");
     }
   } else {
     next(); // Not a protected route, proceed

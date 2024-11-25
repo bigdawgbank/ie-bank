@@ -1,11 +1,19 @@
 import axios from "axios";
 
 const api = axios.create({
-  withCredentials: true,
   baseURL: process.env.VUE_APP_ROOT_API,
   headers: {
     Accept: "application/json",
   },
+});
+
+// Add interceptor to add token to requests
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 export const authService = {
@@ -21,28 +29,21 @@ export const authService = {
   async login(credentials) {
     try {
       const response = await api.post("/login", credentials);
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+      }
       return response.data;
     } catch (error) {
       throw error.response.data;
     }
   },
 
-  async logout() {
-    try {
-      const response = await api.post("/logout");
-      return response.data;
-    } catch (error) {
-      throw error.response.data;
-    }
+  logout() {
+    localStorage.removeItem("token");
   },
 
-  async checkSession() {
-    try {
-      const response = await api.get("/session");
-      return response.data;
-    } catch (error) {
-      throw error.response.data;
-    }
+  checkSession() {
+    return !!localStorage.getItem("token");
   },
 };
 
