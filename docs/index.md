@@ -32,7 +32,7 @@ Implements Infrastructure as Code using Bicep templates.
 
 ### Cybersecurity Engineer
 Secures the application and ensures compliance with security standards.
-- [Cybersecurity Engineer](./Cybersecuirty.md)
+- [Cybersecurity Engineer](./Cybersecurity.md)
 
 ### Site Reliability Engineer
 Monitors system performance and ensures application reliability.
