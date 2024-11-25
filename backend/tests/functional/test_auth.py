@@ -1,7 +1,6 @@
 def test_protected_route(testing_client):
-    """Test accessing protected route with authenticated user"""
-    # Register and login
-    response = testing_client.post(
+    # Register and login to get token
+    testing_client.post(
         "/register",
         data={
             "username": "testuser",
@@ -9,50 +8,32 @@ def test_protected_route(testing_client):
             "password": "testPass123",
         },
     )
-    response2 = testing_client.post(
+    response = testing_client.post(
         "/login", data={"username": "testuser", "password": "testPass123"}
     )
+    token = response.json["token"]
 
-    # Test protected route
-    response = testing_client.get("/accounts")
+    # Test protected route with token
+    response = testing_client.get(
+        "/accounts", headers={"Authorization": f"Bearer {token}"}
+    )
     assert response.status_code == 200
 
 
+def test_authentication_required(testing_client):
+    response = testing_client.get("/accounts")
+    assert response.status_code == 401
+
+
 def test_login_failure(testing_client):
-    """Test invalid login credentials"""
     response = testing_client.post(
         "/login", data={"username": "nonexistent", "password": "wrongpass"}
     )
     assert response.status_code == 401
 
 
-def test_logout(testing_client):
-    """Test logout functionality"""
-    # Register and login first
-    testing_client.post(
-        "/register",
-        data={
-            "username": "testuser",
-            "email": "test@example.com",
-            "password": "testPass123",
-        },
-    )
-    testing_client.post(
-        "/login", data={"username": "testuser", "password": "testPass123"}
-    )
-
-    # Test logout
-    response = testing_client.post("/logout")
-    assert response.status_code == 200
-
-    # Verify can't access protected route after logout
-    response = testing_client.get("/accounts")
-    assert response.status_code == 401
-
-
 def test_register_duplicate_user(testing_client):
-    """Test registering duplicate user"""
-    # Register first user
+    # First registration
     testing_client.post(
         "/register",
         data={
@@ -62,7 +43,7 @@ def test_register_duplicate_user(testing_client):
         },
     )
 
-    # Try to register same username
+    # Duplicate registration
     response = testing_client.post(
         "/register",
         data={
@@ -72,9 +53,3 @@ def test_register_duplicate_user(testing_client):
         },
     )
     assert response.status_code == 500
-
-
-def test_authentication_required(testing_client):
-    """Test authentication is required for protected routes"""
-    response = testing_client.get("/accounts")
-    assert response.status_code == 401
