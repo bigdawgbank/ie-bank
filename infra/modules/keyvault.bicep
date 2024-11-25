@@ -87,3 +87,4 @@ resource keyVault_roleAssignments 'Microsoft.Authorization/roleAssignments@2022-
 ]
 
 output keyVaultName string = keyVault.name
+output keyVaultResourceId string = keyVault.id

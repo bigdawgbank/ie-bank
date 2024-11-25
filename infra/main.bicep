@@ -131,6 +131,9 @@ module containerRegistryModule 'modules/container-registry.bicep' = {
     keyVaultSecretNameAdminPassword0: acrPassword0SecretName
     keyVaultSecretNameAdminPassword1: acrPassword1SecretName
   }
+  dependsOn: [
+    keyVault
+  ]
 }
 
 resource keyVaultReference 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
@@ -202,3 +205,4 @@ module appServiceFE 'modules/app-service-fe.bicep' = {
 
 output frontendAppHostName string = appServiceFE.outputs.frontendAppHostName
 output backendAppHostName string = appServiceBE.outputs.backendAppHostName
+output keyVaultResourceId string = keyVault.outputs.keyVaultResourceId
