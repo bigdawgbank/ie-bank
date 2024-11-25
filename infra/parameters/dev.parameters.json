@@ -11,6 +11,9 @@
     "postgreSQLDatabaseName": {
       "value": "dkumlin-db-dev"
     },
+    "administratorLoginPassword": {
+      "value": "IE.Bank.DB.Admin.Pa$$"
+    },
     "appServicePlanName": {
       "value": "dkumlin-asp-dev"
     },
