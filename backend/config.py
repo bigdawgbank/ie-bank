@@ -8,11 +8,7 @@ load_dotenv()
 class Config(object):
     SECRET_KEY = "this-really-needs-to-be-changed"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SESSION_COOKIE_DOMAIN = os.getenv("DOMAIN")
-    SESSION_COOKIE_SECURE = True
-    REMEMBER_COOKIE_HTTPONLY = True
-    SESSION_COOKIE_HTTPONLY = True
-    SESSION_COOKIE_SAMESITE = None
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
 
 class LocalConfig(Config):
