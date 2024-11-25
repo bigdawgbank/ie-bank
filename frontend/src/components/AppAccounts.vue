@@ -2,6 +2,15 @@
   <div class="jumbotron vertical-center">
     <div class="container">
       <div class="row">
+        <div class="d-flex justify-content-end mb-3 w-100">
+          <button
+            type="button"
+            class="btn btn-danger btn-sm"
+            @click="handleLogout"
+          >
+            Logout
+          </button>
+        </div>
         <div class="col-sm-12">
           <h1>Accounts</h1>
           <hr />
@@ -62,7 +71,7 @@
                     <button
                       type="button"
                       class="btn btn-danger btn-sm"
-                      @click="deleteAccount(account)"
+                      @click="deleteAccount(account.id)"
                     >
                       Delete
                     </button>
@@ -160,9 +169,9 @@
     </div>
   </div>
 </template>
-
 <script>
-import axios from "axios";
+import { accountService, authService } from "../api"; // Import your API client
+
 export default {
   name: "AppAccounts",
   data() {
@@ -182,94 +191,80 @@ export default {
     };
   },
   methods: {
-    /***************************************************
-     * RESTful requests
-     ***************************************************/
-
-    //GET function
-    RESTgetAccounts() {
-      const path = `${process.env.VUE_APP_ROOT_API}/accounts`;
-      axios
-        .get(path)
-        .then((response) => {
-          console.log(response);
-          this.accounts = response.data.accounts;
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+    // Get all accounts
+    async getAccounts() {
+      try {
+        const response = await accountService.getAccounts();
+        console.log(response);
+        this.accounts = response.accounts;
+      } catch (error) {
+        console.error("Failed to fetch accounts:", error);
+        // Optionally show error message to user
+      }
     },
 
-    // POST function
-    RESTcreateAccount(payload) {
-      const path = `${process.env.VUE_APP_ROOT_API}/accounts`;
-      axios
-        .post(path, payload)
-        .then((response) => {
-          console.log(response);
-          this.RESTgetAccounts();
-          // For message alert
-          this.message = "Account Created succesfully!";
-          // To actually show the message
-          this.showMessage = true;
-          // To hide the message after 3 seconds
-          setTimeout(() => {
-            this.showMessage = false;
-          }, 3000);
-        })
-        .catch((error) => {
-          console.error(error);
-          this.RESTgetAccounts();
-        });
+    // Create new account
+    async createAccount(payload) {
+      try {
+        await accountService.createAccount(payload);
+        await this.getAccounts(); // Refresh the list
+
+        // Show success message
+        this.message = "Account Created successfully!";
+        this.showMessage = true;
+        setTimeout(() => {
+          this.showMessage = false;
+        }, 3000);
+      } catch (error) {
+        console.error("Failed to create account:", error);
+        // Optionally show error message to user
+      }
     },
 
-    // Update function
-    RESTupdateAccount(payload, accountId) {
-      const path = `${process.env.VUE_APP_ROOT_API}/accounts/${accountId}`;
-      axios
-        .put(path, payload)
-        .then((response) => {
-          this.RESTgetAccounts();
-          // For message alert
-          this.message = "Account Updated succesfully!";
-          // To actually show the message
-          this.showMessage = true;
-          // To hide the message after 3 seconds
-          setTimeout(() => {
-            this.showMessage = false;
-          }, 3000);
-        })
-        .catch((error) => {
-          console.error(error);
-          this.RESTgetAccounts();
-        });
+    // Update account
+    async updateAccount(payload, accountId) {
+      try {
+        await accountService.updateAccount(accountId, payload);
+        await this.getAccounts(); // Refresh the list
+
+        // Show success message
+        this.message = "Account Updated successfully!";
+        this.showMessage = true;
+        setTimeout(() => {
+          this.showMessage = false;
+        }, 3000);
+      } catch (error) {
+        console.error("Failed to update account:", error);
+        // Optionally show error message to user
+      }
     },
 
     // Delete account
-    RESTdeleteAccount(accountId) {
-      const path = `${process.env.VUE_APP_ROOT_API}/accounts/${accountId}`;
-      axios
-        .delete(path)
-        .then((response) => {
-          this.RESTgetAccounts();
-          // For message alert
-          this.message = "Account Deleted succesfully!";
-          // To actually show the message
-          this.showMessage = true;
-          // To hide the message after 3 seconds
-          setTimeout(() => {
-            this.showMessage = false;
-          }, 3000);
-        })
-        .catch((error) => {
-          console.error(error);
-          this.RESTgetAccounts();
-        });
+    async deleteAccount(accountId) {
+      try {
+        await accountService.deleteAccount(accountId);
+        await this.getAccounts(); // Refresh the list
+
+        // Show success message
+        this.message = "Account Deleted successfully!";
+        this.showMessage = true;
+        setTimeout(() => {
+          this.showMessage = false;
+        }, 3000);
+      } catch (error) {
+        console.error("Failed to delete account:", error);
+        // Optionally show error message to user
+      }
     },
 
-    /***************************************************
-     * FORM MANAGEMENT
-     * *************************************************/
+    async handleLogout() {
+      try {
+        await authService.logout();
+        this.$router.push("/login");
+      } catch (error) {
+        console.error("Failed to logout:", error);
+      }
+    },
 
     // Initialize forms empty
     initForm() {
@@ -281,26 +276,30 @@ export default {
     },
 
     // Handle submit event for create account
-    onSubmit(e) {
-      e.preventDefault(); //prevent default form submit form the browser
-      this.$refs.addAccountModal.hide(); //hide the modal when submitted
+    async onSubmit(e) {
+      e.preventDefault();
+      this.$refs.addAccountModal.hide();
+
       const payload = {
         name: this.createAccountForm.name,
         currency: this.createAccountForm.currency,
         country: this.createAccountForm.country,
       };
-      this.RESTcreateAccount(payload);
+
+      await this.createAccount(payload);
       this.initForm();
     },
 
     // Handle submit event for edit account
-    onSubmitUpdate(e) {
-      e.preventDefault(); //prevent default form submit form the browser
-      this.$refs.editAccountModal.hide(); //hide the modal when submitted
+    async onSubmitUpdate(e) {
+      e.preventDefault();
+      this.$refs.editAccountModal.hide();
+
       const payload = {
         name: this.editAccountForm.name,
       };
-      this.RESTupdateAccount(payload, this.editAccountForm.id);
+
+      await this.updateAccount(payload, this.editAccountForm.id);
       this.initForm();
     },
 
@@ -310,16 +309,14 @@ export default {
     },
 
     // Handle Delete button
-    deleteAccount(account) {
-      this.RESTdeleteAccount(account.id);
+    async handleDelete(account) {
+      await this.deleteAccount(account.id);
     },
   },
 
-  /***************************************************
-   * LIFECYClE HOOKS
-   ***************************************************/
-  created() {
-    this.RESTgetAccounts();
+  // Lifecycle hooks
+  async created() {
+    await this.getAccounts();
   },
 };
 </script>
