@@ -1,13 +1,10 @@
 @description('The Web App name (frontend)')
 @minLength(3)
 @maxLength(24)
-param appServiceAppName string
+param staticWebAppName string
 
 @description('The Azure location where the Frontend Web App will be deployed')
-param location string = resourceGroup().location
-
-@description('The App Service Plan ID for the Frontend Web App')
-param appServicePlanId string
+param staticWebbAppLocation string
 
 @description('Application Insights Instrumentation Key for monitoring')
 param instrumentationKey string
@@ -15,32 +12,48 @@ param instrumentationKey string
 @description('Application Insights Connection String for monitoring')
 param insightsConnectionString string
 
-var appInsigthsSettings = [
-  { name: 'APPINSIGHTS_INSTRUMENTATIONKEY', value: instrumentationKey }
-  { name: 'APPLICATIONINSIGHTS_CONNECTION_STRING', value:insightsConnectionString }
-  { name: 'ApplicationInsightsAgent_EXTENSION_VERSION',value: '~3' }
-  { name: 'XDT_MicrosoftApplicationInsights_NodeJS', value:'1' }
-  ]
+@description('the branch we are deploying on')
+param branch string
 
-resource appServiceApp 'Microsoft.Web/sites@2022-03-01' = {
-  name: appServiceAppName
-  location: location
+@description('The URL of the repository')
+param repositoryUrl string
+
+@description('The location of the app in repository')
+param applocation string = 'frontend'
+
+@description('The location of the output in repository')
+param outputLocation string = '"'
+
+param apilocation string = 'backend'
+
+resource staticWebApp 'Microsoft.Web/staticSites@2022-03-01' = {
+  name: staticWebAppName
+  location: staticWebbAppLocation
+  sku: {
+    name: 'Free' // Change to 'Standard' if needed
+    tier: 'Free'
+  }
   properties: {
-    serverFarmId: appServicePlanId
-    httpsOnly: true
-    siteConfig: {
-      linuxFxVersion: 'NODE|18-lts'
-      alwaysOn: false
-      ftpsState: 'FtpsOnly'
-      appCommandLine: 'pm2 serve /home/site/wwwroot --spa --no-daemon'
-      appSettings: union(appInsigthsSettings, [
-        {
-          name: 'WEBSITE_NODE_DEFAULT_VERSION'
-          value: '18.4.0'
-        }
-      ])
+    repositoryUrl: repositoryUrl
+    branch: branch
+    buildProperties: {
+      appLocation: applocation
+      outputLocation: outputLocation
+      apiLocation: apilocation // Specify if you have an API backend
+
     }
   }
 }
 
-output frontendAppHostName string = appServiceApp.properties.defaultHostName
+module staticWebAppSettingsMod 'staticWebAppSettings.bicep' = {
+  name: 'staticWebAppSettings'
+  params: {
+    staticWebAppName: staticWebApp.name
+    currentAppSettings: staticWebApp.listAppSettings().properties
+    instrumentationKey : instrumentationKey
+    insightsConnectionString : insightsConnectionString
+    }
+  }
+
+
+output staticWebAppDefaultHostname string = staticWebApp.properties.defaultHostname

@@ -24,7 +24,7 @@ param dockerRegistryImageName string
 
 param dockerRegistryImageTag string
 
-param appCommandLine string =''
+param appCommandLine string = ''
 
 param instrumentationKey string
 
@@ -32,16 +32,16 @@ param insightsConnectionString string
 
 var appInsigthsSettings = [
   { name: 'APPINSIGHTS_INSTRUMENTATIONKEY', value: instrumentationKey }
-  { name: 'APPLICATIONINSIGHTS_CONNECTION_STRING', value:insightsConnectionString }
-  { name: 'ApplicationInsightsAgent_EXTENSION_VERSION',value: '~3' }
-  { name: 'XDT_MicrosoftApplicationInsights_NodeJS', value:'1' }
-  ]
+  { name: 'APPLICATIONINSIGHTS_CONNECTION_STRING', value: insightsConnectionString }
+  { name: 'ApplicationInsightsAgent_EXTENSION_VERSION', value: '~3' }
+  { name: 'XDT_MicrosoftApplicationInsights_NodeJS', value: '1' }
+]
 
 var dockerAppSettings = [
   { name: 'DOCKER_REGISTRY_SERVER_URL', value: 'https://${containerRegistryName}.azurecr.io' }
   { name: 'DOCKER_REGISTRY_SERVER_USERNAME', value: dockerRegistryServerUserName }
   { name: 'DOCKER_REGISTRY_SERVER_PASSWORD', value: dockerRegistryServerPassword }
-  ]
+]
 
 resource appServiceAPIApp 'Microsoft.Web/sites@2022-03-01' = {
   name: appServiceAPIAppName
@@ -55,7 +55,6 @@ resource appServiceAPIApp 'Microsoft.Web/sites@2022-03-01' = {
       ftpsState: 'FtpsOnly'
       appCommandLine: appCommandLine
       appSettings: union(appSettings, dockerAppSettings, appInsigthsSettings)
-
     }
   }
 }
