@@ -33,13 +33,3 @@
   margin: 0 auto; /* Center the image */
 }
 </style>
-
-<script>
-export default {
-  methods: {
-    navigateToAccounts() {
-      this.$router.push('/accounts');
-    }
-  }
-}
-</script>
