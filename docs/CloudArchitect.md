@@ -4,28 +4,30 @@ The Cloud Architect is responsible for designing and implementing scalable, reli
 
 ---
 
-## Functional and Non-Functional requirements
+## BigDawgBank Functional and Non-Functional Requirements
 
 ### Functional Requirements (FR)
 
-The following functional requirements outline the behavior and features of the IE Bank Application. Each requirement is linked to the respective user story and some of the requirments will have an associated test cases defined to showcase our Test-Driven-Development(TDD).
+The following functional requirements outline the behavior and features of the IE Bank Application. Each requirement is linked to the respective user story and associated test cases where applicable.
+
+---
 
 #### FR01: Default Admin Account
 **Requirement:** The application must provide a default administrator account (username and password) upon system setup.  
-**User Story:** As an admin, I want a default admin account to be created during system setup so that I can log in and start managing the system immediately.  
+**User Story:** As an admin, I want a default admin account to be created during system setup so that I can log in and start managing the system immediately.    
 
 ---
 
 #### FR02: Admin User Management
 **Requirement:** The admin portal must allow administrators to create, update, delete, and list user accounts.  
 **User Story:** As an admin, I want to create, update, and delete user accounts so that I can manage access to the system.  
-**Test:** _[To be added]_  
+**Test:** [test_create_user](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/unit/test_auth_model.py)  
 
 ---
 
 #### FR03: Password Reset for Users
 **Requirement:** Administrators must be able to reset user passwords to assist users who cannot log in.  
-**User Story:** As an admin, I want to reset user passwords so that I can assist users who cannot log in.  
+**User Story:** As an admin, I want to reset user passwords so that I can assist users who cannot log in.    
 
 ---
 
@@ -38,66 +40,79 @@ The following functional requirements outline the behavior and features of the I
 #### FR05: New User Registration
 **Requirement:** New bank users must be able to register using a registration form (username, password, and password confirmation). A default account with a random account number must be created upon successful registration.  
 **User Story:** As a new user, I want to register for an account so that I can access the system.  
-**Test:** _[To be added]_  
+**Test:** [test_create_user](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/unit/test_auth_model.py) 
 
 ---
 
-#### FR06: Automatic Account Provisioning
-**Requirement:** The system must automatically provision a default account upon new user registration.  
-**User Story:** As a user, I want my account to be provisioned immediately after registration so that I can start using the services.  
+#### FR06: Invalid Repeated Email Check
+**Requirement:** The system must reject accounts that are created with the same email as another.  
+**User Story:** As an admin, I want users who are creating two accounts to not be allowed the use of the same email when creating another one.  
+**Test:** [test_user_unique_email](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/unit/test_auth_model.py)  
 
 ---
 
-#### FR07: Secure User Login
+#### FR07: Multiple accounts per User
+**Requirement:** The system must allow users to create more than one account under the assumption that they use different emails for the new accounts.  
+**User Story:** As a user, I want to ensure that I can register multiple bank accounts to the system so I can better handle my finances.  
+**Test:** [test_register_duplicate_user](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py#test_register_duplicate_user)  
+
+---
+
+#### FR08: Secure User Login
 **Requirement:** Bank users must log in securely using their username and password to access their accounts.  
 **User Story:** As a user, I want to log in securely so that I can access my account.  
-**Test:** _[To be added]_  
+**Test:** [test_authentication_required](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py)  
+**Test:** [test_login_failure](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py)  
 
 ---
 
-#### FR08: View Account and Transactions
+#### FR09: View Account and Transactions
 **Requirement:** Bank users must view their accounts and associated transactions after logging in.  
 **User Story:** As a user, I want to view my account details and recent transactions so that I can manage my finances effectively.  
-**Test:** _[To be added]_  
+**Test:** [test_protected_route](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py)  
 
 ---
 
-#### FR09: Money Transfer
+#### FR10: Money Transfer
 **Requirement:** Bank users must be able to transfer money to other accounts by entering the recipient’s account number and transfer amount. The transfer amount must not exceed the available balance.  
 **User Story:** As a user, I want to transfer money to other accounts so that I can make payments easily.  
-**Test:** _[To be added]_  
 
 ---
 
-#### FR10: Secure Password Handling
+#### FR11: Secure Password Handling
 **Requirement:** All user passwords must be hashed and stored securely to prevent data breaches.  
 **User Story:** As a developer, I want all passwords to be securely hashed so that user data is protected from breaches.  
+**Test:** [test_create_user](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/unit/test_auth_model.py)  
 
 ---
 
-#### FR11: Session Management
+#### FR12: Session Management
 **Requirement:** User sessions must expire after inactivity to ensure account security.  
 **User Story:** As a user, I want my session to expire after inactivity so that my account remains secure.  
 
 ---
 
-#### FR12: Intuitive Admin UI
+#### FR13: Intuitive Admin UI
 **Requirement:** The admin portal must have an intuitive UI for efficient user and permission management.  
 **User Story:** As an admin, I want a clean and intuitive UI for the portal so that I can efficiently manage users and permissions.  
 
 ---
 
+
 ### Non-Functional Requirements (NFR)
 
-The following non-functional requirements define the performance, security, and usability standards for the IE Bank Application.
+The following non-functional requirements define the performance, security, and usability standards for the IE Bank Application. Where applicable, links to potential tests have been suggested.
+
+---
 
 #### NFR01: Basic Authentication
-**Requirement:** The web application must implement a basic authentication system requiring username and password login. Credentials must be hashed and encrypted in the database.   
+**Requirement:** The web application must implement a basic authentication system requiring username and password login. Credentials must be hashed and encrypted in the database.  
+**Test:** [test_authentication_required](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py)  
 
 ---
 
 #### NFR02: Simple Frontend Interface
-**Requirement:** The web application must have a simple and functional frontend UI without requiring advanced aesthetics or responsiveness.   
+**Requirement:** The web application must have a simple and functional frontend UI without requiring advanced aesthetics or responsiveness.  
 
 ---
 
@@ -107,27 +122,27 @@ The following non-functional requirements define the performance, security, and 
 ---
 
 #### NFR04: Cost Optimization
-**Requirement:** Azure resources must be provisioned with cost-effective configurations, leveraging reserved instances and auto-scaling to manage resource costs.    
+**Requirement:** Azure resources must be provisioned with cost-effective configurations, leveraging reserved instances and auto-scaling to manage resource costs.  
 
 ---
 
 #### NFR05: Handling Peak Loads
-**Requirement:** The system must support up to 500 concurrent users in the production environment without performance degradation.   
+**Requirement:** The system must support up to 500 concurrent users in the production environment without performance degradation.  
 
 ---
 
 #### NFR06: Secure Secrets Management
-**Requirement:** Secrets such as database connection strings and API keys must be stored securely using Azure Key Vault.   
+**Requirement:** Secrets such as database connection strings and API keys must be stored securely using Azure Key Vault.  
 
 ---
 
 #### NFR07: Logging and Monitoring
-**Requirement:** The application must implement robust logging and monitoring through Azure Application Insights, ensuring errors and performance metrics are captured.   
+**Requirement:** The application must implement robust logging and monitoring through Azure Application Insights, ensuring errors and performance metrics are captured.  
 
 ---
 
 #### NFR08: Compliance
-**Requirement:** The application must comply with GDPR and other relevant data protection regulations to ensure user data privacy.   
+**Requirement:** The application must comply with GDPR and other relevant data protection regulations to ensure user data privacy.  
 
 ---
 
@@ -137,7 +152,7 @@ The following non-functional requirements define the performance, security, and 
 ---
 
 #### NFR10: Backup and Recovery
-**Requirement:** The system must include point-in-time restore for the database and deployment rollback capabilities in case of failure.   
+**Requirement:** The system must include point-in-time restore for the database and deployment rollback capabilities in case of failure.  
 
 ---
 
@@ -163,7 +178,7 @@ We will utilize GitHub as the central repository for version control, CI/CD pipe
   - Includes workflows for building, testing, and deploying to Azure environments.
 - **Integration with Azure**:
   - Deploys infrastructure using Bicep templates.
-  - Pushes Docker images to Azure Container Registry.
+  - Pushes Docker images to Azure Container Registry through Github actions.
 
 ---
 
@@ -237,7 +252,7 @@ We use the Azure Static Web Apps to host the Vue.js frontend of our banking appl
   - Configured for easy branding with UAT and Production-specific domains.
   - SSL certificates for secure communication.
 - **Automated Deployments**:
-  - GitHub Actions automatically deploy changes upon commits to the `main` or `uat` branches.
+  - GitHub Actions automatically deploys changes upon commits to the `main` or `uat` branches.
 - **Integrated Backend Routing**:
   - API endpoints for the backend are routed seamlessly.
 
@@ -350,6 +365,20 @@ We will use Azure Application Insights to provide us with real-time monitoring a
 
 ## 1. Release Strategy
 - **Description**: Document the release strategy, including environment design, and ensure alignment with the DevOps checklist and GitHub Security best practices.
+
+---
+
+### Development(Dev)
+
+---
+
+### User Acceptance Testing(UAT)
+
+---
+
+### Production(prod)
+
+---
 
 ## 2. Use Case and Sequential Model Design
 - **Description**: Update the use case and sequential model diagrams for each use case in the application.

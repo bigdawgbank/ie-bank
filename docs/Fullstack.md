@@ -36,10 +36,8 @@ The Full Stack Engineer is responsible for designing and implementing cloud solu
 ---
 
 ## Release Strategy
+- [Release Strategy](./CloudArchitect.md)
 
-### 1. Description of the Release Strategy
-- **Description**: Document the release strategy, including steps for deploying the application to development, UAT, and production environments. Detail how the frontend and backend align with this strategy.
- 
 ---
 
 ## Continuous Delivery (CD) Workflows
