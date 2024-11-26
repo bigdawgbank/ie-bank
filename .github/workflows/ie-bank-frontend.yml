@@ -39,7 +39,6 @@ jobs:
         run: |
           echo "NODE_ENV: ${{ vars.NODE_ENV }}"
           echo "VUE_APP_ROOT_API: ${{ vars.VUE_APP_ROOT_API }}"
-          echo "BASE_URL: ${{ vars.BASE_URL }}"
       
       - name: Azure Login
         uses: azure/login@v2
@@ -57,12 +56,10 @@ jobs:
         env:
           NODE_ENV: ${{ vars.NODE_ENV }}
           VUE_APP_ROOT_API: ${{ vars.VUE_APP_ROOT_API }}
-          BASE_URL: ${{ vars.BASE_URL }}
         run: |
           docker build ./frontend \
             --build-arg NODE_ENV=$NODE_ENV \
             --build-arg VUE_APP_ROOT_API=$VUE_APP_ROOT_API \
-            --build-arg BASE_URL=$BASE_URL \
             -t ${{ vars.DOCKER_REGISTRY_SERVER_URL }}/${{ env.IMAGE_NAME }}:${{ steps.image-version.outputs.version }} \
             -t ${{ vars.DOCKER_REGISTRY_SERVER_URL }}/${{ env.IMAGE_NAME }}:latest
           docker push ${{ vars.DOCKER_REGISTRY_SERVER_URL }}/${{ env.IMAGE_NAME }}:${{ steps.image-version.outputs.version }}
@@ -85,7 +82,6 @@ jobs:
         run: |
           echo "NODE_ENV: ${{ vars.NODE_ENV }}"
           echo "VUE_APP_ROOT_API: ${{ vars.VUE_APP_ROOT_API }}"
-          echo "BASE_URL: ${{ vars.BASE_URL }}"
       
       - name: Azure Login
         uses: azure/login@v2
@@ -103,12 +99,10 @@ jobs:
         env:
           NODE_ENV: ${{ vars.NODE_ENV }}
           VUE_APP_ROOT_API: ${{ vars.VUE_APP_ROOT_API }}
-          BASE_URL: ${{ vars.BASE_URL }}
         run: |
           docker build ./frontend \
             --build-arg NODE_ENV=$NODE_ENV \
             --build-arg VUE_APP_ROOT_API=$VUE_APP_ROOT_API \
-            --build-arg BASE_URL=$BASE_URL \
             -t ${{ vars.DOCKER_REGISTRY_SERVER_URL }}/${{ env.IMAGE_NAME }}:${{ steps.image-version.outputs.version }} \
             -t ${{ vars.DOCKER_REGISTRY_SERVER_URL }}/${{ env.IMAGE_NAME }}:latest
           docker push ${{ vars.DOCKER_REGISTRY_SERVER_URL }}/${{ env.IMAGE_NAME }}:${{ steps.image-version.outputs.version }}
@@ -141,7 +135,6 @@ jobs:
         env:
           NODE_ENV: ${{ vars.NODE_ENV }}
           VUE_APP_ROOT_API: ${{ vars.VUE_APP_ROOT_API }}
-          BASE_URL: ${{ vars.BASE_URL }}
 
   static-deploy-uat:
     if: github.event_name == 'pull_request' && github.base_ref == 'main'
@@ -170,4 +163,3 @@ jobs:
         env:
           NODE_ENV: ${{ vars.NODE_ENV }}
           VUE_APP_ROOT_API: ${{ vars.VUE_APP_ROOT_API }}
-          BASE_URL: ${{ vars.BASE_URL }}
