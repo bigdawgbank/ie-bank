@@ -1,24 +1,7 @@
-def test_protected_route(testing_client):
-    # Register and login to get token
-    testing_client.post(
-        "/register",
-        data={
-            "username": "testuser",
-            "email": "test@example.com",
-            "password": "testPass123",
-        },
-    )
-    response = testing_client.post(
-        "/login", data={"username": "testuser", "password": "testPass123"}
-    )
-    token = response.json["token"]
-
-    # Test protected route with token
-    response = testing_client.get(
-        "/accounts", headers={"Authorization": f"Bearer {token}"}
-    )
+def test_protected_route(testing_client, register_and_authenticate):
+    headers = {"Authorization": f"Bearer {register_and_authenticate}"}
+    response = testing_client.get("/accounts", headers=headers)
     assert response.status_code == 200
-
 
 def test_authentication_required(testing_client):
     response = testing_client.get("/accounts")

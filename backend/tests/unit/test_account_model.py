@@ -49,7 +49,7 @@ def test_default_query_account(testing_client):
     THEN check the account is in the database
     """
     with testing_client.application.app_context():  # Ensure the app context is active
-        assert Account.query.filter_by(name='By Default Test Account').first() != None
+        assert Account.query.filter_by(name='Adrian').first() != None
 
 def test_update_account(testing_client):
     """
