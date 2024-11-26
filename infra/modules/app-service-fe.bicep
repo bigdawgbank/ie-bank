@@ -4,7 +4,7 @@
 param staticWebAppName string
 
 @description('The Azure location where the Frontend Web App will be deployed')
-param location string = resourceGroup().location
+param staticWebbAppLocation string
 
 @description('Application Insights Instrumentation Key for monitoring')
 param instrumentationKey string
@@ -31,7 +31,7 @@ param apilocation string = 'backend'
 
 resource staticWebApp 'Microsoft.Web/staticSites@2022-03-01' = {
   name: staticWebAppName
-  location: location
+  location: staticWebbAppLocation
   sku: {
     name: skuName 
     tier: skuName

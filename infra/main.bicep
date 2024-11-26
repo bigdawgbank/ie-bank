@@ -33,6 +33,8 @@ param appServiceAPIAppName string = 'ie-bank-api-dev'
 @description('The Azure location where the resources will be deployed')
 param location string = resourceGroup().location
 
+param staticWebbAppLocation string = 'westeurope'
+
 @description('The value for the environment variable ENV')
 param appServiceAPIEnvVarENV string
 
@@ -198,7 +200,7 @@ module appServiceFE 'modules/app-service-fe.bicep' = {
     staticWebAppName: staticWebAppName
     branch: branch
     repositoryUrl: repositoryUrl
-    location: location
+    staticWebbAppLocation: staticWebbAppLocation
     skuName: skuName
     instrumentationKey: appInsights.outputs.instrumentationKey
     insightsConnectionString: appInsights.outputs.insightsConnectionString
