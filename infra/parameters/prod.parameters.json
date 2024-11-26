@@ -17,7 +17,7 @@
       "appServiceAPIAppName": {
         "value": "dkumlin-be-prod"
       },
-      "appServiceAppName": {
+      "staticWebAppName": {
         "value": "dkumlin-fe-prod"
       },
       "location": {

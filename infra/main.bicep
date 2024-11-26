@@ -23,7 +23,7 @@ param appServicePlanName string = 'ie-bank-app-sp-dev'
 @description('The Web App name (frontend)')
 @minLength(3)
 @maxLength(24)
-param appServiceAppName string = 'ie-bank-dev'
+param staticWebAppName string = 'ie-bank-dev'
 
 @description('The API App name (backend)')
 @minLength(3)
@@ -69,6 +69,12 @@ param logAnalyticsWorkspaceName string
 
 @description('The name of the Application Insights resource')
 param appInsightsName string
+
+@description('branch being deployed')
+param branch string
+
+@description('The Github URL used for the static web app')
+param repositoryUrl string = 'https://github.com/bigdawgbank/ie-bank'
 
 var logAnalyticsWorkspaceId = resourceId('Microsoft.OperationalInsights/workspaces', logAnalyticsWorkspaceName)
 
@@ -189,9 +195,11 @@ module appServiceBE 'modules/app-service-be.bicep' = {
 module appServiceFE 'modules/app-service-fe.bicep' = {
   name: 'appServiceFE'
   params: {
-    appServiceAppName: appServiceAppName
+    staticWebAppName: staticWebAppName
+    branch: branch
+    repositoryUrl: repositoryUrl
     location: location
-    appServicePlanId: appServicePlanModule.outputs.appServicePlanId
+    skuName: skuName
     instrumentationKey: appInsights.outputs.instrumentationKey
     insightsConnectionString: appInsights.outputs.insightsConnectionString
   }
@@ -202,5 +210,5 @@ module appServiceFE 'modules/app-service-fe.bicep' = {
   ]
 }
 
-output frontendAppHostName string = appServiceFE.outputs.frontendAppHostName
+output frontendAppHostName string = appServiceFE.outputs.staticWebAppDefaultHostname
 output backendAppHostName string = appServiceBE.outputs.backendAppHostName
