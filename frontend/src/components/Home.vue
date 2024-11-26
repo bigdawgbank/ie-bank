@@ -7,16 +7,12 @@
           <hr />
           <br />
 
-          <button
-            type="button"
-            class="btn btn-success btn-sm"
-            @click="navigateToAccounts"
-          >
-            Manage Bank Accounts
-          </button>
+          <a role="button" href="/accounts" class="btn btn-primary mt-3">
+                Go to accounts →
+          </a>
+
           <br /><br />
 
-          <!-- Add the large photo below the button -->
           <img src="../assets/bank_background_photo.png" alt="Banking photo" class="large-photo" />
 
           <footer class="text-center">
@@ -30,20 +26,20 @@
 
 <style>
 .large-photo {
-width: 100%;
-height: auto;
-max-width: 1024px; /* Adjust the max-width as needed */
-display: block;
-margin: 0% left; /* Center the image */
+  width: 100%;
+  height: auto;
+  max-width: 1024px; /* Adjust the max-width as needed */
+  display: block;
+  margin: 0 auto; /* Center the image */
 }
 </style>
 
 <script>
 export default {
-methods: {
-  navigateToAccounts() {
-    this.$router.push('/accounts');
+  methods: {
+    navigateToAccounts() {
+      this.$router.push('/accounts');
+    }
   }
-}
 }
 </script>
