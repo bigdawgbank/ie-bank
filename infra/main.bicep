@@ -85,6 +85,13 @@ module keyVault 'modules/keyvault.bicep' = {
   }
 }
 
+resource keyVaultReference 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: keyVaultName
+  dependsOn: [
+    keyVault
+  ]
+}
+
 // Use Key Vault for administrator login password later
 module postgresSQLServerModule 'modules/postgre-sql-server.bicep' = {
   name: 'postgresSQLServerModule'
@@ -134,10 +141,6 @@ module containerRegistryModule 'modules/container-registry.bicep' = {
   dependsOn: [
     keyVault
   ]
-}
-
-resource keyVaultReference 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-  name: keyVaultName
 }
 
 // Module: Backend API App Service
