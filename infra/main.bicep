@@ -201,7 +201,6 @@ module appServiceFE 'modules/app-service-fe.bicep' = {
     branch: branch
     repositoryUrl: repositoryUrl
     staticWebbAppLocation: staticWebbAppLocation
-    skuName: skuName
     instrumentationKey: appInsights.outputs.instrumentationKey
     insightsConnectionString: appInsights.outputs.insightsConnectionString
   }

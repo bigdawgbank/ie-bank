@@ -24,17 +24,14 @@ param applocation string = 'frontend'
 @description('The location of the output in repository')
 param outputLocation string = '"'
 
-@description('The SKU name for the Frontend Web App')
-param skuName string = 'B1'
-
 param apilocation string = 'backend'
 
 resource staticWebApp 'Microsoft.Web/staticSites@2022-03-01' = {
   name: staticWebAppName
   location: staticWebbAppLocation
   sku: {
-    name: skuName 
-    tier: skuName
+    name: 'Free' // Change to 'Standard' if needed
+    tier: 'Free'
   }
   properties: {
     repositoryUrl: repositoryUrl
