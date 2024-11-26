@@ -46,7 +46,7 @@ resource staticWebApp 'Microsoft.Web/staticSites@2022-03-01' = {
 }
 
 module staticWebAppSettingsMod 'staticWebAppSettings.bicep' = {
-  name: 'staticWebApp-Settings}'
+  name: 'staticWebAppSettings}'
   params: {
     staticWebAppName: staticWebApp.name
     currentAppSettings: staticWebApp.listAppSettings().properties
