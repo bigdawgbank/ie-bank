@@ -63,7 +63,7 @@ def login():
 @app.route("/accounts", methods=["POST"])
 @jwt_required()
 def create_account():
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = db.session.get(User, user_id)
     data = request.json
 
@@ -92,7 +92,7 @@ def create_account():
 @app.route("/accounts", methods=["GET"])
 @jwt_required()
 def get_accounts():
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     # Only get accounts belonging to current user
     accounts = db.session.query(Account).filter_by(user_id=user_id).all()
     return jsonify({"accounts": [format_account(account) for account in accounts]}), 200
@@ -101,7 +101,7 @@ def get_accounts():
 @app.route("/accounts/<int:id>", methods=["GET"])
 @jwt_required()
 def get_account(id):
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     account = Account.query.get_or_404(id)
     # Check if account belongs to current user
     if account.user_id != user_id:
@@ -112,7 +112,7 @@ def get_account(id):
 @app.route("/accounts/<int:id>", methods=["PUT"])
 @jwt_required()
 def update_account(id):
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     account = db.session.get(Account, id)
     if not account:
         return jsonify({"error": "Account not found"}), 404
@@ -133,7 +133,7 @@ def update_account(id):
 @app.route("/accounts/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_account(id):
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     account = db.session.get(Account, id)
     if not account:
         return jsonify({"error": "Account not found"}), 404
@@ -164,7 +164,7 @@ def format_account(account):
 @app.route("/profile", methods=["GET"])
 @jwt_required()
 def get_profile():
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     user = db.session.get(User, user_id)
     return (
         jsonify(
