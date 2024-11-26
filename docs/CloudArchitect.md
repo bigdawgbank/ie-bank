@@ -158,7 +158,7 @@ The following non-functional requirements define the performance, security, and 
 
 ## Infrastructure Architecture Design
 
-This document provides an in-depth overview of the infrastructure components and their configurations for the BigDawgBank MVP. The architecture ensures scalability, reliability, and security while adhering to cost-effective design principles.
+This section provides an in-depth overview of the infrastructure components and their configurations for the BigDawgBank MVP. The architecture ensures scalability, reliability, and security while adhering to cost-effective design principles.
 
 ---
 
@@ -175,7 +175,7 @@ We will utilize GitHub as the central repository for version control, CI/CD pipe
   - Provides role-based pages for team collaboration and documentation.
 - **GitHub Actions**: 
   - Automates CI/CD pipelines for application and infrastructure.
-  - Includes workflows for building, testing, and deploying to Azure environments.
+  - Includes workflows for building, testing, and deploying to Azure environments(Dev, UAT and PROD).
 - **Integration with Azure**:
   - Deploys infrastructure using Bicep templates.
   - Pushes Docker images to Azure Container Registry through Github actions.
@@ -363,8 +363,16 @@ We will use Azure Application Insights to provide us with real-time monitoring a
 
 ---
 
-## 1. Release Strategy
+## Release Strategy
 - **Description**: Document the release strategy, including environment design, and ensure alignment with the DevOps checklist and GitHub Security best practices.
+
+## Infrastructure Release Strategy
+- **Description**: Document the infrastructure release strategy, including the use of IaC tools (e.g., Bicep templates, ARM templates) and GitHub Actions workflows. Detail the process for provisioning and updating infrastructure in each environment:
+  - **Development Environment**: Describe experimental deployments and testing infrastructure configurations.
+  - **UAT Environment**: Explain the controlled deployment of infrastructure for stakeholder testing.
+  - **Production Environment**: Provide a strategy for deploying final, stable infrastructure to support the live application.
+  - Highlight rollback mechanisms and disaster recovery strategies for infrastructure deployments.
+
 
 ---
 
