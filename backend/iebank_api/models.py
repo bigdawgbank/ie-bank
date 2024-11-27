@@ -7,9 +7,11 @@ from sqlalchemy import Enum as SQLAlchemyEnum
 
 from iebank_api import bcrypt, db
 
+
 class Role(str, Enum):
     ADMIN = "admin"
     USER = "user"
+
 
 class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -42,25 +44,29 @@ class Account(db.Model):
         self.status = "Active"
         if user:
             self.user_id = user.id
-    
+
     def withdraw(self, amount):
         if amount < 0:
             raise ValueError("Amount must be positive")
         if self.balance < amount:
             raise ValueError("Insufficient funds")
         self.balance -= amount
+
     def deposit(self, amount):
         if amount < 0:
             raise ValueError("Amount must be positive")
         self.balance += amount
-        
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
     role = db.Column(SQLAlchemyEnum(Role), nullable=False, default=Role.USER)
-    accounts = db.relationship("Account", backref="owner", lazy="dynamic")
+    accounts = db.relationship(
+        "Account", backref="owner", lazy="dynamic", cascade="all, delete-orphan"
+    )
 
     def __init__(self, username, email, password, role="user"):
         # Validate username
@@ -121,7 +127,8 @@ class User(db.Model):
         """Get all accounts owned by this user"""
         return self.accounts.all()
 
-class BankTransfer():
+
+class BankTransfer:
     def __init__(self, from_account, to_account, amount):
         self.from_account = from_account
         self.to_account = to_account
