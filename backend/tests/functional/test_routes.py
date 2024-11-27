@@ -163,3 +163,46 @@ def test_bank_transfer_process_route(testing_client, register_and_authenticate):
 
     response = testing_client.post('/transfer', json={'sender_account_id': from_account_id, 'recipient_account_id': to_account_id, 'amount': 100.0}, headers=headers)
     assert response.status_code == 200
+
+def test_wire_transfer_money_route(testing_client, register_and_authenticate):
+    """
+    GIVEN a Flask application
+    WHEN the '/wiretransfer' page is requested (POST)
+    THEN check the response is valid
+    """
+    headers = {"Authorization": f"Bearer {register_and_authenticate}"}
+    sender_account_name = "Adrian checking account"
+    recipient_account_name = "Daniel checking account"
+
+    # Create sender account
+    response = testing_client.post(
+        "/accounts",
+        json={"name": sender_account_name, "currency": "€", "country": "Spain", "balance": 1000.0},
+        headers=headers,
+    )
+    assert response.status_code == 201
+    sender_account_data = response.get_json()
+    from_account_id = sender_account_data["id"]
+
+    # Create recipient account
+    response = testing_client.post(
+        "/accounts",
+        json={"name": recipient_account_name, "currency": "€", "country": "Spain", "balance": 0.0},
+        headers=headers,
+    )
+    assert response.status_code == 201
+    recipient_account_data = response.get_json()
+    recipient_account_number = recipient_account_data["account_number"]
+
+    # Perform wire transfer
+    response = testing_client.post(
+        "/wiretransfer",
+        json={"sender_account_id": from_account_id, "recipient_account_number": recipient_account_number, "amount": 100.0},
+        headers=headers,
+    )
+    assert response.status_code == 200
+    response_data = response.get_json()
+    assert response_data["message"] == "Transfer successful"
+    assert response_data["receipt"]["sender_account_id"] == from_account_id
+    assert response_data["receipt"]["recipient_account_id"] == recipient_account_data["id"]
+    assert response_data["receipt"]["amount"] == 100.0
