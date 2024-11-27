@@ -6,7 +6,7 @@ load_dotenv()
 
 
 class Config(object):
-    SECRET_KEY = "this-really-needs-to-be-changed"
+    SECRET_KEY = os.getenv("SECRET_KEY", "default-secret-key")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
@@ -30,7 +30,6 @@ class DevelopmentConfig(Config):
     DEBUG = True
 
 
-# Added custom config
 class UATConfig(Config):
     SQLALCHEMY_DATABASE_URI = "postgresql://{dbuser}:{dbpass}@{dbhost}/{dbname}".format(
         dbuser=os.getenv("DBUSER"),
@@ -39,3 +38,14 @@ class UATConfig(Config):
         dbname=os.getenv("DBNAME"),
     )
     DEBUG = True
+
+
+class ProductionConfig(Config):
+    SQLALCHEMY_DATABASE_URI = "postgresql://{dbuser}:{dbpass}@{dbhost}/{dbname}".format(
+        dbuser=os.getenv("DBUSER"),
+        dbpass=os.getenv("DBPASS"),
+        dbhost=os.getenv("DBHOST"),
+        dbname=os.getenv("DBNAME"),
+    )
+    DEBUG = False
+    TESTING = False

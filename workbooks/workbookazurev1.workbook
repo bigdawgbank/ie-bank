@@ -1,0 +1,589 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "exceptions\n| summarize errorCount = count() by bin(timestamp, 1h), type\n| order by timestamp asc\n",
+        "size": 0,
+        "title": "Error Types and Count",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "table"
+      },
+      "name": "query - 8"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "requests\n| summarize availability = (countif(success == true) * 100.0 / count()) by bin(timestamp, 1h)\n| order by timestamp desc\n",
+        "size": 0,
+        "aggregation": 3,
+        "title": "Hourly Availability Percentage",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "table",
+        "chartSettings": {
+          "xAxis": "timestamp",
+          "yAxis": [
+            "availability"
+          ],
+          "xSettings": {
+            "label": "TIMESTAMP"
+          },
+          "ySettings": {
+            "label": "AVAILABILITY"
+          }
+        }
+      },
+      "name": "query - 7"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "requests\n| where success == true\n| summarize SuccessCount = count() by bin(timestamp, 1h)\n| order by timestamp asc\n",
+        "size": 0,
+        "title": "Successful Requests Over Time",
+        "timeContext": {
+          "durationMs": 604800000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components"
+      },
+      "name": "query - 20"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "dependencies\n| summarize AvgDuration = avg(duration) by bin(timestamp, 1h)\n| order by timestamp asc\n",
+        "size": 0,
+        "title": "Average Dependency Call Duration Over Time",
+        "timeContext": {
+          "durationMs": 604800000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components"
+      },
+      "name": "query - 24"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "requests\n| summarize AvgResponseTime = avg(duration) by bin(timestamp, 1h)\n| order by timestamp asc\n\n",
+        "size": 0,
+        "title": "Average Server Response Time Over Time",
+        "timeContext": {
+          "durationMs": 604800000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components"
+      },
+      "name": "query - 21"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "requests\n| summarize RequestCount = count() by user_Id\n| order by RequestCount desc\n| top 10 by RequestCount\n",
+        "size": 0,
+        "timeContext": {
+          "durationMs": 604800000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "table"
+      },
+      "name": "Top Users by Request Count"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "requests\n| summarize Percentile95 = percentile(duration, 95)\n",
+              "size": 0,
+              "title": "95th Percentile Response Time",
+              "timeContext": {
+                "durationMs": 86400000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.insights/components"
+            },
+            "name": "query - 22"
+          }
+        ]
+      },
+      "name": "group - 26"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "requests\n| summarize avgDuration = avg(duration) by operation_Name\n| order by avgDuration desc\n",
+        "size": 0,
+        "title": "Backend Performance",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "categoricalbar"
+      },
+      "name": "query - 2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "customEvents\n| summarize eventCount = count() by name\n| order by eventCount desc\n",
+        "size": 0,
+        "title": "Custom Events",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "piechart"
+      },
+      "name": "query - 2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "dependencies\n| summarize failureCount = countif(success == false) by target\n| order by failureCount desc\n",
+        "size": 0,
+        "title": "Dependency Failures",
+        "timeContext": {
+          "durationMs": 604800000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "piechart"
+      },
+      "name": "query - 2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "requests\n| summarize avgDuration = avg(duration)\n",
+        "size": 1,
+        "title": "Average Request Duration",
+        "timeContext": {
+          "durationMs": 604800000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "stat"
+      },
+      "name": "query - 3"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "requests\n| summarize requestCount = count() by operation_Name\n| top 5 by requestCount\n",
+        "size": 0,
+        "title": "Top 5 Most Accessed Endpoints",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "categoricalbar"
+      },
+      "name": "query - 4"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "traces\n| summarize count() by severityLevel\n",
+        "size": 0,
+        "title": "Log Count per Severity",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "categoricalbar"
+      },
+      "name": "query - 5"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "dependencies\n| summarize avgDependencyDuration = avg(duration) by target\n| order by avgDependencyDuration desc\n",
+        "size": 0,
+        "title": " Dependency Performance",
+        "timeContext": {
+          "durationMs": 604800000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "piechart"
+      },
+      "name": "query - 7"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "exceptions\n| summarize count() by type, outerMessage, timestamp = bin(timestamp, 1h)\n| order by timestamp desc\n",
+        "size": 0,
+        "title": "Exception Logs by Type / Unhandled Exceptions Summary",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "piechart"
+      },
+      "name": "query - 9"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "workbookda1041e3-5b48-4e54-8d89-7533478598ce",
+        "version": "MetricsItem/2.0",
+        "size": 0,
+        "chartType": 2,
+        "color": "green",
+        "resourceType": "microsoft.insights/components",
+        "metricScope": 0,
+        "resourceIds": [
+          "/subscriptions/e0b9cada-61bc-4b5a-bd7a-52c606726b3b/resourceGroups/BCSAI2024-DEVOPS-STUDENTS-B-DEV/providers/Microsoft.Insights/components/dkumlin-appInsights-dev"
+        ],
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "metrics": [
+          {
+            "namespace": "microsoft.insights/components/kusto",
+            "metric": "microsoft.insights/components/kusto-Availability-availabilityResults/availabilityPercentage",
+            "aggregation": 4,
+            "splitBy": null,
+            "columnName": "Application Availability"
+          }
+        ],
+        "gridSettings": {
+          "rowLimit": 10000
+        }
+      },
+      "name": "Application Availibility"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "workbookcc47c3d2-4e49-4bc3-a478-9b5dc694587e",
+        "version": "MetricsItem/2.0",
+        "size": 0,
+        "chartType": 2,
+        "resourceType": "microsoft.insights/components",
+        "metricScope": 0,
+        "resourceIds": [
+          "/subscriptions/e0b9cada-61bc-4b5a-bd7a-52c606726b3b/resourceGroups/BCSAI2024-DEVOPS-STUDENTS-B-DEV/providers/Microsoft.Insights/components/dkumlin-appInsights-dev"
+        ],
+        "timeContext": {
+          "durationMs": 3600000
+        },
+        "metrics": [
+          {
+            "namespace": "microsoft.insights/components/kusto",
+            "metric": "microsoft.insights/components/kusto-Server-requests/duration",
+            "aggregation": 4,
+            "splitBy": null,
+            "columnName": "Server Response Time "
+          }
+        ],
+        "gridSettings": {
+          "rowLimit": 10000
+        }
+      },
+      "name": " Server Response Time "
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "workbook3121cb49-589a-43d0-87bb-6e9aa29c17d1",
+        "version": "MetricsItem/2.0",
+        "size": 0,
+        "chartType": 1,
+        "color": "redBright",
+        "resourceType": "microsoft.insights/components",
+        "metricScope": 0,
+        "resourceIds": [
+          "/subscriptions/e0b9cada-61bc-4b5a-bd7a-52c606726b3b/resourceGroups/BCSAI2024-DEVOPS-STUDENTS-B-DEV/providers/Microsoft.Insights/components/dkumlin-appInsights-dev"
+        ],
+        "timeContext": {
+          "durationMs": 3600000
+        },
+        "metrics": [
+          {
+            "namespace": "microsoft.insights/components/kusto",
+            "metric": "microsoft.insights/components/kusto-Failures-requests/failed",
+            "aggregation": 1,
+            "splitBy": null,
+            "columnName": " Failed Request Rate"
+          }
+        ],
+        "gridSettings": {
+          "rowLimit": 10000
+        }
+      },
+      "name": " Failed Request Rate"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "workbook8b89a15c-69e9-49a8-bef9-6978f55c0cbc",
+        "version": "MetricsItem/2.0",
+        "size": 0,
+        "chartType": 1,
+        "color": "orange",
+        "resourceType": "microsoft.insights/components",
+        "metricScope": 0,
+        "resourceIds": [
+          "/subscriptions/e0b9cada-61bc-4b5a-bd7a-52c606726b3b/resourceGroups/BCSAI2024-DEVOPS-STUDENTS-B-DEV/providers/Microsoft.Insights/components/dkumlin-appInsights-dev"
+        ],
+        "timeContext": {
+          "durationMs": 3600000
+        },
+        "metrics": [
+          {
+            "namespace": "microsoft.insights/components/kusto",
+            "metric": "microsoft.insights/components/kusto-Failures-exceptions/count",
+            "aggregation": 1,
+            "splitBy": null,
+            "columnName": "Exception Count"
+          }
+        ],
+        "gridSettings": {
+          "rowLimit": 10000
+        }
+      },
+      "name": "Exception Count"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "workbook5c64b0ae-d6bb-46ca-8a28-b5f186a3b48b",
+        "version": "MetricsItem/2.0",
+        "size": 0,
+        "chartType": 2,
+        "color": "blue",
+        "resourceType": "microsoft.insights/components",
+        "metricScope": 0,
+        "resourceIds": [
+          "/subscriptions/e0b9cada-61bc-4b5a-bd7a-52c606726b3b/resourceGroups/BCSAI2024-DEVOPS-STUDENTS-B-DEV/providers/Microsoft.Insights/components/dkumlin-appInsights-dev"
+        ],
+        "timeContext": {
+          "durationMs": 3600000
+        },
+        "metrics": [
+          {
+            "namespace": "microsoft.insights/components/kusto",
+            "metric": "microsoft.insights/components/kusto-Server-dependencies/duration",
+            "aggregation": 4,
+            "splitBy": null,
+            "columnName": "Dependency Duration"
+          }
+        ],
+        "gridSettings": {
+          "rowLimit": 10000
+        }
+      },
+      "name": "Dependency Duration"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "workbooke2d9ed41-4e94-494f-ba3a-0a5dff4b4a42",
+        "version": "MetricsItem/2.0",
+        "size": 0,
+        "chartType": 2,
+        "resourceType": "microsoft.insights/components",
+        "metricScope": 0,
+        "resourceIds": [
+          "/subscriptions/e0b9cada-61bc-4b5a-bd7a-52c606726b3b/resourceGroups/BCSAI2024-DEVOPS-STUDENTS-B-DEV/providers/Microsoft.Insights/components/dkumlin-appInsights-dev"
+        ],
+        "timeContext": {
+          "durationMs": 3600000
+        },
+        "metrics": [
+          {
+            "namespace": "microsoft.insights/components/kusto",
+            "metric": "microsoft.insights/components/kusto-Performance Counters-performanceCounters/processCpuPercentageTotal",
+            "aggregation": 4,
+            "splitBy": null,
+            "columnName": "CPU Usage"
+          }
+        ],
+        "gridSettings": {
+          "rowLimit": 10000
+        }
+      },
+      "name": "CPU Usage"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "workbook9af57f34-aef1-4fe0-8e30-480f9927664f",
+        "version": "MetricsItem/2.0",
+        "size": 0,
+        "chartType": 2,
+        "resourceType": "microsoft.insights/components",
+        "metricScope": 0,
+        "resourceIds": [
+          "/subscriptions/e0b9cada-61bc-4b5a-bd7a-52c606726b3b/resourceGroups/BCSAI2024-DEVOPS-STUDENTS-B-DEV/providers/Microsoft.Insights/components/dkumlin-appInsights-dev"
+        ],
+        "timeContext": {
+          "durationMs": 3600000
+        },
+        "metrics": [
+          {
+            "namespace": "microsoft.insights/components/kusto",
+            "metric": "microsoft.insights/components/kusto-Performance Counters-performanceCounters/processPrivateBytes",
+            "aggregation": 4,
+            "splitBy": null,
+            "columnName": "Memory Usage"
+          }
+        ],
+        "gridSettings": {
+          "rowLimit": 10000
+        }
+      },
+      "name": "Memory Usage"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "workbook769d0531-e6b4-4346-a8b5-88f0ff7ae36a",
+        "version": "MetricsItem/2.0",
+        "size": 0,
+        "chartType": 2,
+        "color": "brown",
+        "resourceType": "microsoft.insights/components",
+        "metricScope": 0,
+        "resourceIds": [
+          "/subscriptions/e0b9cada-61bc-4b5a-bd7a-52c606726b3b/resourceGroups/BCSAI2024-DEVOPS-STUDENTS-B-DEV/providers/Microsoft.Insights/components/dkumlin-appInsights-dev"
+        ],
+        "timeContext": {
+          "durationMs": 3600000
+        },
+        "metrics": [
+          {
+            "namespace": "microsoft.insights/components/kusto",
+            "metric": "microsoft.insights/components/kusto-Browser-browserTimings/totalDuration",
+            "aggregation": 4,
+            "splitBy": null,
+            "columnName": "Browser Page Load Time"
+          }
+        ],
+        "gridSettings": {
+          "rowLimit": 10000
+        }
+      },
+      "name": "Browser Page Load Time"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "workbook82a3cb15-802e-4731-af14-ccc93fc076db",
+        "version": "MetricsItem/2.0",
+        "size": 0,
+        "chartType": 2,
+        "color": "yellow",
+        "resourceType": "microsoft.insights/components",
+        "metricScope": 0,
+        "resourceIds": [
+          "/subscriptions/e0b9cada-61bc-4b5a-bd7a-52c606726b3b/resourceGroups/BCSAI2024-DEVOPS-STUDENTS-B-DEV/providers/Microsoft.Insights/components/dkumlin-appInsights-dev"
+        ],
+        "timeContext": {
+          "durationMs": 3600000
+        },
+        "metrics": [
+          {
+            "namespace": "microsoft.insights/components/kusto",
+            "metric": "microsoft.insights/components/kusto-Usage-users/count",
+            "aggregation": 5,
+            "splitBy": null,
+            "columnName": "Unique Users"
+          }
+        ],
+        "gridSettings": {
+          "rowLimit": 10000
+        }
+      },
+      "name": "Unique Users"
+    },
+    {
+      "type": 10,
+      "content": {
+        "chartId": "workbook7e542ff2-6302-4564-a58d-0c9ea3bdf6d6",
+        "version": "MetricsItem/2.0",
+        "size": 0,
+        "chartType": 2,
+        "resourceType": "microsoft.insights/components",
+        "metricScope": 0,
+        "resourceIds": [
+          "/subscriptions/e0b9cada-61bc-4b5a-bd7a-52c606726b3b/resourceGroups/BCSAI2024-DEVOPS-STUDENTS-B-DEV/providers/Microsoft.Insights/components/dkumlin-appInsights-dev"
+        ],
+        "timeContext": {
+          "durationMs": 3600000
+        },
+        "metrics": [
+          {
+            "namespace": "microsoft.insights/components/kusto",
+            "metric": "microsoft.insights/components/kusto-Server-requests/count",
+            "aggregation": 1,
+            "splitBy": null,
+            "columnName": "Request Rate"
+          }
+        ],
+        "gridSettings": {
+          "rowLimit": 10000
+        }
+      },
+      "name": "Request Rate"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "customMetrics\n| summarize AvgMetricValue = avg(value) by name\n",
+        "size": 0,
+        "title": "Custom Metric Monitoring",
+        "timeContext": {
+          "durationMs": 604800000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "piechart"
+      },
+      "name": "query - 25"
+    }
+  ],
+  "fallbackResourceIds": [
+    "/subscriptions/e0b9cada-61bc-4b5a-bd7a-52c606726b3b/resourceGroups/BCSAI2024-DEVOPS-STUDENTS-B-DEV/providers/Microsoft.Insights/components/dkumlin-appInsights-dev"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
