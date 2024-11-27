@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import AppAccounts from "../components/AppAccounts.vue";
+import Admin from "../components/Admin.vue";
 import Home from "../components/Home.vue";
 import Register from "../components/Register.vue";
 import Login from "../components/Login.vue";
@@ -28,6 +29,12 @@ const routes = [
     path: "/accounts",
     name: "AppAccounts",
     component: AppAccounts,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/admin",
+    name: "Admin",
+    component: Admin,
     meta: { requiresAuth: true },
   },
 ];
