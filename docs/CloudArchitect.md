@@ -45,15 +45,15 @@ The following functional requirements outline the behavior and features of the I
 
 #### FR06: Invalid Repeated Email Check
 **Requirement:** The system must reject accounts that are created with the same email as another.  
-**User Story:** As an admin, I want users who are creating two accounts to not be allowed the use of the same email when creating another one.  
+**User Story:** As an admin, I want users who are creating more than one user to not be allowed the use of the same email when creating another one.  
 - **Test:** [test_user_unique_email](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/unit/test_auth_model.py)  
-
+- **Test:** [test_register_duplicate_user](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py#test_register_duplicate_user)  
 ---
 
 #### FR07: Multiple accounts per User
 **Requirement:** The system must allow users to create more than one account under the assumption that they use different emails for the new accounts.  
 **User Story:** As a user, I want to ensure that I can register multiple bank accounts to the system so I can better handle my finances.  
-- **Test:** [test_register_duplicate_user](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py#test_register_duplicate_user)  
+
 
 ---
 
