@@ -27,9 +27,10 @@ class DevelopmentConfig(Config):
         SQLALCHEMY_DATABASE_URI = (
             "postgresql://{dbuser}:{dbpass}@{dbhost}/{dbname}".format(
                 dbuser=os.getenv("DBUSER"),
-                dbpass=credential.get_token(
-                    "https://ossrdbms-aad.database.windows.net"
-                ).token,
+                # dbpass=credential.get_token(
+                #     "https://ossrdbms-aad.database.windows.net"
+                # ).token,
+                dbpass=os.getenv("DBPASS"),
                 dbhost=os.getenv("DBHOST"),
                 dbname=os.getenv("DBNAME"),
             )
