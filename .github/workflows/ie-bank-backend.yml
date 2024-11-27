@@ -67,12 +67,6 @@ jobs:
             echo "username=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_USERNAME }} --vault-name ${{ env.KEY_VAULT_NAME_DEV }} --query value -o tsv)" >> $GITHUB_OUTPUT
             echo "password=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_PASSWORD0 }} --vault-name ${{ env.KEY_VAULT_NAME_DEV }} --query value -o tsv)" >> $GITHUB_OUTPUT
 
-      - name: Debug (remove in production)
-        run: |
-          echo "Registry server: ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}"
-          echo "Username is set: ${{ steps.acr-creds.outputs.username }}"
-          echo "Password is set: ${{ steps.acr-creds.outputs.password }}"
-
       - name: Docker Login
         uses: azure/docker-login@v2
         with:
