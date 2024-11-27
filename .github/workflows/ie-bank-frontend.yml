@@ -22,94 +22,8 @@ env:
   IMAGE_NAME: ie-bank-fe
 
 jobs:
-  # Docker Jobs
-  docker-build-dev:
-    runs-on: ubuntu-latest
-    environment: Development
-    outputs:
-      image-version: ${{ steps.image-version.outputs.version }}
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Set image version
-        id: image-version
-        run: echo "version=$(date +'%Y.%m.%d.%H.%M')" >> $GITHUB_OUTPUT
-      
-      - name: Debug - Print Variables (Dev)
-        run: |
-          echo "NODE_ENV: ${{ vars.NODE_ENV }}"
-          echo "VUE_APP_ROOT_API: ${{ vars.VUE_APP_ROOT_API }}"
-      
-      - name: Azure Login
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Docker login
-        uses: docker/login-action@v1
-        with:
-          registry: ${{ vars.DOCKER_REGISTRY_SERVER_URL }}
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
-      
-      - name: Build and push Docker image
-        env:
-          NODE_ENV: ${{ vars.NODE_ENV }}
-          VUE_APP_ROOT_API: ${{ vars.VUE_APP_ROOT_API }}
-        run: |
-          docker build ./frontend \
-            --build-arg NODE_ENV=$NODE_ENV \
-            --build-arg VUE_APP_ROOT_API=$VUE_APP_ROOT_API \
-            -t ${{ vars.DOCKER_REGISTRY_SERVER_URL }}/${{ env.IMAGE_NAME }}:${{ steps.image-version.outputs.version }} \
-            -t ${{ vars.DOCKER_REGISTRY_SERVER_URL }}/${{ env.IMAGE_NAME }}:latest
-          docker push ${{ vars.DOCKER_REGISTRY_SERVER_URL }}/${{ env.IMAGE_NAME }}:${{ steps.image-version.outputs.version }}
-          docker push ${{ vars.DOCKER_REGISTRY_SERVER_URL }}/${{ env.IMAGE_NAME }}:latest
-
-  docker-build-uat:
-    if: github.event_name == 'pull_request' && github.base_ref == 'main'
-    runs-on: ubuntu-latest
-    environment: UAT
-    outputs:
-      image-version: ${{ steps.image-version.outputs.version }}
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Set image version
-        id: image-version
-        run: echo "version=$(date +'%Y.%m.%d.%H.%M')" >> $GITHUB_OUTPUT
-      
-      - name: Debug - Print Variables (UAT)
-        run: |
-          echo "NODE_ENV: ${{ vars.NODE_ENV }}"
-          echo "VUE_APP_ROOT_API: ${{ vars.VUE_APP_ROOT_API }}"
-      
-      - name: Azure Login
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Docker login
-        uses: docker/login-action@v1
-        with:
-          registry: ${{ vars.DOCKER_REGISTRY_SERVER_URL }}
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
-      
-      - name: Build and push Docker image
-        env:
-          NODE_ENV: ${{ vars.NODE_ENV }}
-          VUE_APP_ROOT_API: ${{ vars.VUE_APP_ROOT_API }}
-        run: |
-          docker build ./frontend \
-            --build-arg NODE_ENV=$NODE_ENV \
-            --build-arg VUE_APP_ROOT_API=$VUE_APP_ROOT_API \
-            -t ${{ vars.DOCKER_REGISTRY_SERVER_URL }}/${{ env.IMAGE_NAME }}:${{ steps.image-version.outputs.version }} \
-            -t ${{ vars.DOCKER_REGISTRY_SERVER_URL }}/${{ env.IMAGE_NAME }}:latest
-          docker push ${{ vars.DOCKER_REGISTRY_SERVER_URL }}/${{ env.IMAGE_NAME }}:${{ steps.image-version.outputs.version }}
-          docker push ${{ vars.DOCKER_REGISTRY_SERVER_URL }}/${{ env.IMAGE_NAME }}:latest
-
   # Static Web App Jobs
-  static-deploy-dev:
+  build-deploy-dev:
     runs-on: ubuntu-latest
     environment: Development
     needs: docker-build-dev
@@ -136,7 +50,7 @@ jobs:
           NODE_ENV: ${{ vars.NODE_ENV }}
           VUE_APP_ROOT_API: ${{ vars.VUE_APP_ROOT_API }}
 
-  static-deploy-uat:
+  build-deploy-uat:
     if: github.event_name == 'pull_request' && github.base_ref == 'main'
     runs-on: ubuntu-latest
     environment: UAT
