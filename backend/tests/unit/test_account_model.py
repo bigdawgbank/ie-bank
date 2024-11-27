@@ -15,7 +15,7 @@ def test_create_object_account():
     assert account.country == 'Spain'
     assert account.currency == '€'
     assert account.account_number != None
-    assert account.get_balance() == 0.0
+    assert account.balance == 0.0
     assert account.status == 'Active'
 
 def test_create_account_in_database(testing_client):

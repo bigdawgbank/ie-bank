@@ -157,12 +157,12 @@ def delete_account(id):
     return jsonify(format_account(account)), 200
 
 
-def format_account(account):
+def format_account(account: Account):
     return {
         "id": account.id,
         "name": account.name,
         "account_number": account.account_number,
-        "balance": account.get_balance(),
+        "balance": account.balance,
         "currency": account.currency,
         "status": account.status,
         "country": account.country,

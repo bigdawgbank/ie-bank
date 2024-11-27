@@ -9,7 +9,7 @@ class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32), nullable=False)
     account_number = db.Column(db.String(20), nullable=False, unique=True)
-    _balance = db.Column(db.Float, nullable=False, default=0.0)
+    balance = db.Column(db.Float, nullable=False, default=0.0)
     currency = db.Column(db.String(1), nullable=False, default="€")
     status = db.Column(db.String(10), nullable=False, default="Active")
     country = db.Column(db.String(32), nullable=False)
@@ -32,24 +32,21 @@ class Account(db.Model):
             raise ValueError("Country cannot be empty.")
         self.country = country
         self.account_number = "".join(random.choices(string.digits, k=20))
-        self._balance = balance
+        self.balance = balance
         self.status = "Active"
         if user:
             self.user_id = user.id
     
-    def get_balance(self):
-        return self._balance
-    
     def withdraw(self, amount):
         if amount < 0:
             raise ValueError("Amount must be positive")
-        if self._balance < amount:
+        if self.balance < amount:
             raise ValueError("Insufficient funds")
-        self._balance -= amount
+        self.balance -= amount
     def deposit(self, amount):
         if amount < 0:
             raise ValueError("Amount must be positive")
-        self._balance += amount
+        self.balance += amount
         
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)

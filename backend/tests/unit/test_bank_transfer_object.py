@@ -18,8 +18,8 @@ def test_bank_transfer_object_process(testing_client):
             transfer = BankTransfer(from_account, to_account, 100.0)
             transfer_result = transfer.process_transfer()
             assert transfer_result == True
-            assert from_account.get_balance() == 900.0
-            assert to_account.get_balance() == 100.0
+            assert from_account.balance == 900.0
+            assert to_account.balance == 100.0
 
 
     
