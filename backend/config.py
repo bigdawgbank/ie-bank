@@ -16,6 +16,9 @@ class LocalConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///local.db"
     DEBUG = True
 
+class GithubCIConfig(Config):
+    SQLALCHEMY_DATABASE_URI = "sqlite:///local.db"
+    DEBUG = True
 
 # Use for both uat and dev
 class DevelopmentConfig(Config):
@@ -38,6 +41,7 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///local.db"
     DEBUG = True
+
 # Added custom config
 class UATConfig(Config):
     if os.getenv("ENV") == "uat":
