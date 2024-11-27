@@ -3,6 +3,7 @@ from functools import wraps
 
 from flask import jsonify, request
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+
 from iebank_api import app, bcrypt, db
 from iebank_api.models import Account, BankTransfer, Role, User
 
@@ -177,9 +178,6 @@ def delete_user(user_id):
         return jsonify({"error": "User not found"}), 404
 
     try:
-        # Delete all user's accounts first
-        user.accounts.delete()
-        # Then delete the user
         db.session.delete(user)
         db.session.commit()
 
@@ -282,7 +280,7 @@ def register():
         # Handle any other unexpected errors
         db.session.rollback()
         print(f"Registration error: {str(e)}")
-        return jsonify({"message": "Registration failed"}), 500
+        return jsonify({"error": "Registration failed"}), 500
 
 
 @app.route("/login", methods=["POST"])
@@ -294,7 +292,7 @@ def login():
     if user and bcrypt.check_password_hash(user.password_hash, password):
         access_token = create_access_token(identity=str(user.id))
         return jsonify({"token": access_token}), 200
-    return jsonify({"message": "Invalid credentials"}), 401
+    return jsonify({"error": "Invalid credentials"}), 401
 
 
 @app.route("/profile", methods=["GET"])
@@ -323,7 +321,7 @@ def create_account():
     data = request.json
 
     if not data:
-        return jsonify({"message": "Provide data"}), 400
+        return jsonify({"error": "Provide data"}), 400
 
     name = data.get("name")
     currency = data.get("currency")
