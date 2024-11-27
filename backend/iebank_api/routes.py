@@ -1,10 +1,10 @@
+from datetime import datetime, timezone
 from functools import wraps
 
 from flask import jsonify, request
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
-
 from iebank_api import app, bcrypt, db
-from iebank_api.models import Account, Role, User
+from iebank_api.models import Account, BankTransfer, Role, User
 
 
 def admin_required(f):
@@ -328,6 +328,7 @@ def create_account():
     name = data.get("name")
     currency = data.get("currency")
     country = data.get("country")
+    balance = data.get("balance")
 
     if not name:
         return jsonify({"error": "Name cannot be empty."}), 400
@@ -335,9 +336,11 @@ def create_account():
         return jsonify({"error": "Currency cannot be empty or None."}), 400
     if not country:
         return jsonify({"error": "Country cannot be empty."}), 400
+    if not balance:
+        balance = 0
 
     # Create account and associate with current user
-    account = Account(name, currency, country, user)
+    account = Account(name, currency, country, user, balance)
     db.session.add(account)
     db.session.commit()
 
@@ -361,6 +364,13 @@ def get_account(id):
     # Check if account belongs to current user
     if account.user_id != user_id:
         return jsonify({"error": "Unauthorized"}), 403
+    return jsonify(format_account(account)), 200
+
+
+@app.route("/accounts/<string:account_name>", methods=["GET"])
+@jwt_required()
+def get_account_by_name(account_name):
+    account = Account.query.filter_by(name=account_name).first()
     return jsonify(format_account(account)), 200
 
 
@@ -401,7 +411,7 @@ def delete_account(id):
     return jsonify(format_account(account)), 200
 
 
-def format_account(account):
+def format_account(account: Account):
     return {
         "id": account.id,
         "name": account.name,
@@ -413,3 +423,47 @@ def format_account(account):
         "created_at": account.created_at.isoformat(),
         "user_id": account.user_id,  # Added user_id to response
     }
+
+
+@app.route("/transfer", methods=["POST"])
+@jwt_required()
+def transfer_money():
+    user_id = int(get_jwt_identity())
+    user = db.session.get(User, user_id)
+
+    data = request.get_json()
+    from_account_id = data.get("sender_account_id")
+    to_account_id = data.get("recipient_account_id")
+    amount = data.get("amount")
+
+    if not from_account_id or not to_account_id or not amount:
+        return jsonify({"error": "Missing required fields"}), 400
+
+    from_account = db.session.get(Account, from_account_id)
+    to_account = db.session.get(Account, to_account_id)
+
+    if not from_account or not to_account:
+        return jsonify({"error": "Invalid account details"}), 400
+
+    if from_account.user_id != user.id:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    try:
+        bank_transfer = BankTransfer(from_account, to_account, amount)
+        bank_transfer.process_transfer()
+        return (
+            jsonify(
+                {
+                    "message": "Transfer successful",
+                    "receipt": {
+                        "sender_account_id": from_account.id,
+                        "recipient_account_id": to_account.id,
+                        "amount": amount,
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                    },
+                }
+            ),
+            200,
+        )
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400

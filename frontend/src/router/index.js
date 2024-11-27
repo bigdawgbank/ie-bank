@@ -5,6 +5,7 @@ import Admin from "../components/Admin.vue";
 import Home from "../components/Home.vue";
 import Register from "../components/Register.vue";
 import Login from "../components/Login.vue";
+import Transfer from "../components/Transfer.vue";
 import { authService } from "@/api";
 
 Vue.use(VueRouter);
@@ -35,6 +36,11 @@ const routes = [
     path: "/admin",
     name: "Admin",
     component: Admin,
+    meta: { requiresAuth: true },
+},{
+    path: "/transfer",
+    name: "Transfer",
+    component: Transfer,
     meta: { requiresAuth: true },
   },
 ];
