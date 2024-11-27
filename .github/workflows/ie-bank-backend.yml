@@ -70,8 +70,8 @@ jobs:
       - name: Debug (remove in production)
         run: |
           echo "Registry server: ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}"
-          echo "Username is set: ${{ steps.acr-creds.outputs.username != '' }}"
-          echo "Password is set: ${{ steps.acr-creds.outputs.password != '' }}"
+          echo "Username is set: ${{ steps.acr-creds.outputs.username }}"
+          echo "Password is set: ${{ steps.acr-creds.outputs.password }}"
 
       - name: Docker Login
         uses: azure/docker-login@v2
