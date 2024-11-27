@@ -30,6 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ENV: ghci
+      PYTHONPATH: backend
     outputs:
       image-version: ${{ steps.image-version.outputs.version }}
     steps:
@@ -37,11 +38,6 @@ jobs:
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v3
-        with:
-          python-version: "3.11"
-
-      - name: Upgrade pip
-        run: python -m pip install --upgrade pip
 
       - name: Install dependencies
         run: pip install -r backend/requirements.txt
