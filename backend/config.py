@@ -16,6 +16,11 @@ class LocalConfig(Config):
     DEBUG = True
 
 
+class GithubCIConfig(Config):
+    SQLALCHEMY_DATABASE_URI = "sqlite:///test.db"
+    DEBUG = True
+
+
 # Use for both uat and dev
 class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = "postgresql://{dbuser}:{dbpass}@{dbhost}/{dbname}".format(
