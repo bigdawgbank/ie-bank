@@ -12,6 +12,14 @@
             "type": "npm",
             "script": "serve",
             "isBackground": true
+        },
+        {
+            "type": "npm",
+            "script": "build",
+            "group": "build",
+            "problemMatcher": [],
+            "label": "npm: build",
+            "detail": "vue-cli-service build"
         }
     ]
 }

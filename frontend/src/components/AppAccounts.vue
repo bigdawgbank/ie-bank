@@ -32,8 +32,17 @@
             class="btn btn-primary btn-sm"
             v-b-modal.transfer-modal
           >
-            Transfer Money
+            Transfer between my accounts
           </button>
+
+          <button
+            type="button"
+            class="btn btn-primary btn-sm"
+            v-b-modal.wiretransfer-modal
+          >
+            Wire Transfer
+          </button>
+
           <br /><br />
           <table class="table table-hover">
             <thead>
@@ -192,13 +201,24 @@
       <b-modal
         ref="transferModal"
         id="transfer-modal"
-        title="Transfer Money"
+        title="Transfer between my accounts"
         hide-backdrop
         hide-footer
       >
         <Transfer @transfer-completed="handleTransferComplete" />
       </b-modal>
       <!-- End of Modal for Transfer Money-->
+      <!-- Start of Modal for Wire Transfer-->
+      <b-modal
+        ref="wireTransferModal"
+        id="wiretransfer-modal"
+        title="Wire Transfer"
+        hide-backdrop
+        hide-footer
+      >
+        <WireTransfer @transfer-completed="handleTransferComplete" />
+      </b-modal>
+      <!-- End of Modal for Wire Transfer-->
     </div>
   </div>
 </template>
@@ -206,11 +226,13 @@
 <script>
 import { accountService, authService } from "../api"; // Import your API client
 import Transfer from "./Transfer.vue"; // Import the Transfer component
+import WireTransfer from "./WireTransfer.vue"; // Import the WireTransfer component
 
 export default {
   name: "AppAccounts",
   components: {
     Transfer,
+    WireTransfer,
   },
   data() {
     return {
@@ -235,7 +257,7 @@ export default {
     shouldRefreshAccounts: {
       async handler(newValue) {
         if (newValue) {
-          await this.getAccounts();
+          await this.fetchAccounts();
           this.shouldRefreshAccounts = false;
         }
       },
@@ -246,9 +268,9 @@ export default {
     handleTransferComplete() {
       this.shouldRefreshAccounts = true;
     },
-    async getAccounts() {
+    async fetchAccounts() {
       try {
-        const response = await accountService.getAccounts();
+        const response = await accountService.getUserAccounts();
         this.accounts = response.accounts;
       } catch (error) {
         console.error("Failed to fetch accounts:", error);
@@ -261,6 +283,7 @@ export default {
 
         this.message = "Account Created successfully!";
         this.showMessage = true;
+        this.shouldRefreshAccounts = true;
         setTimeout(() => {
           this.showMessage = false;
         }, 3000);
@@ -275,6 +298,7 @@ export default {
 
         this.message = "Account Updated successfully!";
         this.showMessage = true;
+        this.shouldRefreshAccounts = true;
         setTimeout(() => {
           this.showMessage = false;
         }, 3000);
@@ -289,6 +313,7 @@ export default {
 
         this.message = "Account Deleted successfully!";
         this.showMessage = true;
+        this.shouldRefreshAccounts = true;
         setTimeout(() => {
           this.showMessage = false;
         }, 3000);
@@ -353,7 +378,7 @@ export default {
 
   // Lifecycle hooks
   created() {
-    this.getAccounts();
+    this.fetchAccounts();
   },
 };
 </script>
