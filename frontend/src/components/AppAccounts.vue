@@ -15,11 +15,10 @@
           <h1>Accounts</h1>
           <hr />
           <br />
-          <!-- Allert Message -->
-          <b-alert v-if="showMessage" variant="success" show>{{
-            message
-          }}</b-alert>
-          <!-- b-alert v-if="error" variant="danger" show>{{ error }}</b-alert-->
+          <!-- Alert Message -->
+          <b-alert v-if="showMessage" variant="success" show>
+            {{ message }}
+          </b-alert>
 
           <button
             type="button"
@@ -27,6 +26,13 @@
             v-b-modal.account-modal
           >
             Create Account
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary btn-sm"
+            v-b-modal.transfer-modal
+          >
+            Transfer Money
           </button>
           <br /><br />
           <table class="table table-hover">
@@ -122,7 +128,7 @@
             </b-form-input>
           </b-form-group>
           <b-form-group
-            id="form-currency-group"
+            id="form-country-group"
             label="Country:"
             label-for="form-country-input"
           >
@@ -130,11 +136,27 @@
               id="form-country-input"
               type="text"
               v-model="createAccountForm.country"
-              placeholder="Africa"
+              placeholder="Your Country"
               required
             >
             </b-form-input>
           </b-form-group>
+
+          <b-form-group
+            id="form-balance-group"
+            label="Balance:"
+            label-for="form-balance-input"
+          >
+            <b-form-input
+              id="form-balance-input"
+              type="text"
+              v-model="createAccountForm.balance"
+              placeholder="0"
+              required
+            >
+            </b-form-input>
+          </b-form-group>
+
           <b-button type="submit" variant="outline-info">Submit</b-button>
         </b-form>
       </b-modal>
@@ -166,14 +188,30 @@
         </b-form>
       </b-modal>
       <!-- End of Modal for Edit Account-->
+      <!-- Start of Modal for Transfer Money-->
+      <b-modal
+        ref="transferModal"
+        id="transfer-modal"
+        title="Transfer Money"
+        hide-backdrop
+        hide-footer
+      >
+        <Transfer @transfer-completed="handleTransferComplete" />
+      </b-modal>
+      <!-- End of Modal for Transfer Money-->
     </div>
   </div>
 </template>
+
 <script>
 import { accountService, authService } from "../api"; // Import your API client
+import Transfer from "./Transfer.vue"; // Import the Transfer component
 
 export default {
   name: "AppAccounts",
+  components: {
+    Transfer,
+  },
   data() {
     return {
       accounts: [],
@@ -181,6 +219,7 @@ export default {
         name: "",
         currency: "",
         country: "",
+        balance: "",
       },
       editAccountForm: {
         id: "",
@@ -188,28 +227,38 @@ export default {
       },
       showMessage: false,
       message: "",
+      shouldRefreshAccounts: false,
     };
   },
+  watch: {
+    // Watch for changes that should trigger account refresh
+    shouldRefreshAccounts: {
+      async handler(newValue) {
+        if (newValue) {
+          await this.getAccounts();
+          this.shouldRefreshAccounts = false;
+        }
+      },
+      immediate: false, // Don't run immediately on component creation
+    },
+  },
   methods: {
-    // Get all accounts
+    handleTransferComplete() {
+      this.shouldRefreshAccounts = true;
+    },
     async getAccounts() {
       try {
         const response = await accountService.getAccounts();
-        console.log(response);
         this.accounts = response.accounts;
       } catch (error) {
         console.error("Failed to fetch accounts:", error);
-        // Optionally show error message to user
       }
     },
 
-    // Create new account
     async createAccount(payload) {
       try {
         await accountService.createAccount(payload);
-        await this.getAccounts(); // Refresh the list
 
-        // Show success message
         this.message = "Account Created successfully!";
         this.showMessage = true;
         setTimeout(() => {
@@ -217,17 +266,13 @@ export default {
         }, 3000);
       } catch (error) {
         console.error("Failed to create account:", error);
-        // Optionally show error message to user
       }
     },
 
-    // Update account
     async updateAccount(payload, accountId) {
       try {
         await accountService.updateAccount(accountId, payload);
-        await this.getAccounts(); // Refresh the list
 
-        // Show success message
         this.message = "Account Updated successfully!";
         this.showMessage = true;
         setTimeout(() => {
@@ -235,17 +280,13 @@ export default {
         }, 3000);
       } catch (error) {
         console.error("Failed to update account:", error);
-        // Optionally show error message to user
       }
     },
 
-    // Delete account
     async deleteAccount(accountId) {
       try {
         await accountService.deleteAccount(accountId);
-        await this.getAccounts(); // Refresh the list
 
-        // Show success message
         this.message = "Account Deleted successfully!";
         this.showMessage = true;
         setTimeout(() => {
@@ -253,7 +294,6 @@ export default {
         }, 3000);
       } catch (error) {
         console.error("Failed to delete account:", error);
-        // Optionally show error message to user
       }
     },
 
@@ -266,16 +306,19 @@ export default {
       }
     },
 
-    // Initialize forms empty
     initForm() {
-      this.createAccountForm.name = "";
-      this.createAccountForm.currency = "";
-      this.createAccountForm.country = "";
-      this.editAccountForm.id = "";
-      this.editAccountForm.name = "";
+      this.createAccountForm = {
+        name: "",
+        currency: "",
+        country: "",
+        balance: 0,
+      };
+      this.editAccountForm = {
+        id: "",
+        name: "",
+      };
     },
 
-    // Handle submit event for create account
     async onSubmit(e) {
       e.preventDefault();
       this.$refs.addAccountModal.hide();
@@ -284,13 +327,13 @@ export default {
         name: this.createAccountForm.name,
         currency: this.createAccountForm.currency,
         country: this.createAccountForm.country,
+        balance: this.createAccountForm.balance,
       };
 
       await this.createAccount(payload);
       this.initForm();
     },
 
-    // Handle submit event for edit account
     async onSubmitUpdate(e) {
       e.preventDefault();
       this.$refs.editAccountModal.hide();
@@ -303,20 +346,32 @@ export default {
       this.initForm();
     },
 
-    // Handle edit button
     editAccount(account) {
       this.editAccountForm = account;
-    },
-
-    // Handle Delete button
-    async handleDelete(account) {
-      await this.deleteAccount(account.id);
     },
   },
 
   // Lifecycle hooks
-  async created() {
-    await this.getAccounts();
+  created() {
+    this.getAccounts();
   },
 };
 </script>
+
+<style scoped>
+.vertical-center {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.card {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+</style>
+

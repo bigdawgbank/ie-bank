@@ -49,6 +49,7 @@ export const authService = {
 
 export const accountService = {
   async getAccounts() {
+    // alert("getAccounts");
     try {
       const response = await api.get("/accounts");
       return response.data;
@@ -87,6 +88,17 @@ export const accountService = {
   async deleteAccount(id) {
     try {
       const response = await api.delete(`/accounts/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};
+
+export const transferService = {
+  async transferMoney(transferData) {
+    try {
+      const response = await api.post("/transfer", transferData);
       return response.data;
     } catch (error) {
       throw error.response.data;
