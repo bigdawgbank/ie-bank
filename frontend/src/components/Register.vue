@@ -64,6 +64,21 @@
                   </small>
                 </b-form-group>
 
+                <b-form-group
+                  id="form-confirm-password-group"
+                  label="Confirm Password:"
+                  label-for="form-confirm-password-input"
+                >
+                  <b-form-input
+                    id="form-confirm-password-input"
+                    v-model="registerForm.confirmPassword"
+                    type="password"
+                    placeholder="Confirm your password"
+                    required
+                  >
+                  </b-form-input>
+                </b-form-group>
+
                 <div class="text-center">
                   <b-button type="submit" variant="success" class="w-100">
                     Register
@@ -99,6 +114,7 @@ export default {
         username: "",
         email: "",
         password: "",
+        confirmPassword: "",
       },
       showMessage: false,
       message: "",
@@ -119,6 +135,9 @@ export default {
       if (!/[0-9]/.test(this.registerForm.password)) {
         throw new Error("Password must contain at least one number");
       }
+      if (this.registerForm.password !== this.registerForm.confirmPassword) {
+        throw new Error("Passwords do not match");
+      }
     },
 
     async onSubmit(e) {
@@ -127,10 +146,12 @@ export default {
       try {
         // Validate password
         this.validatePassword();
+
         const formData = new FormData();
         formData.append("username", this.registerForm.username);
         formData.append("email", this.registerForm.email);
         formData.append("password", this.registerForm.password);
+        // Note: confirmPassword is not sent to the backend
 
         // Send registration request
         await authService.register(formData);
