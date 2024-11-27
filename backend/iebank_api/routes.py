@@ -1,8 +1,245 @@
+from functools import wraps
+
 from flask import jsonify, request
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 
 from iebank_api import app, bcrypt, db
-from iebank_api.models import Account, User
+from iebank_api.models import Account, Role, User
+
+
+def admin_required(f):
+    @wraps(f)
+    @jwt_required()
+    def decorated_function(*args, **kwargs):
+        user_id = int(get_jwt_identity())
+        current_user = db.session.get(User, user_id)
+
+        if not current_user or current_user.role != Role.ADMIN:
+            return jsonify({"error": "Admin privileges required"}), 403
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+
+# Get all users (Admin only)
+@app.route("/users", methods=["GET"])
+@admin_required
+def get_all_users():
+    users = db.session.query(User).all()
+    return (
+        jsonify(
+            {
+                "users": [
+                    {
+                        "id": user.id,
+                        "username": user.username,
+                        "email": user.email,
+                        "role": user.role,
+                        "account_count": user.accounts.count(),
+                    }
+                    for user in users
+                ]
+            }
+        ),
+        200,
+    )
+
+
+# Get specific user details (Admin only)
+@app.route("/users/<int:user_id>", methods=["GET"])
+@admin_required
+def get_user_details(user_id):
+    user = db.session.get(User, user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    return (
+        jsonify(
+            {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "role": user.role,
+                "accounts": [
+                    {
+                        "id": account.id,
+                        "name": account.name,
+                        "balance": account.balance,
+                        "currency": account.currency,
+                        "status": account.status,
+                        "country": account.country,
+                        "created_at": account.created_at.isoformat(),
+                    }
+                    for account in user.get_accounts()
+                ],
+            }
+        ),
+        200,
+    )
+
+
+# Create new user (Admin only)
+@app.route("/users", methods=["POST"])
+@admin_required
+def create_user():
+    data = request.json
+
+    try:
+        new_user = User(
+            username=data["username"],
+            email=data["email"],
+            password=data["password"],
+            role=Role.USER.value,
+        )
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        return (
+            jsonify(
+                {
+                    "message": "User created successfully",
+                    "user": {
+                        "id": new_user.id,
+                        "username": new_user.username,
+                        "email": new_user.email,
+                        "role": new_user.role,
+                    },
+                }
+            ),
+            201,
+        )
+
+    except ValueError as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error creating user: {str(e)}")
+        return jsonify({"error": "Failed to create user"}), 500
+
+
+# Update user (Admin only)
+@app.route("/users/<int:user_id>", methods=["PUT"])
+@admin_required
+def update_user(user_id):
+    user = db.session.get(User, user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    data = request.json
+    try:
+        if "username" in data:
+            user.username = data["username"]
+        if "email" in data:
+            user.email = data["email"]
+        if "password" in data:
+            user.set_password(data["password"])
+        if "role" in data:
+            user.role = data["role"]
+
+        db.session.commit()
+
+        return (
+            jsonify(
+                {
+                    "message": "User updated successfully",
+                    "user": {
+                        "id": user.id,
+                        "username": user.username,
+                        "email": user.email,
+                        "role": user.role,
+                    },
+                }
+            ),
+            200,
+        )
+
+    except ValueError as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error updating user: {str(e)}")
+        return jsonify({"error": "Failed to update user"}), 500
+
+
+# Delete user (Admin only)
+@app.route("/users/<int:user_id>", methods=["DELETE"])
+@admin_required
+def delete_user(user_id):
+    current_admin_id = int(get_jwt_identity())
+    if current_admin_id == user_id:
+        return jsonify({"error": "Cannot delete your own admin account"}), 400
+
+    user = db.session.get(User, user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    try:
+        # Delete all user's accounts first
+        user.accounts.delete()
+        # Then delete the user
+        db.session.delete(user)
+        db.session.commit()
+
+        return (
+            jsonify(
+                {
+                    "message": "User and all associated accounts deleted successfully",
+                    "deleted_user_id": user_id,
+                }
+            ),
+            200,
+        )
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error deleting user: {str(e)}")
+        return jsonify({"error": "Failed to delete user"}), 500
+
+
+# Change user's account status (Admin only)
+@app.route("/users/<int:user_id>/accounts/<int:account_id>/status", methods=["PATCH"])
+@admin_required
+def update_account_status(user_id, account_id):
+    user = db.session.get(User, user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    account = (
+        db.session.query(Account).filter_by(id=account_id, user_id=user_id).first()
+    )
+    if not account:
+        return jsonify({"error": "Account not found"}), 404
+
+    data = request.json
+    new_status = data.get("status")
+    if not new_status:
+        return jsonify({"error": "New status is required"}), 400
+
+    try:
+        account.status = new_status
+        db.session.commit()
+
+        return (
+            jsonify(
+                {
+                    "message": "Account status updated successfully",
+                    "account": {
+                        "id": account.id,
+                        "name": account.name,
+                        "status": account.status,
+                    },
+                }
+            ),
+            200,
+        )
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error updating account status: {str(e)}")
+        return jsonify({"error": "Failed to update account status"}), 500
 
 
 @app.route("/register", methods=["POST"])
@@ -58,6 +295,24 @@ def login():
         access_token = create_access_token(identity=str(user.id))
         return jsonify({"token": access_token}), 200
     return jsonify({"message": "Invalid credentials"}), 401
+
+
+@app.route("/profile", methods=["GET"])
+@jwt_required()
+def get_profile():
+    user_id = int(get_jwt_identity())
+    user = db.session.get(User, user_id)
+    return (
+        jsonify(
+            {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "role": user.role,  # Make sure to include the role
+            }
+        ),
+        200,
+    )
 
 
 @app.route("/accounts", methods=["POST"])
@@ -158,21 +413,3 @@ def format_account(account):
         "created_at": account.created_at.isoformat(),
         "user_id": account.user_id,  # Added user_id to response
     }
-
-
-# Optional: Add route to get user profile with accounts
-@app.route("/profile", methods=["GET"])
-@jwt_required()
-def get_profile():
-    user_id = int(get_jwt_identity())
-    user = db.session.get(User, user_id)
-    return (
-        jsonify(
-            {
-                "id": user.id,
-                "username": user.username,
-                "email": user.email,
-            }
-        ),
-        200,
-    )

@@ -1,6 +1,9 @@
 import random
 import string
 from datetime import datetime, timezone
+from enum import Enum
+
+from sqlalchemy import Enum as SQLAlchemyEnum
 
 from iebank_api import bcrypt, db
 
@@ -38,14 +41,20 @@ class Account(db.Model):
             self.user_id = user.id
 
 
+class Role(str, Enum):
+    ADMIN = "admin"
+    USER = "user"
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
+    role = db.Column(SQLAlchemyEnum(Role), nullable=False, default=Role.USER)
     accounts = db.relationship("Account", backref="owner", lazy="dynamic")
 
-    def __init__(self, username, email, password):
+    def __init__(self, username, email, password, role="user"):
         # Validate username
         if not username or username.strip() == "":
             raise ValueError("Username cannot be empty")
@@ -73,6 +82,7 @@ class User(db.Model):
         self.username = username
         self.email = email
         self.set_password(password)
+        self.role = role
 
     def set_password(self, password):
         """Set hashed password."""
