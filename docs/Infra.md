@@ -8,8 +8,6 @@ The Cloud Infrastructure Developer is responsible for designing and implementing
 
 ### 1. Description of Modularization Strategy
 - **Description**: Document the modularization strategy employed in the infrastructure design. Include details on how infrastructure components are broken into reusable and maintainable modules, and how this strategy improves scalability, reliability, and maintainability.
-- **Deliverables**:
-  - [Link to Modularization Strategy Section](#)
 
 ---
 
@@ -25,20 +23,10 @@ The Cloud Infrastructure Developer is responsible for designing and implementing
   - **Azure Application Insights**: Application performance monitoring.
   - **Azure Static Web Apps**: Hosting of static frontend resources.
   - **Azure Container Registry**: Storage and management of container images.
-- **Deliverables**:
-  - [Link to Azure Services Section](#)
 
 ---
 
 ## Infrastructure Release Strategy
-
-### 1. Description of the Infrastructure Release Strategy
-- **Description**: Document the infrastructure release strategy, including the use of IaC tools (e.g., Bicep templates, ARM templates) and GitHub Actions workflows. Detail the process for provisioning and updating infrastructure in each environment:
-  - **Development Environment**: Describe experimental deployments and testing infrastructure configurations.
-  - **UAT Environment**: Explain the controlled deployment of infrastructure for stakeholder testing.
-  - **Production Environment**: Provide a strategy for deploying final, stable infrastructure to support the live application.
-  - Highlight rollback mechanisms and disaster recovery strategies for infrastructure deployments.
-- **Deliverables**:
-  - [Link to Infrastructure Release Strategy Section](#)
+[Infrastructure Release Strategy ](./CloudArchitect.md#infrastructure-release-strategy)
 
 ---

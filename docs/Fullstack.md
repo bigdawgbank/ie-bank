@@ -36,7 +36,7 @@ The Full Stack Engineer is responsible for designing and implementing cloud solu
 ---
 
 ## Release Strategy
-- [Release Strategy](./CloudArchitect.md)
+- [Release Strategy](./CloudArchitect.md#1-release-strategy)
 
 ---
 
