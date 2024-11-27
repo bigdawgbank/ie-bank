@@ -39,30 +39,30 @@ The following functional requirements outline the behavior and features of the I
 #### FR05: New User Registration
 **Requirement:** New bank users must be able to register using a registration form (username, password, and password confirmation). A default account with a random account number must be created upon successful registration.  
 **User Story:** As a new user, I want to register for an account so that I can access the system.
-**Test:** [test_create_user](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/unit/test_auth_model.py) 
+- **Test:** [test_create_user](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/unit/test_auth_model.py) 
 
 ---
 
 #### FR06: Invalid Repeated Email Check
 **Requirement:** The system must reject accounts that are created with the same email as another.  
 **User Story:** As an admin, I want users who are creating two accounts to not be allowed the use of the same email when creating another one.  
-**Test:** [test_user_unique_email](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/unit/test_auth_model.py)  
+- **Test:** [test_user_unique_email](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/unit/test_auth_model.py)  
 
 ---
 
 #### FR07: Multiple accounts per User
 **Requirement:** The system must allow users to create more than one account under the assumption that they use different emails for the new accounts.  
 **User Story:** As a user, I want to ensure that I can register multiple bank accounts to the system so I can better handle my finances.  
-**Test:** [test_register_duplicate_user](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py#test_register_duplicate_user)  
+- **Test:** [test_register_duplicate_user](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py#test_register_duplicate_user)  
 
 ---
 
 #### FR08: Secure User Login
 **Requirement:** Bank users must log in securely using their username and password to access their accounts.  
 **User Story:** As a user, I want to log in securely so that I can access my account.
-**Test:** [test_protected_route](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py) 
-**Test:** [test_authentication_required](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py) 
-**Test:** [test_login_failure](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py)  
+- **Test:** [test_protected_route](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py)
+- **Test:** [test_authentication_required](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py) 
+- **Test:** [test_login_failure](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py)  
 
 ---
 
@@ -76,15 +76,15 @@ The following functional requirements outline the behavior and features of the I
 #### FR10: Money Transfer
 **Requirement:** Bank users must be able to transfer money to other accounts by entering the recipient’s account number and transfer amount. The transfer amount must not exceed the available balance.  
 **User Story:** As a user, I want to transfer money to other accounts so that I can make payments easily.  
-**Test** [test_bank_transfer_process_route](https://github.com/bigdawgbank/ie-bank/blob/feat/money-transfer/backend/tests/functional/test_routes.py#test_bank_transfer_process_route)
-**Test** [test_bank_transfer_object_process](https://github.com/bigdawgbank/ie-bank/blob/feat/money-transfer/backend/tests/unit/test_bank_transfer_object.py)
+- **Test** [test_bank_transfer_process_route](https://github.com/bigdawgbank/ie-bank/blob/feat/money-transfer/backend/tests/functional/test_routes.py#test_bank_transfer_process_route)
+- **Test** [test_bank_transfer_object_process](https://github.com/bigdawgbank/ie-bank/blob/feat/money-transfer/backend/tests/unit/test_bank_transfer_object.py)
 
 ---
 
 #### FR11: Secure Password Handling
 **Requirement:** All user passwords must be hashed and stored securely to prevent data breaches.  
 **User Story:** As a developer, I want all passwords to be securely hashed so that user data is protected from breaches.  
-**Test:** [test_create_user](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/unit/test_auth_model.py)  
+- **Test:** [test_create_user](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/unit/test_auth_model.py)  
 
 ---
 
@@ -109,7 +109,7 @@ The following non-functional requirements define the performance, security, and 
 
 #### NFR01: Basic Authentication
 **Requirement:** The web application must implement a basic authentication system requiring username and password login. Credentials must be hashed and encrypted in the database.  
-**Test:** [test_authentication_required](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py)  
+- **Test:** [test_authentication_required](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py)  
 
 ---
 
