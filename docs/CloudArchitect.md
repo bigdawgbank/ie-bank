@@ -240,7 +240,7 @@ We will use Azure PostgreSQL Flexible Server as our managed database service for
 
 ---
 
-### Static Website
+### Static Web App 
 #### Description
 We use the Azure Static Web Apps to host the Vue.js frontend of our banking application, ensuring fast and reliable delivery of the user interface.
 
@@ -258,7 +258,7 @@ We use the Azure Static Web Apps to host the Vue.js frontend of our banking appl
 
 ---
 
-### Azure Container Registry
+### Azure Container Registry(ACR)
 #### Description
 We will use the Azure Container Registry(ACR) to effectively store and manage the Docker images used for our backend application.
 
@@ -356,10 +356,7 @@ We will use Azure Application Insights to provide us with real-time monitoring a
 
 ---
 
-## Testing
-
-### Functional
-### Non-Functional
+## Test Driven Design(TDD)
 
 ---
 
@@ -390,6 +387,28 @@ We will use Azure Application Insights to provide us with real-time monitoring a
 
 ## 2. Use Case and Sequential Model Design
 - **Description**: Update the use case and sequential model diagrams for each use case in the application.
+
+| Use Case Name                       | **Create a New Bank Account**                                         | **Manage Bank Users (Admin)**                               | **View Accounts and Transactions**                           |
+|------------------------|----------------------------------------------------------------------|-----------------------------------------------------------|-------------------------------------------------------------|
+| **Description**        | A user creates a new account in the system.                         | The admin creates, updates, deletes, and views users.      | Users view details of their accounts, including transactions. |
+| **Actors**             | Bank User                                                          | Admin User                                                | Bank User                                                   |
+| **Primary Flow**       | 1. User navigates to the registration page.<br>2. Fills out the registration form with details.<br>3. Submits the form.<br>4. System creates a default account for the user. | 1. Admin logs into the admin portal.<br>2. Selects "Manage Users."<br>3. Performs actions such as creating, updating, or deleting users. | 1. User logs in.<br>2. Navigates to the "My Accounts" section.<br>3. Selects an account to view transaction history.<br>4. Transaction details are displayed. |
+| **Alternate Flows**    | 1. Missing required fields: The system prompts the user to complete the form.<br>2. Invalid email format: System rejects submission with an error message. | 1. Invalid data provided: System rejects changes and shows error.<br>2. Unauthorized action: System restricts operations for unauthorized accounts. | 1. User has no accounts: System displays "No accounts found" message.<br>2. Transaction list is empty: System shows an appropriate message. |
+| **System Requirements**| - User details must be validated.<br>- Account number must be unique.<br>- Default balance set to 0. | - Admin role must be validated for access.<br>- Actions must trigger logs for auditing purposes. | - Transactions must be linked to accounts.<br>- Secure access to account data is required. |
+
+
+### INPUT SEQUENTIAL MODELS HERE FOR FIRST 3 USE CASES
+
+|           Use Case Name             | **Transfer Funds**                                                  | **Admin Role Assignment**                                  | **User Login**                                              |
+|------------------------|----------------------------------------------------------------------|-----------------------------------------------------------|-------------------------------------------------------------|
+| **Description**        | Users transfer funds between accounts within the bank.             | Admin assigns roles and permissions to users.             | A registered user securely logs into their account.         |
+| **Actors**             | Bank User                                                          | Admin User                                                | Bank User                                                   |
+| **Primary Flow**       | 1. User logs in.<br>2. Navigates to the "Transfer Funds" section.<br>3. Provides recipient account number and amount.<br>4. Submits the transfer request.<br>5. System validates and completes the transfer. | 1. Admin logs in and navigates to "Manage Roles."<br>2. Selects a user and assigns roles and permissions.<br>3. Confirms the action.<br>4. System applies and logs the changes. | 1. User navigates to the login page.<br>2. Provides credentials.<br>3. System validates credentials.<br>4. On success, user is redirected to the dashboard.<br>5. Secure session is created for the user. |
+| **Alternate Flows**    | 1. Insufficient funds: System rejects transfer and notifies the user.<br>2. Invalid account number: System rejects the request.<br>3. Transfer limit exceeded: User is notified and action is denied. | 1. Invalid role: System rejects the request with an error message.<br>2. Unauthorized action: Non-admin users are restricted from accessing this functionality. | 1. Invalid credentials: System denies access and shows an error.<br>2. Account locked: System notifies the user and suggests contacting support.<br>3. Session timeout: System logs out the user after inactivity. |
+| **System Requirements**| - Validate recipient account before transfer.<br>- Real-time balance updates.<br>- Log all transactions for auditing purposes. | - Role-based access control must be enforced.<br>- Changes to roles must be logged.<br>- Admin validation required. | - Passwords must be securely hashed.<br>- Session management must enforce expiration policies. |
+
+### INPUT SEQUENTIAL MODELS HERE FOR SECOND 3 USE CASES
+
 
 ## 3. Entity Relationship Diagram
 - **Description**: Update and document the Entity Relationship Diagram for the database.
