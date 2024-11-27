@@ -131,3 +131,35 @@ def test_delete_account(testing_client, register_and_authenticate):
     headers = {"Authorization": f"Bearer {register_and_authenticate}"}
     response = testing_client.delete('/accounts/1', headers=headers)
     assert response.status_code == 200
+
+def test_bank_transfer_process_route(testing_client, register_and_authenticate):
+    """
+    GIVEN a Flask application
+    WHEN the '/transfer' page is requested (POST)
+    THEN check the response is valid
+    """
+    headers = {"Authorization": f"Bearer {register_and_authenticate}"}
+    sender_account_name = "Adrian checkin account"
+    recipient_account_name = "Daniel checkin account"
+    response = testing_client.post("/accounts", 
+                                  json={"name": sender_account_name, "currency": "€", "country": "Spain", "balance": 1000.0}, 
+                                  headers=headers)
+    response = testing_client.post("/accounts", 
+                                  json={"name": recipient_account_name, "currency": "€", "country": "Spain", "balance": 0.0}, 
+                                  headers=headers)
+
+    response_sender_account = testing_client.get(f"/accounts/{sender_account_name}", headers=headers)
+    # Parse the JSON response
+    sender_account_data = response_sender_account.get_json()
+    # Extract the account ID
+    from_account_id = sender_account_data['id']
+
+    
+    response_recipient_account = testing_client.get(f"/accounts/{recipient_account_name}", headers=headers)
+    # Parse the JSON response
+    recipient_account_data = response_recipient_account.get_json()
+    # Extract the account ID
+    to_account_id = recipient_account_data['id']
+
+    response = testing_client.post('/transfer', json={'sender_account_id': from_account_id, 'recipient_account_id': to_account_id, 'amount': 100.0}, headers=headers)
+    assert response.status_code == 200

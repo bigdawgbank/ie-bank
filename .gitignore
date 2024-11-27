@@ -145,7 +145,12 @@ frontend/.pnp.*
 # Backend (Flask) ignores
 backend/.venv/
 backend/__pycache__/
+*.pyc
 backend/.env
 backend/.vscode
 backend/.db/
 backend/instance/
+
+# Python cache
+*.pyc
+__pycache__/

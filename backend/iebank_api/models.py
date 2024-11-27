@@ -9,7 +9,7 @@ class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32), nullable=False)
     account_number = db.Column(db.String(20), nullable=False, unique=True)
-    balance = db.Column(db.Float, nullable=False, default=0.0)
+    _balance = db.Column(db.Float, nullable=False, default=0.0)
     currency = db.Column(db.String(1), nullable=False, default="€")
     status = db.Column(db.String(10), nullable=False, default="Active")
     country = db.Column(db.String(32), nullable=False)
@@ -21,7 +21,7 @@ class Account(db.Model):
     def __repr__(self):
         return "<Event %r>" % self.account_number
 
-    def __init__(self, name, currency, country, user=None):
+    def __init__(self, name, currency, country, user=None, balance=0.0):
         if not name:
             raise ValueError("Name cannot be empty.")
         self.name = name
@@ -32,12 +32,25 @@ class Account(db.Model):
             raise ValueError("Country cannot be empty.")
         self.country = country
         self.account_number = "".join(random.choices(string.digits, k=20))
-        self.balance = 0.0
+        self._balance = balance
         self.status = "Active"
         if user:
             self.user_id = user.id
-
-
+    
+    def get_balance(self):
+        return self._balance
+    
+    def withdraw(self, amount):
+        if amount < 0:
+            raise ValueError("Amount must be positive")
+        if self._balance < amount:
+            raise ValueError("Insufficient funds")
+        self._balance -= amount
+    def deposit(self, amount):
+        if amount < 0:
+            raise ValueError("Amount must be positive")
+        self._balance += amount
+        
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
@@ -102,3 +115,18 @@ class User(db.Model):
     def get_accounts(self):
         """Get all accounts owned by this user"""
         return self.accounts.all()
+
+class BankTransfer():
+    def __init__(self, from_account, to_account, amount):
+        self.from_account = from_account
+        self.to_account = to_account
+        self.amount = amount
+
+    def process_transfer(self):
+        transfer_suceess = False
+        self.from_account.withdraw(self.amount)
+        self.to_account.deposit(self.amount)
+        db.session.commit()
+        transfer_suceess = True
+        # Success of the transfer can be True or False
+        return transfer_suceess
