@@ -9,6 +9,7 @@ load_dotenv()
 class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG = False
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
 
 class LocalConfig(Config):
@@ -16,11 +17,7 @@ class LocalConfig(Config):
     DEBUG = True
 
 
-class GithubCIConfig(Config):
-    SQLALCHEMY_DATABASE_URI = "sqlite:///test.db"
-    DEBUG = True
-
-
+# Use for both uat and dev
 class DevelopmentConfig(Config):
     if os.getenv("ENV") == "dev":
         credential = DefaultAzureCredential()
@@ -38,6 +35,9 @@ class DevelopmentConfig(Config):
         DEBUG = True
 
 
+class ProductionConfig(Config):
+    SQLALCHEMY_DATABASE_URI = "sqlite:///local.db"
+    DEBUG = True
 # Added custom config
 class UATConfig(Config):
     if os.getenv("ENV") == "uat":

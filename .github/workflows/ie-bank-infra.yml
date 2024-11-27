@@ -53,6 +53,8 @@ jobs:
           template: ./infra/main.bicep
           parameters: >
             ./infra/parameters/dev.parameters.json 
+            branch=${{ github.ref_name }}
+            repositoryUrl=https://github.com/bigdawgbank/ie-bank 
             appServiceAPIEnvVarENV=${{ vars.ENV }} 
             appServiceAPIEnvVarDBHOST=${{ vars.DBHOST }} 
             appServiceAPIEnvVarDBNAME=${{ vars.DBNAME }} 
@@ -87,7 +89,9 @@ jobs:
           resourceGroupName: ${{ env.RESOURCE_GROUP_UAT }}
           template: ./infra/main.bicep
           parameters: >
-            ./infra/parameters/uat.parameters.json 
+            ./infra/parameters/uat.parameters.json
+            repositoryUrl=https://github.com/bigdawgbank/ie-bank 
+            branch=${{ github.ref_name }} 
             appServiceAPIEnvVarENV=${{ vars.ENV}} 
             appServiceAPIEnvVarDBHOST=${{ vars.DBHOST }} 
             appServiceAPIEnvVarDBNAME=${{ vars.DBNAME }} 

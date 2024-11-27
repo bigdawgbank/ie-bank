@@ -17,7 +17,7 @@
     "appServiceAPIAppName": {
       "value": "dkumlin-be-uat"
     },
-    "appServiceAppName": {
+    "staticWebAppName": {
       "value": "dkumlin-fe-uat"
     },
     "location": {
@@ -34,6 +34,22 @@
           "principalType": "Group"
         }
       ]
-    }
+    },
+    "containerRegistryName": {
+        "value": "dkumlinacruat"
+    },
+    "dockerRegistryImageName": {
+        "value": "dkumlin-be-uat"
+    },
+    "dockerRegistryImageTag": {
+        "value": "latest"
+    },
+    "logAnalyticsWorkspaceName": {
+      "value": "dkumlin-logAnalyticsWorkspace-uat" 
+    },
+    "appInsightsName": {
+      "value": "dkumlin-appInsights-uat"
+  } 
   }
 }
+

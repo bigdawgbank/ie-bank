@@ -17,7 +17,7 @@
     "appServiceAPIAppName": {
       "value": "dkumlin-be-dev"
     },
-    "appServiceAppName": {
+    "staticWebAppName": {
       "value": "dkumlin-fe-dev"
     },
     "location": {
@@ -30,7 +30,13 @@
       "value": "dkumlin-be-dev"
     },
     "dockerRegistryImageTag": {
-      "value": "latest"
+        "value": "latest"
+    },
+    "logAnalyticsWorkspaceName": {
+      "value": "dkumlin-logAnalyticsWorkspace-dev" 
+    },
+    "appInsightsName": {
+      "value": "dkumlin-appInsights-dev"
     },
     "keyVaultName": {
       "value": "dkumlin-keyVault-dev"
