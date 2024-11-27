@@ -20,8 +20,7 @@ The following functional requirements outline the behavior and features of the I
 
 #### FR02: Admin User Management
 **Requirement:** The admin portal must allow administrators to create, update, delete, and list user accounts.  
-**User Story:** As an admin, I want to create, update, and delete user accounts so that I can manage access to the system.  
-**Test:** [test_create_user](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/unit/test_auth_model.py)  
+**User Story:** As an admin, I want to create, update, and delete user accounts so that I can manage access to the system.   
 
 ---
 
@@ -39,7 +38,7 @@ The following functional requirements outline the behavior and features of the I
 
 #### FR05: New User Registration
 **Requirement:** New bank users must be able to register using a registration form (username, password, and password confirmation). A default account with a random account number must be created upon successful registration.  
-**User Story:** As a new user, I want to register for an account so that I can access the system.  
+**User Story:** As a new user, I want to register for an account so that I can access the system.
 **Test:** [test_create_user](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/unit/test_auth_model.py) 
 
 ---
@@ -60,8 +59,9 @@ The following functional requirements outline the behavior and features of the I
 
 #### FR08: Secure User Login
 **Requirement:** Bank users must log in securely using their username and password to access their accounts.  
-**User Story:** As a user, I want to log in securely so that I can access my account.  
-**Test:** [test_authentication_required](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py)  
+**User Story:** As a user, I want to log in securely so that I can access my account.
+**Test:** [test_protected_route](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py) 
+**Test:** [test_authentication_required](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py) 
 **Test:** [test_login_failure](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py)  
 
 ---
@@ -69,13 +69,15 @@ The following functional requirements outline the behavior and features of the I
 #### FR09: View Account and Transactions
 **Requirement:** Bank users must view their accounts and associated transactions after logging in.  
 **User Story:** As a user, I want to view my account details and recent transactions so that I can manage my finances effectively.  
-**Test:** [test_protected_route](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py)  
+**Test:**  To be Added!
 
 ---
 
 #### FR10: Money Transfer
 **Requirement:** Bank users must be able to transfer money to other accounts by entering the recipient’s account number and transfer amount. The transfer amount must not exceed the available balance.  
 **User Story:** As a user, I want to transfer money to other accounts so that I can make payments easily.  
+**Test** [test_bank_transfer_process_route](https://github.com/bigdawgbank/ie-bank/blob/feat/money-transfer/backend/tests/functional/test_routes.py#test_bank_transfer_process_route)
+**Test** [test_bank_transfer_object_process](https://github.com/bigdawgbank/ie-bank/blob/feat/money-transfer/backend/tests/unit/test_bank_transfer_object.py)
 
 ---
 
