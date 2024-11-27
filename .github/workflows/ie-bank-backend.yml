@@ -30,6 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ENV: ghci
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
       PYTHONPATH: backend
     outputs:
       image-version: ${{ steps.image-version.outputs.version }}

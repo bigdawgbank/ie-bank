@@ -22,3 +22,5 @@ python-dotenv==0.21.0
 SQLAlchemy==2.0.21
 typing_extensions==4.12.2
 Werkzeug==3.0.4
+gunicorn
+azure-identity==1.19.0
