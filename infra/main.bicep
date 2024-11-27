@@ -66,6 +66,16 @@ param dockerRegistryImageName string
 @description('Tag of the Docker image, the version')
 param dockerRegistryImageTag string
 
+@description('Name of the Key Vault')
+param keyVaultName string = 'dkmulin-kv-dev'
+
+@description('Role assignments for the Key Vault')
+param keyVaultRoleAssignments array = []
+
+var acrUsernameSecretName = 'acr-username'
+var acrPassword0SecretName = 'acr-password0'
+var acrPassword1SecretName = 'acr-password1'
+
 @description('The name of the Log Analytics Workspace')
 param logAnalyticsWorkspaceName string
 
@@ -82,14 +92,34 @@ var logAnalyticsWorkspaceId = resourceId('Microsoft.OperationalInsights/workspac
 
 var skuName = (environmentType == 'prod') ? 'B1' : 'B1' //modify according to desired capacity
 
+module keyVault 'modules/keyvault.bicep' = {
+  name: 'keyVault'
+  params: {
+    keyVaultName: keyVaultName
+    location: location
+    roleAssignments: keyVaultRoleAssignments
+  }
+}
+
+resource keyVaultReference 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: keyVaultName
+  dependsOn: [
+    keyVault
+  ]
+}
+
 // Use Key Vault for administrator login password later
 module postgresSQLServerModule 'modules/postgre-sql-server.bicep' = {
   name: 'postgresSQLServerModule'
   params: {
     postgreSQLServerName: postgreSQLServerName
     location: location
-    administratorLoginPassword: 'IE.Bank.DB.Admin.Pa$$'
+    postgreSQLAdminServicePrincipalObjectId: appServiceBE.outputs.systemAssignedIdentityPrincipalId
+    postgreSQLAdminServicePrincipalName: appServiceAPIAppName
   }
+  dependsOn: [
+    appServiceBE
+  ]
 }
 
 module postgresSQLDatabaseModule 'modules/postgre-sql-db.bicep' = {
@@ -139,7 +169,14 @@ module containerRegistryModule 'modules/container-registry.bicep' = {
   params: {
     name: containerRegistryName
     location: location
+    keyVaultResourceId: resourceId('Microsoft.KeyVault/vaults', keyVaultName)
+    keyVaultSecretNameAdminUsername: acrUsernameSecretName
+    keyVaultSecretNameAdminPassword0: acrPassword0SecretName
+    keyVaultSecretNameAdminPassword1: acrPassword1SecretName
   }
+  dependsOn: [
+    keyVault
+  ]
 }
 
 // Module: Backend API App Service
@@ -149,11 +186,11 @@ module appServiceBE 'modules/app-service-be.bicep' = {
     appServiceAPIAppName: appServiceAPIAppName
     location: location
     appServicePlanId: appServicePlanModule.outputs.appServicePlanId
-    dockerRegistryServerUserName: containerRegistryModule.outputs.containerRegistryUserName
-    dockerRegistryServerPassword: containerRegistryModule.outputs.containerRegistryPassword0
+    containerRegistryName: containerRegistryName
+    dockerRegistryServerUserName: keyVaultReference.getSecret(acrUsernameSecretName)
+    dockerRegistryServerPassword: keyVaultReference.getSecret(acrPassword0SecretName)
     dockerRegistryImageTag: dockerRegistryImageTag
     dockerRegistryImageName: dockerRegistryImageName
-    containerRegistryName: containerRegistryName
     instrumentationKey: appInsights.outputs.insightsConnectionString
     insightsConnectionString: appInsights.outputs.instrumentationKey
     appSettings: [
@@ -190,6 +227,7 @@ module appServiceBE 'modules/app-service-be.bicep' = {
   dependsOn: [
     appServicePlanModule
     containerRegistryModule
+    keyVault
   ]
 }
 
@@ -213,3 +251,4 @@ module appServiceFE 'modules/app-service-fe.bicep' = {
 
 output frontendAppHostName string = appServiceFE.outputs.staticWebAppDefaultHostname
 output backendAppHostName string = appServiceBE.outputs.backendAppHostName
+output keyVaultResourceId string = keyVault.outputs.keyVaultResourceId

@@ -10,6 +10,14 @@
           >
             Logout
           </button>
+          <button
+            v-if="isAdmin"
+            type="button"
+            class="btn btn-primary btn-sm ms-2"
+            @click="goToAdmin"
+          >
+            Admin Portal
+          </button>
         </div>
         <div class="col-sm-12">
           <h1>Accounts</h1>
@@ -249,6 +257,7 @@ export default {
       },
       showMessage: false,
       message: "",
+      isAdmin: false, // Add this to track admin status
       shouldRefreshAccounts: false,
     };
   },
@@ -265,6 +274,19 @@ export default {
     },
   },
   methods: {
+    // Add method to check user role
+    goToAdmin() {
+      this.$router.push("/admin");
+    },
+    async checkUserRole() {
+      try {
+        const response = await authService.getProfile(); // You'll need to add this to your authService
+        this.isAdmin = response.role === "admin";
+      } catch (error) {
+        console.error("Failed to check user role:", error);
+      }
+    },
+    // Get all accounts
     handleTransferComplete() {
       this.shouldRefreshAccounts = true;
     },
@@ -376,9 +398,12 @@ export default {
     },
   },
 
-  // Lifecycle hooks
-  created() {
-    this.fetchAccounts();
+  // Update created lifecycle hook
+  async created() {
+    await Promise.all([
+      this.fetchAccounts(),
+      this.checkUserRole(), // Add this to check role when component mounts
+    ]);
   },
 };
 </script>
