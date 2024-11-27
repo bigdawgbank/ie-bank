@@ -283,6 +283,7 @@ export default {
 
         this.message = "Account Created successfully!";
         this.showMessage = true;
+        this.shouldRefreshAccounts = true;
         setTimeout(() => {
           this.showMessage = false;
         }, 3000);
@@ -297,6 +298,7 @@ export default {
 
         this.message = "Account Updated successfully!";
         this.showMessage = true;
+        this.shouldRefreshAccounts = true;
         setTimeout(() => {
           this.showMessage = false;
         }, 3000);
@@ -311,6 +313,7 @@ export default {
 
         this.message = "Account Deleted successfully!";
         this.showMessage = true;
+        this.shouldRefreshAccounts = true;
         setTimeout(() => {
           this.showMessage = false;
         }, 3000);
@@ -399,4 +402,3 @@ export default {
   border-bottom: 1px solid #dee2e6;
 }
 </style>
-
