@@ -13,8 +13,10 @@ param category string = 'workbook' // Common categories: workbook, templates, me
 @description('The version of the workbook')
 param version string = '1.0'
 
+var workbookGuid = guid(resourceGroup().id, 'my-workbook')
+
 resource workbook 'Microsoft.Insights/workbooks@2023-06-01' = {
-  name: 'my-workbook'
+  name: workbookGuid
   location: location
   kind: 'shared' // Can be 'user' or 'shared'
   properties: {
