@@ -5,7 +5,7 @@
         <div class="col-md-8">
           <div class="card custom-width">
             <div class="card-header">
-              <h3 class="text-center">Transfer Money</h3>
+              <h3 class="text-center">Transfer between my accounts</h3>
             </div>
             <div class="card-body">
               <!-- Alert Messages -->
@@ -17,7 +17,7 @@
               <b-form @submit="onSubmit">
                 <b-form-group
                   id="form-sender-account-id-group"
-                  label="Sender Account ID:"
+                  label="Origin Account:"
                   label-for="form-sender-account-id-input"
                 >
                   <b-form-select
@@ -35,7 +35,7 @@
 
                 <b-form-group
                   id="form-recipient-account-id-group"
-                  label="Recipient Account ID:"
+                  label="Recipient Account:"
                   label-for="form-recipient-account-id-input"
                 >
                   <b-form-select
@@ -104,8 +104,7 @@ export default {
   methods: {
     async fetchAccounts() {
       try {
-        //alert("fetching accounts");
-        const response = await accountService.getAccounts();
+        const response = await accountService.getUserAccounts();
         console.log(response);
         this.accounts = response.accounts;
       } catch (error) {
@@ -116,8 +115,6 @@ export default {
       e.preventDefault();
 
       try {
-        //alert("transferring money");
-        //alert(this.transferForm);
         const response = await transferService.transferMoney(this.transferForm);
 
         // Show success message
