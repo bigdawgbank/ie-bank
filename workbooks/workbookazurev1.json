@@ -80,7 +80,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "requests\n| summarize AvgResponseTime = avg(duration) by bin(timestamp, 1h)\n| order by timestamp asc\n\n",
+        "query": "requests\n| summarize AvgResponseTime = avg(duration) by bin(timestamp, 1h)\n| order by timestamp asc\n",
         "size": 0,
         "title": "Average Server Response Time Over Time",
         "timeContext": {
@@ -233,7 +233,7 @@
         "version": "KqlItem/1.0",
         "query": "dependencies\n| summarize avgDependencyDuration = avg(duration) by target\n| order by avgDependencyDuration desc\n",
         "size": 0,
-        "title": " Dependency Performance",
+        "title": "Dependency Performance",
         "timeContext": {
           "durationMs": 604800000
         },
@@ -288,7 +288,7 @@
           "rowLimit": 10000
         }
       },
-      "name": "Application Availibility"
+      "name": "Application Availability"
     },
     {
       "type": 10,
@@ -311,14 +311,14 @@
             "metric": "microsoft.insights/components/kusto-Server-requests/duration",
             "aggregation": 4,
             "splitBy": null,
-            "columnName": "Server Response Time "
+            "columnName": "Server Response Time"
           }
         ],
         "gridSettings": {
           "rowLimit": 10000
         }
       },
-      "name": " Server Response Time "
+      "name": "Server Response Time"
     },
     {
       "type": 10,
@@ -342,14 +342,14 @@
             "metric": "microsoft.insights/components/kusto-Failures-requests/failed",
             "aggregation": 1,
             "splitBy": null,
-            "columnName": " Failed Request Rate"
+            "columnName": "Failed Request Rate"
           }
         ],
         "gridSettings": {
           "rowLimit": 10000
         }
       },
-      "name": " Failed Request Rate"
+      "name": "Failed Request Rate"
     },
     {
       "type": 10,
@@ -580,145 +580,138 @@
         "visualization": "piechart"
       },
       "name": "query - 25"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "requests\n| summarize TotalRequests = count() by operation_Name\n| order by TotalRequests desc",
+        "size": 0,
+        "title": "Request Count by Operation Type",
+        "timeContext": {
+          "durationMs": 604800000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "table"
+      },
+      "name": "Request Count by Operation Type"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "requests\n| summarize AvgLatency = avg(duration) by operation_Name\n| order by AvgLatency desc",
+        "size": 0,
+        "title": "API Latency by Operation",
+        "timeContext": {
+          "durationMs": 604800000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "table"
+      },
+      "name": "API Latency by Operation"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "requests\n| summarize RequestCount = count() by cloud_RoleName\n| order by RequestCount desc",
+        "size": 0,
+        "title": "Frontend vs Backend Load Analysis",
+        "timeContext": {
+          "durationMs": 604800000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "table"
+      },
+      "name": "Frontend vs Backend Load Analysis"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "availabilityResults\n| where name == \"Key Vault Availability\"\n| summarize AvgAvailability = avg(availabilityPercentage)",
+        "size": 0,
+        "title": "Key Vault Availability",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "linechart"
+      },
+      "name": "Key Vault Availability"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "customMetrics\n| where name == \"Database Is Alive\"\n| summarize MaxAvailability = max(value)",
+        "size": 0,
+        "title": "Database Availability",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "linechart"
+      },
+      "name": "Database Availability"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "requests\n| summarize Count = count(), CountFailed = countif(success == false), SuccessPercentage = (countif(success == true) * 100 / count()), Users = dcount(user_Id) by appName, operation_Name\n| order by Count desc",
+        "size": 0,
+        "title": "Application Usage Overview",
+        "timeContext": {
+          "durationMs": 604800000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "table"
+      },
+      "name": "Application Usage Overview"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "dependencies\n| summarize failureCount = countif(success == false) by target\n| order by failureCount desc",
+        "size": 0,
+        "title": "Failed Dependency Calls",
+        "timeContext": {
+          "durationMs": 604800000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "table"
+      },
+      "name": "Failed Dependency Calls"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "requests\n| summarize Percentile95 = percentile(duration, 95)",
+        "size": 0,
+        "title": "95th Percentile Latency",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "linechart"
+      },
+      "name": "95th Percentile Latency"
     }
   ],
   "fallbackResourceIds": [
     "/subscriptions/e0b9cada-61bc-4b5a-bd7a-52c606726b3b/resourceGroups/BCSAI2024-DEVOPS-STUDENTS-B-DEV/providers/Microsoft.Insights/components/dkumlin-appInsights-dev"
   ],
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
-
-  {
-    "version": "Notebook/1.0",
-    "items": [
-      {
-        "type": 3,
-        "content": {
-          "version": "KqlItem/1.0",
-          "query": "requests\n| summarize TotalRequests = count() by operation_Name\n| order by TotalRequests desc",
-          "size": 0,
-          "title": "Request Count by Operation Type",
-          "timeContext": {
-            "durationMs": 604800000
-          },
-          "queryType": 0,
-          "resourceType": "microsoft.insights/components",
-          "visualization": "table"
-        },
-        "name": "Request Count by Operation Type"
-      },
-      {
-        "type": 3,
-        "content": {
-          "version": "KqlItem/1.0",
-          "query": "requests\n| summarize AvgLatency = avg(duration) by operation_Name\n| order by AvgLatency desc",
-          "size": 0,
-          "title": "API Latency by Operation",
-          "timeContext": {
-            "durationMs": 604800000
-          },
-          "queryType": 0,
-          "resourceType": "microsoft.insights/components",
-          "visualization": "table"
-        },
-        "name": "API Latency by Operation"
-      },
-      {
-        "type": 3,
-        "content": {
-          "version": "KqlItem/1.0",
-          "query": "requests\n| summarize RequestCount = count() by cloud_RoleName\n| order by RequestCount desc",
-          "size": 0,
-          "title": "Frontend vs Backend Load Analysis",
-          "timeContext": {
-            "durationMs": 604800000
-          },
-          "queryType": 0,
-          "resourceType": "microsoft.insights/components",
-          "visualization": "table"
-        },
-        "name": "Frontend vs Backend Load Analysis"
-      },
-      {
-        "type": 3,
-        "content": {
-          "version": "KqlItem/1.0",
-          "query": "availabilityResults\n| where name == \"Key Vault Availability\"\n| summarize AvgAvailability = avg(availabilityPercentage)",
-          "size": 0,
-          "title": "Key Vault Availability",
-          "timeContext": {
-            "durationMs": 86400000
-          },
-          "queryType": 0,
-          "resourceType": "microsoft.insights/components",
-          "visualization": "linechart"
-        },
-        "name": "Key Vault Availability"
-      },
-      {
-        "type": 3,
-        "content": {
-          "version": "KqlItem/1.0",
-          "query": "customMetrics\n| where name == \"Database Is Alive\"\n| summarize MaxAvailability = max(value)",
-          "size": 0,
-          "title": "Database Availability",
-          "timeContext": {
-            "durationMs": 86400000
-          },
-          "queryType": 0,
-          "resourceType": "microsoft.insights/components",
-          "visualization": "linechart"
-        },
-        "name": "Database Availability"
-      },
-      {
-        "type": 3,
-        "content": {
-          "version": "KqlItem/1.0",
-          "query": "requests\n| summarize Count = count(), CountFailed = countif(success == false), SuccessPercentage = (countif(success == true) * 100 / count()), Users = dcount(user_Id) by appName, operation_Name\n| order by Count desc",
-          "size": 0,
-          "title": "Application Usage Overview",
-          "timeContext": {
-            "durationMs": 604800000
-          },
-          "queryType": 0,
-          "resourceType": "microsoft.insights/components",
-          "visualization": "table"
-        },
-        "name": "Application Usage Overview"
-      },
-      {
-        "type": 3,
-        "content": {
-          "version": "KqlItem/1.0",
-          "query": "dependencies\n| summarize failureCount = countif(success == false) by target\n| order by failureCount desc",
-          "size": 0,
-          "title": "Failed Dependency Calls",
-          "timeContext": {
-            "durationMs": 604800000
-          },
-          "queryType": 0,
-          "resourceType": "microsoft.insights/components",
-          "visualization": "table"
-        },
-        "name": "Failed Dependency Calls"
-      },
-      {
-        "type": 3,
-        "content": {
-          "version": "KqlItem/1.0",
-          "query": "requests\n| summarize Percentile95 = percentile(duration, 95)",
-          "size": 0,
-          "title": "95th Percentile Latency",
-          "timeContext": {
-            "durationMs": 86400000
-          },
-          "queryType": 0,
-          "resourceType": "microsoft.insights/components",
-          "visualization": "linechart"
-        },
-        "name": "95th Percentile Latency"
-      }
-    ],
-    "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
-  }
-}  
+}
