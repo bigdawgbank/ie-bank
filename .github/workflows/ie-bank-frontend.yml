@@ -13,113 +13,83 @@ on:
   workflow_dispatch:
 
 env:
-  FRONTEND_WEBAPP_DEV: dkumlin-fe-dev
-  FRONTEND_WEBAPP_UAT: dkumlin-fe-uat
+  FRONTEND_STATIC_WEBAPP_DEV: dkumlin-fe-dev
+  FRONTEND_STATIC_WEBAPP_UAT: dkumlin-fe-uat
+  NODE_VERSION: '18.x'
+  APP_LOCATION: 'frontend'
+  OUTPUT_LOCATION: 'dist'
+  IMAGE_NAME: ie-bank-fe
 
 jobs:
-  build-dev:
+  # Development Environment
+  build-deploy-dev:
     runs-on: ubuntu-latest
     environment: Development
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Node.js version
+      
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18.x'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-      - name: Debug - Print Variables (Dev)
-        run: |
-          echo "NODE_ENV: ${{ vars.NODE_ENV }}"
-          echo "VUE_APP_ROOT_API: ${{ vars.VUE_APP_ROOT_API }}"
-          echo "BASE_URL: ${{ vars.BASE_URL }}"
-      - name: npm install, build, and test (Dev)
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Install Dependencies
+        working-directory: ${{ env.APP_LOCATION }}
+        run: npm install
+      
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Build And Deploy to Static Web App
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: ${{ env.APP_LOCATION }}
+          output_location: ${{ env.OUTPUT_LOCATION }}
+          skip_app_build: false
+          production_branch: "main"
+          app_build_command: 'npm run build -- --mode ${{ vars.NODE_ENV }}'
         env:
           NODE_ENV: ${{ vars.NODE_ENV }}
           VUE_APP_ROOT_API: ${{ vars.VUE_APP_ROOT_API }}
-          BASE_URL: ${{ vars.BASE_URL }}
-        run: |
-          cd frontend
-          npm ci
-          npm run build -- --mode ${{ vars.NODE_ENV }}
-      - name: Upload artifact for deployment job (Dev)
-        uses: actions/upload-artifact@v4
-        with:
-          name: node-app-dev
-          path: frontend/dist/
 
-  build-uat:
+  # UAT Environment
+  build-deploy-uat:
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
     runs-on: ubuntu-latest
     environment: UAT
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Node.js version
+      
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18.x'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-      - name: Debug - Print Variables (UAT)
-        run: |
-          echo "NODE_ENV: ${{ vars.NODE_ENV }}"
-          echo "VUE_APP_ROOT_API: ${{ vars.VUE_APP_ROOT_API }}"
-          echo "BASE_URL: ${{ vars.BASE_URL }}"
-      - name: npm install, build, and test (UAT)
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Install Dependencies
+        working-directory: ${{ env.APP_LOCATION }}
+        run: npm install
+      
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          
+      - name: Build And Deploy to Static Web App
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: ${{ env.APP_LOCATION }}
+          output_location: ${{ env.OUTPUT_LOCATION }}
+          skip_app_build: false
+          production_branch: "main"
+          app_build_command: 'npm run build -- --mode ${{ vars.NODE_ENV }}'
         env:
           NODE_ENV: ${{ vars.NODE_ENV }}
           VUE_APP_ROOT_API: ${{ vars.VUE_APP_ROOT_API }}
-          BASE_URL: ${{ vars.BASE_URL }}
-        run: |
-          cd frontend
-          npm ci
-          npm run build -- --mode ${{ vars.NODE_ENV }}
-      - name: Upload artifact for deployment job (UAT)
-        uses: actions/upload-artifact@v4
-        with:
-          name: node-app-uat
-          path: frontend/dist/
-
-  deploy-dev:
-    runs-on: ubuntu-latest
-    needs: build-dev
-    environment:
-      name: 'Development'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: node-app-dev
-          path: .
-      - uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: 'Deploy to Azure Web App'
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ env.FRONTEND_WEBAPP_DEV }}
-          package: .
-
-  deploy-uat:
-    if: github.event_name == 'pull_request' && github.base_ref == 'main'
-    runs-on: ubuntu-latest
-    needs: build-uat
-    environment:
-      name: 'UAT'
-      url: ${{ steps.deploy-to-webapp-uat.outputs.webapp-url }}
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: node-app-uat
-          path: .
-      - uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: 'Deploy to Azure Web App (UAT)'
-        id: deploy-to-webapp-uat
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ env.FRONTEND_WEBAPP_UAT }}
-          package: .

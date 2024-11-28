@@ -24,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ENV: ghci
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python 3.11
@@ -33,6 +34,11 @@ jobs:
     - name: Upgrade pip
       run: |
         python -m pip install --upgrade pip
+    - name: Debug JWT_SECRET_KEY
+      run: |
+        echo "Debugging JWT_SECRET_KEY"
+        echo "::add-mask::$JWT_SECRET_KEY"  # Mask the value in logs
+        echo "JWT_SECRET_KEY is set to: $JWT_SECRET_KEY"
     - name: Install dependencies
       run: |
         pip install -r backend/requirements.txt

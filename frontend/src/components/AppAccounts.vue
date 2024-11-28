@@ -2,15 +2,31 @@
   <div class="jumbotron vertical-center">
     <div class="container">
       <div class="row">
+        <div class="d-flex justify-content-end mb-3 w-100">
+          <button
+            type="button"
+            class="btn btn-danger btn-sm"
+            @click="handleLogout"
+          >
+            Logout
+          </button>
+          <button
+            v-if="isAdmin"
+            type="button"
+            class="btn btn-primary btn-sm ms-2"
+            @click="goToAdmin"
+          >
+            Admin Portal
+          </button>
+        </div>
         <div class="col-sm-12">
           <h1>Accounts</h1>
           <hr />
           <br />
-          <!-- Allert Message -->
-          <b-alert v-if="showMessage" variant="success" show>{{
-            message
-          }}</b-alert>
-          <!-- b-alert v-if="error" variant="danger" show>{{ error }}</b-alert-->
+          <!-- Alert Message -->
+          <b-alert v-if="showMessage" variant="success" show>
+            {{ message }}
+          </b-alert>
 
           <button
             type="button"
@@ -18,6 +34,13 @@
             v-b-modal.account-modal
           >
             Create Account
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary btn-sm"
+            v-b-modal.transfer-modal
+          >
+            Transfer Money
           </button>
           <br /><br />
           <table class="table table-hover">
@@ -62,7 +85,7 @@
                     <button
                       type="button"
                       class="btn btn-danger btn-sm"
-                      @click="deleteAccount(account)"
+                      @click="deleteAccount(account.id)"
                     >
                       Delete
                     </button>
@@ -113,7 +136,7 @@
             </b-form-input>
           </b-form-group>
           <b-form-group
-            id="form-currency-group"
+            id="form-country-group"
             label="Country:"
             label-for="form-country-input"
           >
@@ -121,11 +144,27 @@
               id="form-country-input"
               type="text"
               v-model="createAccountForm.country"
-              placeholder="Africa"
+              placeholder="Your Country"
               required
             >
             </b-form-input>
           </b-form-group>
+
+          <b-form-group
+            id="form-balance-group"
+            label="Balance:"
+            label-for="form-balance-input"
+          >
+            <b-form-input
+              id="form-balance-input"
+              type="text"
+              v-model="createAccountForm.balance"
+              placeholder="0"
+              required
+            >
+            </b-form-input>
+          </b-form-group>
+
           <b-button type="submit" variant="outline-info">Submit</b-button>
         </b-form>
       </b-modal>
@@ -157,14 +196,30 @@
         </b-form>
       </b-modal>
       <!-- End of Modal for Edit Account-->
+      <!-- Start of Modal for Transfer Money-->
+      <b-modal
+        ref="transferModal"
+        id="transfer-modal"
+        title="Transfer Money"
+        hide-backdrop
+        hide-footer
+      >
+        <Transfer @transfer-completed="handleTransferComplete" />
+      </b-modal>
+      <!-- End of Modal for Transfer Money-->
     </div>
   </div>
 </template>
 
 <script>
-import axios from "axios";
+import { accountService, authService } from "../api"; // Import your API client
+import Transfer from "./Transfer.vue"; // Import the Transfer component
+
 export default {
   name: "AppAccounts",
+  components: {
+    Transfer,
+  },
   data() {
     return {
       accounts: [],
@@ -172,6 +227,7 @@ export default {
         name: "",
         currency: "",
         country: "",
+        balance: "",
       },
       editAccountForm: {
         id: "",
@@ -179,147 +235,168 @@ export default {
       },
       showMessage: false,
       message: "",
+      isAdmin: false, // Add this to track admin status
+      shouldRefreshAccounts: false,
     };
   },
+  watch: {
+    // Watch for changes that should trigger account refresh
+    shouldRefreshAccounts: {
+      async handler(newValue) {
+        if (newValue) {
+          await this.getAccounts();
+          this.shouldRefreshAccounts = false;
+        }
+      },
+      immediate: false, // Don't run immediately on component creation
+    },
+  },
   methods: {
-    /***************************************************
-     * RESTful requests
-     ***************************************************/
-
-    //GET function
-    RESTgetAccounts() {
-      const path = `${process.env.VUE_APP_ROOT_API}/accounts`;
-      axios
-        .get(path)
-        .then((response) => {
-          console.log(response);
-          this.accounts = response.data.accounts;
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+    // Add method to check user role
+    goToAdmin() {
+      this.$router.push("/admin");
+    },
+    async checkUserRole() {
+      try {
+        const response = await authService.getProfile(); // You'll need to add this to your authService
+        this.isAdmin = response.role === "admin";
+      } catch (error) {
+        console.error("Failed to check user role:", error);
+      }
+    },
+    // Get all accounts
+    handleTransferComplete() {
+      this.shouldRefreshAccounts = true;
+    },
+    async getAccounts() {
+      try {
+        const response = await accountService.getAccounts();
+        this.accounts = response.accounts;
+      } catch (error) {
+        console.error("Failed to fetch accounts:", error);
+      }
     },
 
-    // POST function
-    RESTcreateAccount(payload) {
-      const path = `${process.env.VUE_APP_ROOT_API}/accounts`;
-      axios
-        .post(path, payload)
-        .then((response) => {
-          console.log(response);
-          this.RESTgetAccounts();
-          // For message alert
-          this.message = "Account Created succesfully!";
-          // To actually show the message
-          this.showMessage = true;
-          // To hide the message after 3 seconds
-          setTimeout(() => {
-            this.showMessage = false;
-          }, 3000);
-        })
-        .catch((error) => {
-          console.error(error);
-          this.RESTgetAccounts();
-        });
+    async createAccount(payload) {
+      try {
+        await accountService.createAccount(payload);
+
+        this.message = "Account Created successfully!";
+        this.showMessage = true;
+        setTimeout(() => {
+          this.showMessage = false;
+        }, 3000);
+      } catch (error) {
+        console.error("Failed to create account:", error);
+      }
     },
 
-    // Update function
-    RESTupdateAccount(payload, accountId) {
-      const path = `${process.env.VUE_APP_ROOT_API}/accounts/${accountId}`;
-      axios
-        .put(path, payload)
-        .then((response) => {
-          this.RESTgetAccounts();
-          // For message alert
-          this.message = "Account Updated succesfully!";
-          // To actually show the message
-          this.showMessage = true;
-          // To hide the message after 3 seconds
-          setTimeout(() => {
-            this.showMessage = false;
-          }, 3000);
-        })
-        .catch((error) => {
-          console.error(error);
-          this.RESTgetAccounts();
-        });
+    async updateAccount(payload, accountId) {
+      try {
+        await accountService.updateAccount(accountId, payload);
+
+        this.message = "Account Updated successfully!";
+        this.showMessage = true;
+        setTimeout(() => {
+          this.showMessage = false;
+        }, 3000);
+      } catch (error) {
+        console.error("Failed to update account:", error);
+      }
     },
 
-    // Delete account
-    RESTdeleteAccount(accountId) {
-      const path = `${process.env.VUE_APP_ROOT_API}/accounts/${accountId}`;
-      axios
-        .delete(path)
-        .then((response) => {
-          this.RESTgetAccounts();
-          // For message alert
-          this.message = "Account Deleted succesfully!";
-          // To actually show the message
-          this.showMessage = true;
-          // To hide the message after 3 seconds
-          setTimeout(() => {
-            this.showMessage = false;
-          }, 3000);
-        })
-        .catch((error) => {
-          console.error(error);
-          this.RESTgetAccounts();
-        });
+    async deleteAccount(accountId) {
+      try {
+        await accountService.deleteAccount(accountId);
+
+        this.message = "Account Deleted successfully!";
+        this.showMessage = true;
+        setTimeout(() => {
+          this.showMessage = false;
+        }, 3000);
+      } catch (error) {
+        console.error("Failed to delete account:", error);
+      }
     },
 
-    /***************************************************
-     * FORM MANAGEMENT
-     * *************************************************/
+    async handleLogout() {
+      try {
+        await authService.logout();
+        this.$router.push("/login");
+      } catch (error) {
+        console.error("Failed to logout:", error);
+      }
+    },
 
-    // Initialize forms empty
     initForm() {
-      this.createAccountForm.name = "";
-      this.createAccountForm.currency = "";
-      this.createAccountForm.country = "";
-      this.editAccountForm.id = "";
-      this.editAccountForm.name = "";
+      this.createAccountForm = {
+        name: "",
+        currency: "",
+        country: "",
+        balance: 0,
+      };
+      this.editAccountForm = {
+        id: "",
+        name: "",
+      };
     },
 
-    // Handle submit event for create account
-    onSubmit(e) {
-      e.preventDefault(); //prevent default form submit form the browser
-      this.$refs.addAccountModal.hide(); //hide the modal when submitted
+    async onSubmit(e) {
+      e.preventDefault();
+      this.$refs.addAccountModal.hide();
+
       const payload = {
         name: this.createAccountForm.name,
         currency: this.createAccountForm.currency,
         country: this.createAccountForm.country,
+        balance: this.createAccountForm.balance,
       };
-      this.RESTcreateAccount(payload);
+
+      await this.createAccount(payload);
       this.initForm();
     },
 
-    // Handle submit event for edit account
-    onSubmitUpdate(e) {
-      e.preventDefault(); //prevent default form submit form the browser
-      this.$refs.editAccountModal.hide(); //hide the modal when submitted
+    async onSubmitUpdate(e) {
+      e.preventDefault();
+      this.$refs.editAccountModal.hide();
+
       const payload = {
         name: this.editAccountForm.name,
       };
-      this.RESTupdateAccount(payload, this.editAccountForm.id);
+
+      await this.updateAccount(payload, this.editAccountForm.id);
       this.initForm();
     },
 
-    // Handle edit button
     editAccount(account) {
       this.editAccountForm = account;
     },
-
-    // Handle Delete button
-    deleteAccount(account) {
-      this.RESTdeleteAccount(account.id);
-    },
   },
 
-  /***************************************************
-   * LIFECYClE HOOKS
-   ***************************************************/
-  created() {
-    this.RESTgetAccounts();
+  // Update created lifecycle hook
+  async created() {
+    await Promise.all([
+      this.getAccounts(),
+      this.checkUserRole(), // Add this to check role when component mounts
+    ]);
   },
 };
 </script>
+
+<style scoped>
+.vertical-center {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.card {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+</style>
+

@@ -1,17 +1,71 @@
 import pytest
-
 from iebank_api import app
+import json
+
+def test_create_account(testing_client, register_and_authenticate):
+    headers = {"Authorization": f"Bearer {register_and_authenticate}"}
+    # Create account
+    response = testing_client.post("/accounts", 
+                                  json={"name": "My Savings Account", "currency": "€", "country": "Ireland"}, 
+                                  headers=headers)
+
+    assert response.status_code == 201
+    assert response.json["name"] == "My Savings Account"
+    assert response.json["currency"] == "€"
+    assert response.json["country"] == "Ireland"
+    assert "account_number" in response.json
+    assert "user_id" in response.json
+
+    # Verify account in list
+    accounts_response = testing_client.get("/accounts", headers=headers)
+    assert accounts_response.status_code == 200
+    accounts = accounts_response.json.get("accounts", accounts_response.json)
+    assert len(accounts) == 1
+    assert accounts[0]["name"] == "My Savings Account"
 
 
-def test_get_accounts(testing_client):
+def test_create_account_invalid_data(testing_client, register_and_authenticate):
+    headers = {"Authorization": f"Bearer {register_and_authenticate}"}
+
+    # Test missing name
+    response = testing_client.post(
+        "/accounts", json={"currency": "€", "country": "Ireland"}, headers=headers
+    )
+    assert response.status_code == 400
+    assert "error" in response.json
+
+    # Test missing currency
+    response = testing_client.post(
+        "/accounts", json={"name": "My Account", "country": "Ireland"}, headers=headers
+    )
+    assert response.status_code == 400
+    assert "error" in response.json
+
+    # Test missing country
+    response = testing_client.post(
+        "/accounts", json={"name": "My Account", "currency": "€"}, headers=headers
+    )
+    assert response.status_code == 400
+    assert "error" in response.json
+
+
+def test_create_account_unauthorized(testing_client):
+    response = testing_client.post(
+        "/accounts", json={"name": "My Account", "currency": "€", "country": "Ireland"}
+    )
+    assert response.status_code == 401
+
+def test_get_accounts(testing_client, register_and_authenticate):
     """
     GIVEN a Flask application
     WHEN the '/accounts' page is requested (GET)
     THEN check the response is valid
     """
-    response = testing_client.get("/accounts")
-    assert response.status_code == 200
+    headers = {"Authorization": f"Bearer {register_and_authenticate}"}
 
+    # Test protected route with token
+    response = testing_client.get("/accounts", headers=headers)
+    assert response.status_code == 200
 
 def test_dummy_wrong_path():
     """
@@ -23,40 +77,89 @@ def test_dummy_wrong_path():
         response = client.get("/wrong_path")
         assert response.status_code == 404
 
-
-def test_create_account(testing_client):
+def test_get_account_by_account_id(testing_client, register_and_authenticate):
     """
     GIVEN a Flask application
-    WHEN the '/accounts' page is posted to (POST)
+    WHEN the '/accounts' page is requested (GET)
     THEN check the response is valid
     """
-    response = testing_client.post(
-        "/accounts", json={"name": "John Doe", "currency": "€", "country": "Sweden"}
-    )
-    assert response.status_code == 201
+    headers = {"Authorization": f"Bearer {register_and_authenticate}"}
 
+    # Query all existing accounts
+    response_all = testing_client.get('/accounts', headers=headers)
+    assert response_all.status_code == 200
 
-def test_create_bad_account(testing_client):
+    # Parse the JSON response
+    accounts = json.loads(response_all.data)
+    
+    # Ensure there are accounts in the response
+    assert len(accounts['accounts']) > 0
+
+    # Get the first account
+    first_account = accounts['accounts'][0]
+    
+    # Perform assertions on the first account
+    assert 'id' in first_account
+    assert 'account_number' in first_account
+    assert 'name' in first_account
+    assert 'currency' in first_account
+    assert 'country' in first_account
+
+    # Now we can test get by account number
+    response_single = testing_client.get('/accounts/' + str(first_account['id']), headers=headers)
+    assert response_single.status_code == 200
+
+# test update/put to the by default account id=1
+def test_put_account(testing_client ,register_and_authenticate):
     """
     GIVEN a Flask application
-    WHEN an account is created with invalid data
-    THEN check that the response status code is 400
+    WHEN the '/accounts' page is updated (PUT)
+    THEN check the response is valid
     """
+    headers = {"Authorization": f"Bearer {register_and_authenticate}"}
 
-    response = testing_client.post(
-        "/accounts", json={"currency": "€", "country": "Sweden"}
-    )
-    assert response.status_code == 400
-    assert response.json.get("error") == "Name cannot be empty."
+    response = testing_client.put('/accounts/1', json={'name': 'John Doe', 'currency': '€', 'country': 'Spain'}, headers=headers)
+    assert response.status_code == 200
 
-    response = testing_client.post(
-        "/accounts", json={"name": "John Doe", "currency": None, "country": "Sweden"}
-    )
-    assert response.status_code == 400
-    assert response.json.get("error") == "Currency cannot be empty or None."
+# test_delete_account would delete the by default created account with id=1
+def test_delete_account(testing_client, register_and_authenticate):
+    """
+    GIVEN a Flask application
+    WHEN the '/accounts' page is deleted (DELETE)
+    THEN check the response is valid
+    """
+    headers = {"Authorization": f"Bearer {register_and_authenticate}"}
+    response = testing_client.delete('/accounts/1', headers=headers)
+    assert response.status_code == 200
 
-    response = testing_client.post(
-        "/accounts", json={"name": "John Doe", "currency": "€", "country": ""}
-    )
-    assert response.status_code == 400
-    assert response.json.get("error") == "Country cannot be empty."
+def test_bank_transfer_process_route(testing_client, register_and_authenticate):
+    """
+    GIVEN a Flask application
+    WHEN the '/transfer' page is requested (POST)
+    THEN check the response is valid
+    """
+    headers = {"Authorization": f"Bearer {register_and_authenticate}"}
+    sender_account_name = "Adrian checkin account"
+    recipient_account_name = "Daniel checkin account"
+    response = testing_client.post("/accounts", 
+                                  json={"name": sender_account_name, "currency": "€", "country": "Spain", "balance": 1000.0}, 
+                                  headers=headers)
+    response = testing_client.post("/accounts", 
+                                  json={"name": recipient_account_name, "currency": "€", "country": "Spain", "balance": 0.0}, 
+                                  headers=headers)
+
+    response_sender_account = testing_client.get(f"/accounts/{sender_account_name}", headers=headers)
+    # Parse the JSON response
+    sender_account_data = response_sender_account.get_json()
+    # Extract the account ID
+    from_account_id = sender_account_data['id']
+
+    
+    response_recipient_account = testing_client.get(f"/accounts/{recipient_account_name}", headers=headers)
+    # Parse the JSON response
+    recipient_account_data = response_recipient_account.get_json()
+    # Extract the account ID
+    to_account_id = recipient_account_data['id']
+
+    response = testing_client.post('/transfer', json={'sender_account_id': from_account_id, 'recipient_account_id': to_account_id, 'amount': 100.0}, headers=headers)
+    assert response.status_code == 200
