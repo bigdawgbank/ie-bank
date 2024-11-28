@@ -5,7 +5,7 @@ param logAnalyticsWorkspaceName string
 param location string = resourceGroup().location
 
 @description('The display name for the workbook')
-param workbookDisplayName string = 'WorkbookLarbi'  // Changed this line
+param workbookDisplayName string = 'WorkbookLarbi'
 
 @description('The category of the workbook')
 param category string = 'workbook' // Common categories: workbook, templates, metrics, logs
