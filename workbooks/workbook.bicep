@@ -1,29 +1,20 @@
-@description('The name of the Log Analytics Workspace')
-param logAnalyticsWorkspaceName string
+@description('Name of the Workbook')
+param workbookName string
 
-@description('The Azure location where the workbook will be deployed')
+@description('Definition of the Workbook as a JSON string')
+param workbookDefinition string
+
+@description('Azure location where the Workbook will be deployed')
 param location string = resourceGroup().location
 
-@description('The display name for the workbook')
-param workbookDisplayName string = 'WorkbookLarbi'
-
-@description('The category of the workbook')
-param category string = 'workbook' // Common categories: workbook, templates, metrics, logs
-
-@description('The version of the workbook')
-param version string = '1.0'
-
-var workbookGuid = guid(resourceGroup().id, 'my-workbook')
-
-resource workbook 'Microsoft.Insights/workbooks@2023-06-01' = {
-  name: workbookGuid
+resource workbook 'Microsoft.Insights/workbooks@2020-11-20' = {
+  name: workbookName
   location: location
-  kind: 'shared' // Can be 'user' or 'shared'
   properties: {
-    displayName: workbookDisplayName
-    sourceId: resourceId('Microsoft.OperationalInsights/workspaces', logAnalyticsWorkspaceName)
-    category: category
-    serializedData: loadTextContent('./workbookazurev1.json')
-    version: version
+    displayName: workbookName
+    serializedData: workbookDefinition
+    version: '1.0'
+    category: 'workbook'
+    sourceId: resourceId('Microsoft.Insights/components', 'appInsights-dev')
   }
 }

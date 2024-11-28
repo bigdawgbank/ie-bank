@@ -88,12 +88,9 @@ param branch string
 @description('The Github URL used for the static web app')
 param repositoryUrl string = 'https://github.com/bigdawgbank/ie-bank'
 
-@description('The display name for the workbook')
-param workbookDisplayName string = 'WorkbookLarbi'  // Added this line
-
 var logAnalyticsWorkspaceId = resourceId('Microsoft.OperationalInsights/workspaces', logAnalyticsWorkspaceName)
 
-var skuName = (environmentType == 'prod') ? 'B1' : 'B1' // Modify according to desired capacity
+var skuName = (environmentType == 'prod') ? 'B1' : 'B1' //modify according to desired capacity
 
 module keyVault 'modules/keyvault.bicep' = {
   name: 'keyVault'
@@ -144,7 +141,6 @@ module logAnalytics 'modules/azure-log-analytics.bicep' = {
     name: logAnalyticsWorkspaceName
   }
 }
-
 module appInsights 'modules/app-insights.bicep' = {
   name: 'appInsights'
   params: {
@@ -190,7 +186,7 @@ module appServiceBE 'modules/app-service-be.bicep' = {
     appServiceAPIAppName: appServiceAPIAppName
     location: location
     appServicePlanId: appServicePlanModule.outputs.appServicePlanId
-    containerRegistryName: containerRegistryModule.outputs.containerRegistryName
+    containerRegistryName: containerRegistryName
     dockerRegistryServerUserName: keyVaultReference.getSecret(acrUsernameSecretName)
     dockerRegistryServerPassword: keyVaultReference.getSecret(acrPassword0SecretName)
     dockerRegistryImageTag: dockerRegistryImageTag
@@ -250,19 +246,6 @@ module appServiceFE 'modules/app-service-fe.bicep' = {
     appServicePlanModule
     appInsights
     containerRegistryModule
-  ]
-}
-
-// Workbook Module
-module workbook '../workbooks/workbook.bicep' = {
-  name: 'workbook'
-  params: {
-    logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
-    location: location
-    workbookDisplayName: workbookDisplayName
-  }
-  dependsOn: [
-    logAnalytics
   ]
 }
 
