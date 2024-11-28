@@ -4,12 +4,18 @@ param logAnalyticsWorkspaceName string
 @description('The Azure location where the workbook will be deployed')
 param location string = resourceGroup().location
 
+@description('The display name for the workbook')
+param workbookDisplayName string = 'My Workbook'
+
+@description('The relative path to the serialized workbook JSON file')
+param workbookFilePath string = '../workbooks/workbookazurev1.json'
+
 resource workbook 'Microsoft.Insights/workbooks@2020-10-01' = {
   name: 'my-workbook'
   location: location
   properties: {
-    displayName: 'My Workbook'
+    displayName: workbookDisplayName
     sourceId: resourceId('Microsoft.OperationalInsights/workspaces', logAnalyticsWorkspaceName)
-    serializedData: loadTextContent('../workbooks/workbookazurev1.json') // Adjusted to match your file structure
+    serializedData: loadTextContent(workbookFilePath)
   }
 }

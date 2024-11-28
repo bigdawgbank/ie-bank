@@ -73,6 +73,7 @@ jobs:
           template: ./workbooks/workbook.bicep
           parameters: >
             logAnalyticsWorkspaceName=dkumlin-logAnalyticsWorkspace-dev
+            location=${{ env.RESOURCE_GROUP_DEV }}
           deploymentName: ${{ env.USER_ALIAS }}-workbook-dev
 
   deploy-uat:
@@ -120,4 +121,5 @@ jobs:
           template: ./workbooks/workbook.bicep
           parameters: >
             logAnalyticsWorkspaceName=dkumlin-logAnalyticsWorkspace-uat
+            location=${{ env.RESOURCE_GROUP_UAT }}
           deploymentName: ${{ env.USER_ALIAS }}-workbook-uat
