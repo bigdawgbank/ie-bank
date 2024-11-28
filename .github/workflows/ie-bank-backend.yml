@@ -15,6 +15,23 @@ on:
 permissions:
   contents: read
   id-token: write
+name: ie-bank-backend
+
+on:
+  push:
+    paths:
+      - "backend/**"
+    branches:
+      - "*" # This will run on any branch
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "backend/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
 
 env:
   BACKEND_WEBAPP_DEV: dkumlin-be-dev
@@ -50,7 +67,6 @@ jobs:
           pip install flake8 pytest
           flake8 backend/ --count --select=E9,F63,F7,F82 --show-source --statistics
           flake8 backend/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-
       - name: Test with pytest
         run: python -m pytest -v
 
@@ -60,7 +76,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Get Docker Registry Credentials
-        id: get-registry-creds
+        id: acr-creds
         uses: azure/CLI@v1
         with:
           inlineScript: |
@@ -68,7 +84,6 @@ jobs:
             echo "::add-mask::$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_PASSWORD0 }} --vault-name ${{ env.KEY_VAULT_NAME_DEV }} --query value -o tsv)"
             echo "username=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_USERNAME }} --vault-name ${{ env.KEY_VAULT_NAME_DEV }} --query value -o tsv)" >> $GITHUB_OUTPUT
             echo "password=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_PASSWORD0 }} --vault-name ${{ env.KEY_VAULT_NAME_DEV }} --query value -o tsv)" >> $GITHUB_OUTPUT
-
       - name: Docker Login
         uses: azure/docker-login@v2
         with:
@@ -86,7 +101,6 @@ jobs:
           docker tag ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:${{ steps.image-version.outputs.version }} ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:latest
           docker push ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:${{ steps.image-version.outputs.version }}
           docker push ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:latest
-
       - name: Upload Artifact for Deployment
         uses: actions/upload-artifact@v4
         with:
