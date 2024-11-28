@@ -424,4 +424,3 @@ export default {
   border-bottom: 1px solid #dee2e6;
 }
 </style>
-

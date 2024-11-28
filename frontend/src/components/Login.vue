@@ -106,7 +106,7 @@ export default {
         }, 1000);
       } catch (error) {
         // Show error message
-        this.message = error.message || "Login failed";
+        this.message = error.error || "Login failed";
         this.alertVariant = "danger";
         this.showMessage = true;
 
