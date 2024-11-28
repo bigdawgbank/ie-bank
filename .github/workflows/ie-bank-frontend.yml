@@ -42,13 +42,11 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Get Azure static web app token
-        id: acr-creds
-        uses: azure/CLI@v1
-        with:
-          inlineScript: |
-            AZURE_STATIC_WEB_APPS_API_TOKEN=$(az account get-access-token --query accessToken -o tsv)
-            echo "AZURE_STATIC_WEB_APPS_API_TOKEN=$AZURE_STATIC_WEB_APPS_API_TOKEN" >> $GITHUB_ENV
+      - name: Get Static Web App Deployment Token
+        id: get-deployment-token
+        run: |
+          TOKEN=$(az staticwebapp secrets list --name ${{ env.FRONTEND_STATIC_WEBAPP_DEV }} --query "properties.apiKey" -o tsv)
+          echo "AZURE_STATIC_WEB_APPS_API_TOKEN=$TOKEN" >> $GITHUB_ENV
           
       - name: Build And Deploy to Static Web App
         uses: Azure/static-web-apps-deploy@v1
