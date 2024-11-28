@@ -249,6 +249,18 @@ module appServiceFE 'modules/app-service-fe.bicep' = {
   ]
 }
 
+// Workbook Module
+module workbook 'workbooks/workbook.bicep' = {
+  name: 'workbook'
+  params: {
+    logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
+    location: location
+  }
+  dependsOn: [
+    logAnalytics
+  ]
+}
+
 output frontendAppHostName string = appServiceFE.outputs.staticWebAppDefaultHostname
 output backendAppHostName string = appServiceBE.outputs.backendAppHostName
 output keyVaultResourceId string = keyVault.outputs.keyVaultResourceId
