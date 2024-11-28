@@ -34,13 +34,8 @@ elif os.getenv("ENV") == "ghci":
     logger.info("Running in GitHub mode")
     app.config.from_object("config.GithubCIConfig")
 elif os.getenv("ENV") == "uat":
-<<<<<<< HEAD
     logger.info("Running in UAT mode")
     app.config.from_object("config.GithubCIConfig")
-=======
-    print("Running in uat mode")
-    app.config.from_object("config.UATConfig")
->>>>>>> origin/main
 else:
     logger.info("Running in production mode")
     app.config.from_object("config.ProductionConfig")
@@ -82,13 +77,8 @@ from iebank_api.models import Account, User
 
 with app.app_context():
     db.create_all()
-<<<<<<< HEAD
     logger.info("Database tables created successfully")
 
 CORS(app)
-=======
-    create_admin_user()
-CORS(app, supports_credentials=True)
->>>>>>> origin/main
 
 from iebank_api import routes
