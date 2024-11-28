@@ -250,7 +250,7 @@ module appServiceFE 'modules/app-service-fe.bicep' = {
 }
 
 // Workbook Module
-module workbook 'workbooks/workbook.bicep' = {
+module workbook '../workbooks/workbook.bicep' = {
   name: 'workbook'
   params: {
     logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
