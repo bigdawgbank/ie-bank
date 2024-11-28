@@ -16,12 +16,26 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Response interceptor to handle unauthorized responses
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // If response is 401 Unauthorized, clear token and redirect to login
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      router.push("/login");
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const authService = {
   async register(userData) {
     try {
       const response = await api.post("/register", userData);
       return response.data;
     } catch (error) {
+      console.log(error);
       throw error.response.data;
     }
   },
@@ -58,8 +72,7 @@ export const authService = {
 };
 
 export const accountService = {
-  async getAccounts() {
-    // alert("getAccounts");
+  async getUserAccounts() {
     try {
       const response = await api.get("/accounts");
       return response.data;
@@ -193,6 +206,16 @@ export const transferService = {
   async transferMoney(transferData) {
     try {
       const response = await api.post("/transfer", transferData);
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+};
+export const wireTransferService = {
+  async wireTransferMoney(wireTransferData) {
+    try {
+      const response = await api.post("/wiretransfer", wireTransferData);
       return response.data;
     } catch (error) {
       throw error.response.data;
