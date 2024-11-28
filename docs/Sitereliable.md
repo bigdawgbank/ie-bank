@@ -82,9 +82,6 @@ To ensure the application’s performance, availability, and reliability, the fo
     - **Error Rate Alerts**: Triggered when error rates exceed 1%.
     - **Response Time Alerts**: Triggered when average response times exceed 200ms.
 
-- **Dashboards**:
-  - Real-time dashboards have been created using Azure Workbooks to visualize critical metrics, facilitating proactive monitoring.
-
 - **Log Analysis**:
   - Implemented log queries using Kusto Query Language (KQL) to identify trends and potential issues.
 
