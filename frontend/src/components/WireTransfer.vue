@@ -99,12 +99,9 @@
     methods: {
       async fetchAccounts() {
         try {
-          //alert("fetching accounts");
           const response = await accountService.getUserAccounts();
           console.log(response);
           this.accounts = response.accounts;
-          //alert(respond.accounts[0].account_number);
-          //alert(this.accounts[0].account_number);
         } catch (error) {
           console.error("Error fetching accounts:", error);
         }

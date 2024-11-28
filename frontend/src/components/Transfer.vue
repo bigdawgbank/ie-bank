@@ -104,7 +104,6 @@ export default {
   methods: {
     async fetchAccounts() {
       try {
-        //alert("fetching accounts");
         const response = await accountService.getUserAccounts();
         console.log(response);
         this.accounts = response.accounts;
@@ -116,8 +115,6 @@ export default {
       e.preventDefault();
 
       try {
-        //alert("transferring money");
-        //alert(this.transferForm);
         const response = await transferService.transferMoney(this.transferForm);
 
         // Show success message

@@ -486,9 +486,6 @@ def wire_transfer_money():
         return jsonify({"error": "Invalid account details"}), 400
 
     try:
-        # We´re reusing the BankTransfer class for wire transfers
-        # In the future if a wire transfer requires a routing number or bank id 
-            # then we will need to create a new class named BankWireTransfer
         bank_transfer = BankTransfer(from_account, to_account, amount)
         bank_transfer.process_transfer()
         return (
