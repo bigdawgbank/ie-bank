@@ -53,8 +53,8 @@ jobs:
           subscriptionId: ${{ env.SUBSCRIPTION_ID_DEV }}
           resourceGroupName: ${{ env.RESOURCE_GROUP_DEV }}
           template: ./infra/main.bicep
-          parameters: >
-            ./infra/parameters/dev.parameters.json
+          parametersFile: ./infra/parameters/dev.parameters.json  # Moved to parametersFile
+          parameters: |
             branch=${{ github.ref_name }}
             repositoryUrl=https://github.com/bigdawgbank/ie-bank
             appServiceAPIEnvVarENV=${{ vars.ENV }}
@@ -103,8 +103,8 @@ jobs:
           subscriptionId: ${{ env.SUBSCRIPTION_ID_DEV }}
           resourceGroupName: ${{ env.RESOURCE_GROUP_UAT }}
           template: ./infra/main.bicep
-          parameters: >
-            ./infra/parameters/uat.parameters.json
+          parametersFile: ./infra/parameters/uat.parameters.json  # Moved to parametersFile
+          parameters: |
             repositoryUrl=https://github.com/bigdawgbank/ie-bank
             branch=${{ github.ref_name }}
             appServiceAPIEnvVarENV=${{ vars.ENV }}
