@@ -1,15 +1,15 @@
 name: ie-bank-infra
 on:
-  workflow_dispatch:  # Allows manual triggering
+  workflow_dispatch:  # This allows manual triggering
   push:
     branches:
-      - '*'  # Runs on any branch
+      - '*'  # This will run on any branch
     paths:
       - 'infra/**'
       - '!infra/scripts/**'
   pull_request:
     branches:
-      - main  # Runs on pull requests to main
+      - main  # This will run on pull requests to main
     paths:
       - 'infra/**'
       - '!infra/scripts/**'
@@ -92,7 +92,7 @@ jobs:
             ./infra/parameters/uat.parameters.json
             repositoryUrl=https://github.com/bigdawgbank/ie-bank 
             branch=${{ github.ref_name }} 
-            appServiceAPIEnvVarENV=${{ vars.ENV }} 
+            appServiceAPIEnvVarENV=${{ vars.ENV}} 
             appServiceAPIEnvVarDBHOST=${{ vars.DBHOST }} 
             appServiceAPIEnvVarDBNAME=${{ vars.DBNAME }} 
             appServiceAPIEnvVarDBPASS=${{ secrets.DBPASS }} 
