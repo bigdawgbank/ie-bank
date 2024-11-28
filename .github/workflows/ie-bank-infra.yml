@@ -92,7 +92,7 @@ jobs:
             ./infra/parameters/uat.parameters.json
             repositoryUrl=https://github.com/bigdawgbank/ie-bank 
             branch=${{ github.ref_name }} 
-            appServiceAPIEnvVarENV=${{ vars.ENV}} 
+            appServiceAPIEnvVarENV=${{ vars.ENV }} 
             appServiceAPIEnvVarDBHOST=${{ vars.DBHOST }} 
             appServiceAPIEnvVarDBNAME=${{ vars.DBNAME }} 
             appServiceAPIEnvVarDBPASS=${{ secrets.DBPASS }} 
@@ -117,9 +117,9 @@ jobs:
           subscriptionId: ${{ env.SUBSCRIPTION_ID_DEV }}
           resourceGroupName: ${{ env.RESOURCE_GROUP_DEV }}
           template: ./infra/workbook.bicep
-          parameters: >
+          parameters: |
             workbookName=ie-bank-workbook-dev
-            workbookDefinition=$(cat ./infra/workbookazurev1.json | jq -c)
+            workbookDefinition='$(cat ./infra/workbookazurev1.json | jq -c .)'
           deploymentName: ${{ env.USER_ALIAS }}-workbook-dev
 
   deploy-workbook-uat:
@@ -138,7 +138,7 @@ jobs:
           subscriptionId: ${{ env.SUBSCRIPTION_ID_DEV }}
           resourceGroupName: ${{ env.RESOURCE_GROUP_UAT }}
           template: ./infra/workbook.bicep
-          parameters: >
+          parameters: |
             workbookName=ie-bank-workbook-uat
-            workbookDefinition=$(cat ./infra/workbookazurev1.json | jq -c)
+            workbookDefinition='$(cat ./infra/workbookazurev1.json | jq -c .)'
           deploymentName: ${{ env.USER_ALIAS }}-workbook-uat
