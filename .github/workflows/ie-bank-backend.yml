@@ -17,16 +17,24 @@ permissions:
   id-token: write
 
 env:
+  # Dev
   BACKEND_WEBAPP_DEV: dkumlin-be-dev
-  BACKEND_WEBAPP_UAT: dkumlin-be-uat  # Add this line for UAT webapp name
   CONTAINER_REGISTRY_SERVER_URL_DEV: dkumlinacrdev.azurecr.io
   IMAGE_NAME_DEV: dkumlin-be-dev
   KEY_VAULT_NAME_DEV: dkumlin-keyVault-dev
+
+  # UAT
+  BACKEND_WEBAPP_UAT: dkumlin-be-uat
+  CONTAINER_REGISTRY_SERVER_URL_UAT: dkumlinacruat.azurecr.io
+  IMAGE_NAME_UAT: dkumlin-be-uat
+  KEY_VAULT_NAME_UAT: dkumlin-keyVault-uat
+
+  # General
   KEY_VAULT_SECRET_ACR_USERNAME: acr-username
   KEY_VAULT_SECRET_ACR_PASSWORD0: acr-password0
 
 jobs:
-  build:
+  build-dev:
     runs-on: ubuntu-latest
     env:
       ENV: ghci
@@ -64,8 +72,6 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            echo "::add-mask::$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_USERNAME }} --vault-name ${{ env.KEY_VAULT_NAME_DEV }} --query value -o tsv)"
-            echo "::add-mask::$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_PASSWORD0 }} --vault-name ${{ env.KEY_VAULT_NAME_DEV }} --query value -o tsv)"
             echo "username=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_USERNAME }} --vault-name ${{ env.KEY_VAULT_NAME_DEV }} --query value -o tsv)" >> $GITHUB_OUTPUT
             echo "password=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_PASSWORD0 }} --vault-name ${{ env.KEY_VAULT_NAME_DEV }} --query value -o tsv)" >> $GITHUB_OUTPUT
 
@@ -87,24 +93,12 @@ jobs:
           docker push ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:${{ steps.image-version.outputs.version }}
           docker push ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:latest
 
-      - name: Upload Artifact for Deployment
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-docker-image
-          path: backend
-
   deploy-dev:
     runs-on: ubuntu-latest
-    needs: build
+    needs: build-dev
     environment:
       name: "Development"
     steps:
-      - name: Download Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: backend-docker-image
-          path: backend
-
       - name: Login to Azure CLI
         uses: azure/login@v2
         with:
@@ -116,19 +110,73 @@ jobs:
           app-name: ${{ env.BACKEND_WEBAPP_DEV }}
           images: "${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:${{ needs.build.outputs.image-version }}"
 
+  build-uat:
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      ENV: ghci
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      PYTHONPATH: backend
+    outputs:
+      image-version: ${{ steps.image-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Lint with flake8
+        run: |
+          pip install flake8 pytest
+          flake8 backend/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 backend/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Test with pytest
+        run: python -m pytest -v
+
+      - name: Login to Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get Docker Registry Credentials (UAT)
+        id: acr-creds
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            echo "username=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_USERNAME }} --vault-name ${{ env.KEY_VAULT_NAME_UAT }} --query value -o tsv)" >> $GITHUB_OUTPUT
+            echo "password=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_PASSWORD0 }} --vault-name ${{ env.KEY_VAULT_NAME_UAT }} --query value -o tsv)" >> $GITHUB_OUTPUT
+
+      - name: Docker Login (UAT)
+        uses: azure/docker-login@v2
+        with:
+          login-server: ${{ env.CONTAINER_REGISTRY_SERVER_URL_UAT }}
+          username: ${{ steps.acr-creds.outputs.username }}
+          password: ${{ steps.acr-creds.outputs.password }}
+
+      - name: Set Image Version
+        id: image-version
+        run: echo "version=$(date +'%Y.%m.%d.%H.%M')" >> $GITHUB_OUTPUT
+
+      - name: Build and Push Docker Image (UAT)
+        run: |
+          docker build -t ${{ env.CONTAINER_REGISTRY_SERVER_URL_UAT }}/${{ env.IMAGE_NAME_UAT }}:${{ steps.image-version.outputs.version }} backend/ 
+          docker tag ${{ env.CONTAINER_REGISTRY_SERVER_URL_UAT }}/${{ env.IMAGE_NAME_UAT }}:${{ steps.image-version.outputs.version }} ${{ env.CONTAINER_REGISTRY_SERVER_URL_UAT }}/${{ env.IMAGE_NAME_UAT }}:latest
+          docker push ${{ env.CONTAINER_REGISTRY_SERVER_URL_UAT }}/${{ env.IMAGE_NAME_UAT }}:${{ steps.image-version.outputs.version }}
+          docker push ${{ env.CONTAINER_REGISTRY_SERVER_URL_UAT }}/${{ env.IMAGE_NAME_UAT }}:latest
+
   deploy-uat:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    needs: build
+    needs: build-uat
     environment:
       name: "UAT"
     steps:
-      - name: Download Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: backend-docker-image
-          path: backend
-
       - name: Login to Azure CLI
         uses: azure/login@v2
         with:
@@ -138,4 +186,4 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.BACKEND_WEBAPP_UAT }}
-          images: "${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:${{ needs.build.outputs.image-version }}"
+          images: "${{ env.CONTAINER_REGISTRY_SERVER_URL_UAT }}/${{ env.IMAGE_NAME_UAT }}:${{ needs.build-uat.outputs.image-version }}"
