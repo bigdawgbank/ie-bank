@@ -349,10 +349,17 @@ def create_account():
 
 @app.route("/accounts", methods=["GET"])
 @jwt_required()
-def get_accounts():
+def get_user_accounts():
     user_id = int(get_jwt_identity())
     # Only get accounts belonging to current user
     accounts = db.session.query(Account).filter_by(user_id=user_id).all()
+    return jsonify({"accounts": [format_account(account) for account in accounts]}), 200
+
+
+@app.route("/accounts/all", methods=["GET"])
+@jwt_required()
+def get_all_accounts():
+    accounts = db.session.query(Account).all()
     return jsonify({"accounts": [format_account(account) for account in accounts]}), 200
 
 
@@ -445,8 +452,38 @@ def transfer_money():
     if not from_account or not to_account:
         return jsonify({"error": "Invalid account details"}), 400
 
-    if from_account.user_id != user.id:
-        return jsonify({"error": "Unauthorized"}), 403
+    try:
+        bank_transfer = BankTransfer(from_account, to_account, amount)
+        bank_transfer.process_transfer()
+        return jsonify({"message": "Transfer successful", "receipt": {
+            "sender_account_id": from_account.id,
+            "recipient_account_id": to_account.id,
+            "amount": amount,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }}), 200
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@app.route("/wiretransfer", methods=["POST"])
+@jwt_required()
+def wire_transfer_money():
+    user_id = int(get_jwt_identity())
+    user = db.session.get(User, user_id)
+
+    data = request.get_json()
+    from_account_id = data.get("sender_account_id")
+    to_account_number = data.get("recipient_account_number")
+    amount = data.get("amount")
+
+    if not from_account_id or not to_account_number or not amount:
+        return jsonify({"error": "Missing required fields"}), 400
+
+    from_account = db.session.get(Account, from_account_id)
+    to_account = db.session.query(Account).filter_by(account_number=to_account_number).first()
+
+    if not from_account or not to_account:
+        return jsonify({"error": "Invalid account details"}), 400
 
     try:
         bank_transfer = BankTransfer(from_account, to_account, amount)
