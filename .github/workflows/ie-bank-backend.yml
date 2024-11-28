@@ -39,6 +39,8 @@ jobs:
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v3
+        with:
+          python-version: '3.11'
 
       - name: Install dependencies
         run: pip install -r backend/requirements.txt
@@ -80,7 +82,7 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker build backend/ -t ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:${{ steps.image-version.outputs.version }}
+          docker build -t ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:${{ steps.image-version.outputs.version }} backend/ 
           docker tag ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:${{ steps.image-version.outputs.version }} ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:latest
           docker push ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:${{ steps.image-version.outputs.version }}
           docker push ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:latest
