@@ -59,7 +59,7 @@ jobs:
           resourceGroupName: ${{ env.RESOURCE_GROUP_DEV }}
           template: ./infra/main.bicep
           parameters: |
-            @infra/parameters/dev.parameters.json
+            ./infra/parameters/dev.parameters.json
             branch=${{ github.ref_name }}
             repositoryUrl=https://github.com/bigdawgbank/ie-bank
             appServiceAPIEnvVarENV=${{ env.ENV }}
@@ -114,9 +114,9 @@ jobs:
           resourceGroupName: ${{ env.RESOURCE_GROUP_UAT }}
           template: ./infra/main.bicep
           parameters: |
-            @infra/parameters/uat.parameters.json
-            repositoryUrl=https://github.com/bigdawgbank/ie-bank
+            ./infra/parameters/uat.parameters.json
             branch=${{ github.ref_name }}
+            repositoryUrl=https://github.com/bigdawgbank/ie-bank
             appServiceAPIEnvVarENV=${{ env.ENV }}
             appServiceAPIEnvVarDBHOST=${{ env.DBHOST }}
             appServiceAPIEnvVarDBNAME=${{ env.DBNAME }}
