@@ -88,6 +88,9 @@ param branch string
 @description('The Github URL used for the static web app')
 param repositoryUrl string = 'https://github.com/bigdawgbank/ie-bank'
 
+@description('The display name for the workbook')
+param workbookDisplayName string = 'WorkbookLarbi'  // Added this line
+
 var logAnalyticsWorkspaceId = resourceId('Microsoft.OperationalInsights/workspaces', logAnalyticsWorkspaceName)
 
 var skuName = (environmentType == 'prod') ? 'B1' : 'B1' //modify according to desired capacity
@@ -255,6 +258,7 @@ module workbook '../workbooks/workbook.bicep' = {
   params: {
     logAnalyticsWorkspaceName: logAnalyticsWorkspaceName
     location: location
+    workbookDisplayName: workbookDisplayName  // Added this line
   }
   dependsOn: [
     logAnalytics
