@@ -20,6 +20,7 @@ env:
   RESOURCE_GROUP_UAT: BCSAI2024-DEVOPS-STUDENTS-B-UAT
   SUBSCRIPTION_ID_DEV: e0b9cada-61bc-4b5a-bd7a-52c606726b3b
   USER_ALIAS: dkumlin
+  LOCATION: northeurope  # Added the LOCATION environment variable
 
 jobs:
   build:
@@ -73,7 +74,7 @@ jobs:
           template: ./workbooks/workbook.bicep
           parameters: >
             logAnalyticsWorkspaceName=dkumlin-logAnalyticsWorkspace-dev
-            location=${{ env.RESOURCE_GROUP_DEV }}
+            location=${{ env.LOCATION }}  # Updated to use a valid Azure location
           deploymentName: ${{ env.USER_ALIAS }}-workbook-dev
 
   deploy-uat:
@@ -104,7 +105,7 @@ jobs:
             ./infra/parameters/uat.parameters.json
             repositoryUrl=https://github.com/bigdawgbank/ie-bank 
             branch=${{ github.ref_name }} 
-            appServiceAPIEnvVarENV=${{ vars.ENV}} 
+            appServiceAPIEnvVarENV=${{ vars.ENV }} 
             appServiceAPIEnvVarDBHOST=${{ vars.DBHOST }} 
             appServiceAPIEnvVarDBNAME=${{ vars.DBNAME }} 
             appServiceAPIEnvVarDBPASS=${{ secrets.DBPASS }} 
@@ -121,5 +122,5 @@ jobs:
           template: ./workbooks/workbook.bicep
           parameters: >
             logAnalyticsWorkspaceName=dkumlin-logAnalyticsWorkspace-uat
-            location=${{ env.RESOURCE_GROUP_UAT }}
+            location=${{ env.LOCATION }}  # Updated to use a valid Azure location
           deploymentName: ${{ env.USER_ALIAS }}-workbook-uat
