@@ -1,12 +1,10 @@
 # Dockerfile
 FROM python:3.10-slim-buster
 
-WORKDIR /app
-
 # Install PostgreSQL development files and other necessary packages
-RUN apt-get update \
-    && apt-get install -y libpq-dev gcc \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y build-essential libpq-dev gcc
+
+WORKDIR /app
 
 COPY requirements.txt requirements.txt
 
@@ -16,4 +14,4 @@ COPY . .
 
 EXPOSE 5000
 
-CMD ["python3", "-m", "flask", "--app", "iebank_api", "run", "--host=0.0.0.0"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
