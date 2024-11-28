@@ -16,9 +16,11 @@ class LocalConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///local.db"
     DEBUG = True
 
+
 class GithubCIConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///local.db"
     DEBUG = True
+
 
 class GithubCIConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///test.db"
@@ -32,10 +34,9 @@ class DevelopmentConfig(Config):
         SQLALCHEMY_DATABASE_URI = (
             "postgresql://{dbuser}:{dbpass}@{dbhost}/{dbname}".format(
                 dbuser=os.getenv("DBUSER"),
-                # dbpass=credential.get_token(
-                #     "https://ossrdbms-aad.database.windows.net"
-                # ).token,
-                dbpass=os.getenv("DBPASS"),
+                dbpass=credential.get_token(
+                    "https://ossrdbms-aad.database.windows.net"
+                ).token,
                 dbhost=os.getenv("DBHOST"),
                 dbname=os.getenv("DBNAME"),
             )
@@ -46,6 +47,7 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///local.db"
     DEBUG = True
+
 
 # Added custom config
 class UATConfig(Config):
