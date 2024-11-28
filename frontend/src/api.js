@@ -16,12 +16,26 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Response interceptor to handle unauthorized responses
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // If response is 401 Unauthorized, clear token and redirect to login
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      router.push("/login");
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const authService = {
   async register(userData) {
     try {
       const response = await api.post("/register", userData);
       return response.data;
     } catch (error) {
+      console.log(error);
       throw error.response.data;
     }
   },
