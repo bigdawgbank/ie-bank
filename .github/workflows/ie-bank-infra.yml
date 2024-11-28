@@ -53,7 +53,7 @@ jobs:
           subscriptionId: ${{ env.SUBSCRIPTION_ID_DEV }}
           resourceGroupName: ${{ env.RESOURCE_GROUP_DEV }}
           template: ./infra/main.bicep
-          parametersFile: ./infra/parameters/dev.parameters.json  # Moved to parametersFile
+          parametersFile: ./infra/parameters/dev.parameters.json
           parameters: |
             branch=${{ github.ref_name }}
             repositoryUrl=https://github.com/bigdawgbank/ie-bank
@@ -64,7 +64,7 @@ jobs:
             appServiceAPIDBHostDBUSER=${{ secrets.DBUSER }}
             appServiceAPIDBHostFLASK_APP=${{ vars.FLASK_APP }}
             appServiceAPIDBHostFLASK_DEBUG=${{ vars.FLASK_DEBUG }}
-            workbookDisplayName=WorkbookLarbi  # Added this line
+            workbookDisplayName=WorkbookLarbi
           deploymentName: ${{ env.USER_ALIAS }}-dev
 
       - name: Deploy Workbook to Development
@@ -76,7 +76,7 @@ jobs:
           parameters: |
             logAnalyticsWorkspaceName=dkumlin-logAnalyticsWorkspace-dev
             location=${{ env.LOCATION }}
-            workbookDisplayName=WorkbookLarbi  # Added this line
+            workbookDisplayName=WorkbookLarbi
           deploymentName: ${{ env.USER_ALIAS }}-workbook-dev
 
   deploy-uat:
@@ -103,7 +103,7 @@ jobs:
           subscriptionId: ${{ env.SUBSCRIPTION_ID_DEV }}
           resourceGroupName: ${{ env.RESOURCE_GROUP_UAT }}
           template: ./infra/main.bicep
-          parametersFile: ./infra/parameters/uat.parameters.json  # Moved to parametersFile
+          parametersFile: ./infra/parameters/uat.parameters.json
           parameters: |
             repositoryUrl=https://github.com/bigdawgbank/ie-bank
             branch=${{ github.ref_name }}
@@ -114,7 +114,7 @@ jobs:
             appServiceAPIDBHostDBUSER=${{ secrets.DBUSER }}
             appServiceAPIDBHostFLASK_APP=${{ vars.FLASK_APP }}
             appServiceAPIDBHostFLASK_DEBUG=${{ vars.FLASK_DEBUG }}
-            workbookDisplayName=WorkbookLarbi  # Added this line
+            workbookDisplayName=WorkbookLarbi
           deploymentName: ${{ env.USER_ALIAS }}-uat
 
       - name: Deploy Workbook to UAT
@@ -126,5 +126,5 @@ jobs:
           parameters: |
             logAnalyticsWorkspaceName=dkumlin-logAnalyticsWorkspace-uat
             location=${{ env.LOCATION }}
-            workbookDisplayName=WorkbookLarbi  # Added this line
+            workbookDisplayName=WorkbookLarbi
           deploymentName: ${{ env.USER_ALIAS }}-workbook-uat
