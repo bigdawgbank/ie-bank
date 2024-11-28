@@ -7,7 +7,7 @@ param location string = resourceGroup().location
 @description('The display name for the workbook')
 param workbookDisplayName string = 'My Workbook'
 
-resource workbook 'Microsoft.Insights/workbooks@2020-10-01' = {
+resource workbook 'Microsoft.Insights/workbooks@2023-06-01' = {
   name: 'my-workbook'
   location: location
   properties: {
