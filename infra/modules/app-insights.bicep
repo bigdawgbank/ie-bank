@@ -7,6 +7,15 @@ param appInsightsName string
 @description('Azure Log Analytics Workspace ID')
 param logAnalyticsWorkspaceId string
 
+
+module workbook 'workbook.bicep' = {
+  name: 'workbook'
+  params: {
+    location: location
+    sourceId: appInsights.id
+  }
+}
+
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: appInsightsName
   location: location
