@@ -5,16 +5,13 @@ param sourceId string
 param location string
 
 resource myWorkbook 'Microsoft.Insights/workbooks@2022-04-01' = {
-  name: 'ie-bank-workbook'
+  name: guid('sampleWorkbook', resourceGroup().id)
   location: location
   kind: 'shared'
   properties: {
     category: 'workbook'
-    displayName: 'IE Bank Workbook'
+    displayName: 'IE BigDawgBank Workbook '
     serializedData: loadTextContent('../../workbooks/workbook1.json')
     sourceId: sourceId
   }
 }
-
-output workbookName string = myWorkbook.name
-output workbookId string = myWorkbook.id
