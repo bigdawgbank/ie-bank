@@ -207,10 +207,6 @@ module appServiceBE 'modules/app-service-be.bicep' = {
         value: appServiceAPIEnvVarDBNAME
       }
       {
-        name: 'DBPASS'
-        value: appServiceAPIEnvVarDBPASS
-      }
-      {
         name: 'DBUSER'
         value: appServiceAPIDBHostDBUSER
       }
