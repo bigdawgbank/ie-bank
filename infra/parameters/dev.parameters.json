@@ -39,7 +39,7 @@
       "value": "dkumlin-appInsights-dev"
     },
     "keyVaultName": {
-      "value": "dkumlin-KV-dev"
+      "value": "dkumlin-key-dev"
     },
     "keyVaultRoleAssignments": {
       "value": [

@@ -24,7 +24,7 @@
       "value": "North Europe"
     },
     "keyVaultName": {
-      "value": "dkumlin-KV-uat"
+      "value": "dkumlin-key-uat"
     },
     "keyVaultRoleAssignments": {
       "value": [
