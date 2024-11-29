@@ -24,7 +24,7 @@
       "value": "North Europe"
     },
     "keyVaultName": {
-      "value": "dkumlin-keyvault-uat"
+      "value": "dkumlin-KV-uat"
     },
     "keyVaultRoleAssignments": {
       "value": [
@@ -36,20 +36,19 @@
       ]
     },
     "containerRegistryName": {
-        "value": "dkumlinacruat"
+      "value": "dkumlinacruat"
     },
     "dockerRegistryImageName": {
-        "value": "dkumlin-be-uat"
+      "value": "dkumlin-be-uat"
     },
     "dockerRegistryImageTag": {
-        "value": "latest"
+      "value": "latest"
     },
     "logAnalyticsWorkspaceName": {
-      "value": "dkumlin-logAnalyticsWorkspace-uat" 
+      "value": "dkumlin-logAnalyticsWorkspace-uat"
     },
     "appInsightsName": {
       "value": "dkumlin-appInsights-uat"
-  } 
+    }
   }
 }
-

@@ -30,16 +30,16 @@
       "value": "dkumlin-be-dev"
     },
     "dockerRegistryImageTag": {
-        "value": "latest"
+      "value": "latest"
     },
     "logAnalyticsWorkspaceName": {
-      "value": "dkumlin-logAnalyticsWorkspace-dev" 
+      "value": "dkumlin-logAnalyticsWorkspace-dev"
     },
     "appInsightsName": {
       "value": "dkumlin-appInsights-dev"
     },
     "keyVaultName": {
-      "value": "dkumlin-keyvault-dev"
+      "value": "dkumlin-KV-dev"
     },
     "keyVaultRoleAssignments": {
       "value": [
@@ -52,3 +52,4 @@
     }
   }
 }
+
