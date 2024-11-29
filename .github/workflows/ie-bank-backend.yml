@@ -152,6 +152,11 @@ jobs:
             echo "username=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_USERNAME }} --vault-name ${{ env.KEY_VAULT_NAME_UAT }} --query value -o tsv)" >> $GITHUB_OUTPUT
             echo "password=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_PASSWORD0 }} --vault-name ${{ env.KEY_VAULT_NAME_UAT }} --query value -o tsv)" >> $GITHUB_OUTPUT
 
+      - name: Debug ACR Credentials
+        run: |
+          echo "ACR Username: ${{ steps.acr-creds.outputs.username }}"
+          echo "ACR Password: ${{ steps.acr-creds.outputs.password }}"
+
       - name: Docker Login (UAT)
         uses: azure/docker-login@v2
         with:
