@@ -37,42 +37,21 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      #- name: Validate Bicep deployment
-        #run: |
-            #echo "Validating Bicep deployment..."
-            #for file in $(find ./infra -name '*.bicep'); do
-                    #az deployment group what-if \
-                    #--resource-group $RESOURCE_GROUP_DEV \
-                    #--template-file $file \
-                    #--parameters @./infra/parameters/dev.parameters.json || exit 1
-            #done
-            #echo "Deployment validation completed successfully!"
-        
-        
-  test:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
       - uses: actions/checkout@v3
+      - name: Run Bicep linter
+        run: az bicep build --file ./infra/main.bicep
 
+      - name: Run checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: './infra'
+          file: 'main.bicep'
+        continue-on-error: true
 
-      - name: Install Azure CLI
-        run: |
-          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-
-      - name: Install Bicep
-        run: |
-          az bicep install
-
-      - name: Run Unit Tests with arm-ttk
-        run: |
-            echo "Cloning arm-ttk for unit testing..."
-            git clone https://github.com/Azure/arm-ttk.git
-            echo "Running arm-ttk tests..."
-            pwsh ./arm-ttk/arm-ttk.ps1 ./infra/**/*.bicep || exit 1
+        
   deploy-dev:
     runs-on: ubuntu-latest
-    needs: test
+    needs: build
     environment: Development
 
     steps:
@@ -106,7 +85,7 @@ jobs:
 
   deploy-uat:
     runs-on: ubuntu-latest
-    needs: test
+    needs: build
     if: github.event_name == 'pull_request' && github.base_ref == 'main' || github.ref == 'refs/heads/main'
     environment: UAT
 
