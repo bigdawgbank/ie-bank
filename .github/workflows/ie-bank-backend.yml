@@ -69,8 +69,8 @@ jobs:
         uses: azure/docker-login@v2
         with:
           login-server: ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}
-          username: ${{ env.REGISTRY_USERNAME }}
-          password: ${{ env.REGISTRY_PASSWORD }}
+          username: ${{ steps.acr-cred.output.REGISTRY_USERNAME }}
+          password: ${{ steps.acr-cred.output.REGISTRY_PASSWORD }}
 
       - name: Set Image Version
         id: image-version
