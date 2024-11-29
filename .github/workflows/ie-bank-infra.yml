@@ -31,8 +31,7 @@ jobs:
       - name: Run checkov
         uses: bridgecrewio/checkov-action@master
         with:
-          directory: 'infra'
-          file: 'main.bicep'
+          file: infra/main.bicep
         continue-on-error: true
 
 
