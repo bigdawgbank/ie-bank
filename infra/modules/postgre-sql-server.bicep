@@ -32,6 +32,8 @@ resource postgresSQLServer 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01
     tier: tier
   }
   properties: {
+    administratorLogin: administratorLogin
+    administratorLoginPassword: 'IE.Bank.DB.Admin.Pa$$'
     createMode: 'Default'
     highAvailability: {
       mode: 'Disabled'
