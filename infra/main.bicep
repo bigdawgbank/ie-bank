@@ -92,22 +92,6 @@ var logAnalyticsWorkspaceId = resourceId('Microsoft.OperationalInsights/workspac
 
 var skuName = (environmentType == 'prod') ? 'B1' : 'B1' //modify according to desired capacity
 
-module keyVault 'modules/keyvault.bicep' = {
-  name: 'keyVault'
-  params: {
-    keyVaultName: keyVaultName
-    location: location
-    roleAssignments: keyVaultRoleAssignments
-  }
-}
-
-resource keyVaultReference 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-  name: keyVaultName
-  dependsOn: [
-    keyVault
-  ]
-}
-
 // Use Key Vault for administrator login password later
 module postgresSQLServerModule 'modules/postgre-sql-server.bicep' = {
   name: 'postgresSQLServerModule'
@@ -141,6 +125,27 @@ module logAnalytics 'modules/azure-log-analytics.bicep' = {
     name: logAnalyticsWorkspaceName
   }
 }
+
+module keyVault 'modules/keyvault.bicep' = {
+  name: 'keyVault'
+  params: {
+    keyVaultName: keyVaultName
+    location: location
+    roleAssignments: keyVaultRoleAssignments
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+  }
+  dependsOn: [
+    logAnalytics
+  ]
+}
+
+resource keyVaultReference 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: keyVaultName
+  dependsOn: [
+    keyVault
+  ]
+}
+
 module appInsights 'modules/app-insights.bicep' = {
   name: 'appInsights'
   params: {
