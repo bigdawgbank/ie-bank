@@ -120,7 +120,7 @@ jobs:
 
   deploy-prod:
     runs-on: ubuntu-latest
-    needs: test
+    needs: build
     environment: PROD
 
     steps:
