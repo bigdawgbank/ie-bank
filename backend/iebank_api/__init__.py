@@ -17,7 +17,7 @@ logger = logging.getLogger("iebank_logger")
 logger.setLevel(logging.INFO)  # Adjust log level as needed
 
 # Configure Azure Log Handler
-connection_string = os.getenv("APPINSIGHTS_CONNECTION_STRING")
+connection_string = os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING")
 if connection_string:
     handler = AzureLogHandler(connection_string=connection_string)
     handler.setLevel(logging.INFO)
