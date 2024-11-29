@@ -22,11 +22,6 @@ class GithubCIConfig(Config):
     DEBUG = True
 
 
-class GithubCIConfig(Config):
-    SQLALCHEMY_DATABASE_URI = "sqlite:///test.db"
-    DEBUG = True
-
-
 # Use for both uat and dev
 class DevelopmentConfig(Config):
     if os.getenv("ENV") == "dev":
