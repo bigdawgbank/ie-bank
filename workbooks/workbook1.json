@@ -2,6 +2,13 @@
   "version": "Notebook/1.0",
   "items": [
     {
+      "type": 1,
+      "content": {
+        "json": "# IE BigDawgBank Workbook\n\n## \"Empowering Reliability, Performance, and Insights\"\n\n### Welcome to BigDawgBank Workbook, the central hub for monitoring and analyzing the health, performance, and reliability of our application. Designed with our SLAs, SLOs, and SLIs in mind, this workbook provides real-time insights into key metrics such as uptime, error rates, and response times. By leveraging these insights, our team ensures compliance with service commitments, addresses incidents proactively, and delivers a seamless and dependable user experience."
+      },
+      "name": "text - 29"
+    },
+    {
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
@@ -69,7 +76,7 @@
         "size": 0,
         "title": "Average Dependency Call Duration Over Time",
         "timeContext": {
-          "durationMs": 604800000
+          "durationMs": 86400000
         },
         "queryType": 0,
         "resourceType": "microsoft.insights/components"
@@ -135,54 +142,6 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "requests\n| summarize avgDuration = avg(duration) by operation_Name\n| order by avgDuration desc\n",
-        "size": 0,
-        "title": "Backend Performance",
-        "timeContext": {
-          "durationMs": 86400000
-        },
-        "queryType": 0,
-        "resourceType": "microsoft.insights/components",
-        "visualization": "categoricalbar"
-      },
-      "name": "query - 2"
-    },
-    {
-      "type": 3,
-      "content": {
-        "version": "KqlItem/1.0",
-        "query": "customEvents\n| summarize eventCount = count() by name\n| order by eventCount desc\n",
-        "size": 0,
-        "title": "Custom Events",
-        "timeContext": {
-          "durationMs": 86400000
-        },
-        "queryType": 0,
-        "resourceType": "microsoft.insights/components",
-        "visualization": "piechart"
-      },
-      "name": "query - 2"
-    },
-    {
-      "type": 3,
-      "content": {
-        "version": "KqlItem/1.0",
-        "query": "dependencies\n| summarize failureCount = countif(success == false) by target\n| order by failureCount desc\n",
-        "size": 0,
-        "title": "Dependency Failures",
-        "timeContext": {
-          "durationMs": 604800000
-        },
-        "queryType": 0,
-        "resourceType": "microsoft.insights/components",
-        "visualization": "piechart"
-      },
-      "name": "query - 2"
-    },
-    {
-      "type": 3,
-      "content": {
-        "version": "KqlItem/1.0",
         "query": "requests\n| summarize avgDuration = avg(duration)\n",
         "size": 1,
         "title": "Average Request Duration",
@@ -194,38 +153,6 @@
         "visualization": "stat"
       },
       "name": "query - 3"
-    },
-    {
-      "type": 3,
-      "content": {
-        "version": "KqlItem/1.0",
-        "query": "requests\n| summarize requestCount = count() by operation_Name\n| top 5 by requestCount\n",
-        "size": 0,
-        "title": "Top 5 Most Accessed Endpoints",
-        "timeContext": {
-          "durationMs": 86400000
-        },
-        "queryType": 0,
-        "resourceType": "microsoft.insights/components",
-        "visualization": "categoricalbar"
-      },
-      "name": "query - 4"
-    },
-    {
-      "type": 3,
-      "content": {
-        "version": "KqlItem/1.0",
-        "query": "traces\n| summarize count() by severityLevel\n",
-        "size": 0,
-        "title": "Log Count per Severity",
-        "timeContext": {
-          "durationMs": 86400000
-        },
-        "queryType": 0,
-        "resourceType": "microsoft.insights/components",
-        "visualization": "categoricalbar"
-      },
-      "name": "query - 5"
     },
     {
       "type": 3,
@@ -280,7 +207,6 @@
             "namespace": "microsoft.insights/components/kusto",
             "metric": "microsoft.insights/components/kusto-Availability-availabilityResults/availabilityPercentage",
             "aggregation": 4,
-            "splitBy": null,
             "columnName": "Application Availability"
           }
         ],
@@ -310,7 +236,6 @@
             "namespace": "microsoft.insights/components/kusto",
             "metric": "microsoft.insights/components/kusto-Server-requests/duration",
             "aggregation": 4,
-            "splitBy": null,
             "columnName": "Server Response Time"
           }
         ],
@@ -341,7 +266,6 @@
             "namespace": "microsoft.insights/components/kusto",
             "metric": "microsoft.insights/components/kusto-Failures-requests/failed",
             "aggregation": 1,
-            "splitBy": null,
             "columnName": "Failed Request Rate"
           }
         ],
@@ -372,7 +296,6 @@
             "namespace": "microsoft.insights/components/kusto",
             "metric": "microsoft.insights/components/kusto-Failures-exceptions/count",
             "aggregation": 1,
-            "splitBy": null,
             "columnName": "Exception Count"
           }
         ],
@@ -403,7 +326,6 @@
             "namespace": "microsoft.insights/components/kusto",
             "metric": "microsoft.insights/components/kusto-Server-dependencies/duration",
             "aggregation": 4,
-            "splitBy": null,
             "columnName": "Dependency Duration"
           }
         ],
@@ -433,7 +355,6 @@
             "namespace": "microsoft.insights/components/kusto",
             "metric": "microsoft.insights/components/kusto-Performance Counters-performanceCounters/processCpuPercentageTotal",
             "aggregation": 4,
-            "splitBy": null,
             "columnName": "CPU Usage"
           }
         ],
@@ -463,7 +384,6 @@
             "namespace": "microsoft.insights/components/kusto",
             "metric": "microsoft.insights/components/kusto-Performance Counters-performanceCounters/processPrivateBytes",
             "aggregation": 4,
-            "splitBy": null,
             "columnName": "Memory Usage"
           }
         ],
@@ -494,7 +414,6 @@
             "namespace": "microsoft.insights/components/kusto",
             "metric": "microsoft.insights/components/kusto-Browser-browserTimings/totalDuration",
             "aggregation": 4,
-            "splitBy": null,
             "columnName": "Browser Page Load Time"
           }
         ],
@@ -525,7 +444,6 @@
             "namespace": "microsoft.insights/components/kusto",
             "metric": "microsoft.insights/components/kusto-Usage-users/count",
             "aggregation": 5,
-            "splitBy": null,
             "columnName": "Unique Users"
           }
         ],
@@ -555,7 +473,6 @@
             "namespace": "microsoft.insights/components/kusto",
             "metric": "microsoft.insights/components/kusto-Server-requests/count",
             "aggregation": 1,
-            "splitBy": null,
             "columnName": "Request Rate"
           }
         ],
@@ -711,8 +628,7 @@
     }
   ],
   "fallbackResourceIds": [
-    "/subscriptions/e0b9cada-61bc-4b5a-bd7a-52c606726b3b/resourceGroups/BCSAI2024-DEVOPS-STUDENTS-B-DEV/providers/Microsoft.Insights/components/dkumlin-appInsights-dev"
+    "/subscriptions/e0b9cada-61bc-4b5a-bd7a-52c606726b3b/resourcegroups/bcsai2024-devops-students-b-dev/providers/microsoft.insights/components/dkumlin-appinsights-dev"
   ],
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
-}
-
+} 
