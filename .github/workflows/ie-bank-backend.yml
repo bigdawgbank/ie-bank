@@ -21,13 +21,13 @@ env:
   BACKEND_WEBAPP_DEV: dkumlin-be-dev
   CONTAINER_REGISTRY_SERVER_URL_DEV: dkumlinacrdev.azurecr.io
   IMAGE_NAME_DEV: dkumlin-be-dev
-  KEY_VAULT_NAME_DEV: dkumlin-KV-dev
+  KEY_VAULT_NAME_DEV: dkumlin-key-dev
 
   # UAT
   BACKEND_WEBAPP_UAT: dkumlin-be-uat
   CONTAINER_REGISTRY_SERVER_URL_UAT: dkumlinacruat.azurecr.io
   IMAGE_NAME_UAT: dkumlin-be-uat
-  KEY_VAULT_NAME_UAT: dkumlin-KV-uat
+  KEY_VAULT_NAME_UAT: dkumlin-key-uat
 
   # General
   KEY_VAULT_SECRET_ACR_USERNAME: acr-username
