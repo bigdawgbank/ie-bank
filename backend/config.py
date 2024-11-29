@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# aoihaisfhasfhafsu
+
 
 class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
