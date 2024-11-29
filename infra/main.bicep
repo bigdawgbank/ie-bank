@@ -67,7 +67,7 @@ param dockerRegistryImageName string
 param dockerRegistryImageTag string
 
 @description('Name of the Key Vault')
-param keyVaultName string = 'dkmulin-kv-dev'
+param keyVaultName string 
 
 @description('Role assignments for the Key Vault')
 param keyVaultRoleAssignments array = []
