@@ -44,9 +44,9 @@ param appServiceAPIEnvVarDBHOST string
 @description('The value for the environment variable DBNAME')
 param appServiceAPIEnvVarDBNAME string
 
-@description('The value for the environment variable DBPASS')
-@secure()
-param appServiceAPIEnvVarDBPASS string
+// @description('The value for the environment variable DBPASS')
+// @secure()
+// param appServiceAPIEnvVarDBPASS string
 
 @description('The value for the environment variable DBUSER')
 param appServiceAPIDBHostDBUSER string

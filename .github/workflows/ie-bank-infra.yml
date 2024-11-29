@@ -58,7 +58,6 @@ jobs:
             appServiceAPIEnvVarENV=${{ vars.ENV }} 
             appServiceAPIEnvVarDBHOST=${{ vars.DBHOST }} 
             appServiceAPIEnvVarDBNAME=${{ vars.DBNAME }} 
-            appServiceAPIEnvVarDBPASS=${{ secrets.DBPASS }} 
             appServiceAPIDBHostDBUSER=${{ secrets.DBUSER }} 
             appServiceAPIDBHostFLASK_APP=${{ vars.FLASK_APP }} 
             appServiceAPIDBHostFLASK_DEBUG=${{ vars.FLASK_DEBUG }}
@@ -95,7 +94,6 @@ jobs:
             appServiceAPIEnvVarENV=${{ vars.ENV}} 
             appServiceAPIEnvVarDBHOST=${{ vars.DBHOST }} 
             appServiceAPIEnvVarDBNAME=${{ vars.DBNAME }} 
-            appServiceAPIEnvVarDBPASS=${{ secrets.DBPASS }} 
             appServiceAPIDBHostDBUSER=${{ secrets.DBUSER }} 
             appServiceAPIDBHostFLASK_APP=${{ vars.FLASK_APP }} 
             appServiceAPIDBHostFLASK_DEBUG=${{ vars.FLASK_DEBUG }}
