@@ -10,6 +10,8 @@ import { authService } from "@/api";
 
 Vue.use(VueRouter);
 
+// Just for testing
+//
 const routes = [
   {
     path: "/",
@@ -37,7 +39,8 @@ const routes = [
     name: "Admin",
     component: Admin,
     meta: { requiresAuth: true },
-},{
+  },
+  {
     path: "/transfer",
     name: "Transfer",
     component: Transfer,
