@@ -149,8 +149,10 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            echo "username=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_USERNAME }} --vault-name ${{ env.KEY_VAULT_NAME_UAT }} --query value -o tsv)" >> $GITHUB_OUTPUT
-            echo "password=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_PASSWORD0 }} --vault-name ${{ env.KEY_VAULT_NAME_UAT }} --query value -o tsv)" >> $GITHUB_OUTPUT
+            echo "username=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_USERNAME }} --vault-name ${{ env.KEY_VAULT_NAME_UAT }} --query value -o tsv)"
+            echo "password=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_PASSWORD0 }} --vault-name ${{ env.KEY_VAULT_NAME_UAT }} --query value -o tsv)"
+            echo "username=$username" >> $GITHUB_OUTPUT
+            echo "password=$password" >> $GITHUB_OUTPUT
 
       - name: Debug ACR Credentials
         run: |
