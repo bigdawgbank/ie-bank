@@ -48,6 +48,7 @@ The following functional requirements outline the behavior and features of the I
 **User Story:** As an admin, I want users who are creating more than one user to not be allowed the use of the same email when creating another one.  
 - **Test:** [test_user_unique_email](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/unit/test_auth_model.py)  
 - **Test:** [test_register_duplicate_user](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py#test_register_duplicate_user)  
+
 ---
 
 #### FR07: Multiple accounts per User
@@ -307,7 +308,7 @@ We will use the Log Analytics Workspace to consolidate logs and metrics from Azu
 
 ### Application Insights
 #### Description
-We will use Azure Application Insights to provide us with real-time monitoring and telemetry for the BigDawgBank application, covering both frontend and backend performance.
+We will use Azure Application Insights built on top of our Log Analytics to provide us with real-time monitoring and telemetry for the BigDawgBank application, covering both frontend and backend performance.
 
 #### Key Features
 - **Performance Metrics**:
@@ -327,7 +328,7 @@ We will use Azure Application Insights to provide us with real-time monitoring a
 ### Infra Architecture Design Diagram:
 
 
-![Cloud Architecture Diagram](./images/Architecture-Design.png)
+![Cloud Architecture Diagram](./images/Infra_Architecture_Design.drawio.png)
 
 
 ### INPUT DESCRIPTION HERE
@@ -390,7 +391,7 @@ We will use Azure Application Insights to provide us with real-time monitoring a
 ## 2. Use Case and Sequential Model Design
 - **Description**: Update the use case and sequential model diagrams for each use case in the application.
 
-| Use Case Name                       | **Create a New Bank Account**                                         | **Manage Bank Users (Admin)**                               | **View Accounts and Transactions**                           |
+| Use Case Name                       | **Register for a New Bank Account**                                         | **Manage Bank Users (Admin)**                               | **View Accounts and Transactions**                           |
 |------------------------|----------------------------------------------------------------------|-----------------------------------------------------------|-------------------------------------------------------------|
 | **Description**        | A user creates a new account in the system.                         | The admin creates, updates, deletes, and views users.      | Users view details of their accounts, including transactions. |
 | **Actors**             | Bank User                                                          | Admin User                                                | Bank User                                                   |
@@ -409,7 +410,6 @@ We will use Azure Application Insights to provide us with real-time monitoring a
 | **Alternate Flows**    | 1. Insufficient funds: System rejects transfer and notifies the user.<br>2. Invalid account number: System rejects the request.<br>3. Transfer limit exceeded: User is notified and action is denied. | 1. Invalid role: System rejects the request with an error message.<br>2. Unauthorized action: Non-admin users are restricted from accessing this functionality. | 1. Invalid credentials: System denies access and shows an error.<br>2. Account locked: System notifies the user and suggests contacting support.<br>3. Session timeout: System logs out the user after inactivity. |
 | **System Requirements**| - Validate recipient account before transfer.<br>- Real-time balance updates.<br>- Log all transactions for auditing purposes. | - Role-based access control must be enforced.<br>- Changes to roles must be logged.<br>- Admin validation required. | - Passwords must be securely hashed.<br>- Session management must enforce expiration policies. |
 
-### INPUT SEQUENTIAL MODELS HERE FOR SECOND 3 USE CASES
 
 
 ## 3. Entity Relationship Diagram
