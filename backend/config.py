@@ -25,69 +25,48 @@ class GithubCIConfig(Config):
 # Use for both uat and dev
 class DevelopmentConfig(Config):
     if os.getenv("ENV") == "dev":
-        # Initialize Azure Credential
         credential = DefaultAzureCredential()
-
-        # Retrieve the access token for Azure Database for PostgreSQL
-        token = credential.get_token("https://ossrdbms-aad.database.windows.net").token
-
-        # Update the SQLALCHEMY_DATABASE_URI for Azure AD authentication
         SQLALCHEMY_DATABASE_URI = (
-            "postgresql://{dbuser}@{dbhost}:{dbport}/{dbname}?sslmode=require".format(
+            "postgresql://{dbuser}:{dbpass}@{dbhost}/{dbname}".format(
                 dbuser=os.getenv("DBUSER"),
+                dbpass=credential.get_token(
+                    "https://ossrdbms-aad.database.windows.net"
+                ).token,
                 dbhost=os.getenv("DBHOST"),
-                dbport=os.getenv("DBPORT", "5432"),  # Default to port 5432
                 dbname=os.getenv("DBNAME"),
             )
         )
-
-        # Pass the token as a connection argument
-        SQLALCHEMY_ENGINE_OPTIONS = {"connect_args": {"password": token}}
         DEBUG = True
 
 
 # Added custom config
 class UATConfig(Config):
     if os.getenv("ENV") == "uat":
-        # Initialize Azure Credential
         credential = DefaultAzureCredential()
-
-        # Retrieve the access token for Azure Database for PostgreSQL
-        token = credential.get_token("https://ossrdbms-aad.database.windows.net").token
-
-        # Update the SQLALCHEMY_DATABASE_URI for Azure AD authentication
         SQLALCHEMY_DATABASE_URI = (
-            "postgresql://{dbuser}@{dbhost}:{dbport}/{dbname}?sslmode=require".format(
+            "postgresql://{dbuser}:{dbpass}@{dbhost}/{dbname}".format(
                 dbuser=os.getenv("DBUSER"),
+                dbpass=credential.get_token(
+                    "https://ossrdbms-aad.database.windows.net"
+                ).token,
                 dbhost=os.getenv("DBHOST"),
-                dbport=os.getenv("DBPORT", "5432"),  # Default to port 5432
                 dbname=os.getenv("DBNAME"),
             )
         )
-
-        # Pass the token as a connection argument
-        SQLALCHEMY_ENGINE_OPTIONS = {"connect_args": {"password": token}}
         DEBUG = True
 
 
 class ProductionConfig(Config):
-    if os.getenv("ENV") == "uat":
-        # Initialize Azure Credential
+    if os.getenv("ENV") == "prod":
         credential = DefaultAzureCredential()
-
-        # Retrieve the access token for Azure Database for PostgreSQL
-        token = credential.get_token("https://ossrdbms-aad.database.windows.net").token
-
-        # Update the SQLALCHEMY_DATABASE_URI for Azure AD authentication
         SQLALCHEMY_DATABASE_URI = (
-            "postgresql://{dbuser}@{dbhost}:{dbport}/{dbname}?sslmode=require".format(
+            "postgresql://{dbuser}:{dbpass}@{dbhost}/{dbname}".format(
                 dbuser=os.getenv("DBUSER"),
+                dbpass=credential.get_token(
+                    "https://ossrdbms-aad.database.windows.net"
+                ).token,
                 dbhost=os.getenv("DBHOST"),
-                dbport=os.getenv("DBPORT", "5432"),  # Default to port 5432
                 dbname=os.getenv("DBNAME"),
             )
         )
-
-        # Pass the token as a connection argument
-        SQLALCHEMY_ENGINE_OPTIONS = {"connect_args": {"password": token}}
         DEBUG = True
