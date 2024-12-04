@@ -25,7 +25,23 @@ env:
   USER_ALIAS: dkumlin
 
 jobs:
+  check-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      infra: ${{ steps.filter.outputs.infra }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            infra:
+              - 'infra/**'
+              - '!infra/scripts/**'
+
   build:
+    needs: check-changes
+    if: needs.check-changes.outputs.infra == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -33,8 +49,9 @@ jobs:
         run: az bicep build --file ./infra/main.bicep
 
   deploy-dev:
+    needs: [check-changes, build]
+    if: needs.check-changes.outputs.infra == 'true'
     runs-on: ubuntu-latest
-    needs: build
     environment: Development
     steps:
       - uses: actions/checkout@v3
@@ -69,9 +86,11 @@ jobs:
           deploymentName: ${{ env.USER_ALIAS }}-dev
 
   deploy-uat:
+    needs: [check-changes, build, deploy-dev]
+    if: |
+      needs.check-changes.outputs.infra == 'true' && 
+      (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
-    needs: build
-    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
     environment: UAT
     steps:
       - uses: actions/checkout@v3

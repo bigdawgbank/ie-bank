@@ -22,26 +22,41 @@ env:
   BACKEND_WEBAPP_DEV: dkumlin-be-dev
   CONTAINER_REGISTRY_SERVER_URL_DEV: dkumlinacrdev.azurecr.io
   IMAGE_NAME_DEV: dkumlin-be-dev
-  KEY_VAULT_NAME_DEV: dkumlin-keyVault-dev
+  KEY_VAULT_NAME_DEV: dkumlin-keyvault-dev
 
   # UAT
   BACKEND_WEBAPP_UAT: dkumlin-be-uat
   CONTAINER_REGISTRY_SERVER_URL_UAT: dkumlinacruat.azurecr.io
   IMAGE_NAME_UAT: dkumlin-be-uat
-  KEY_VAULT_NAME_UAT: dkumlin-keyVault-uat
+  KEY_VAULT_NAME_UAT: dkumlin-keyvault-uat
 
   # Production
   BACKEND_WEBAPP_PROD: dkumlin-be-prod
   CONTAINER_REGISTRY_SERVER_URL_PROD: dkumlinacrprod.azurecr.io
   IMAGE_NAME_PROD: dkumlin-be-prod
-  KEY_VAULT_NAME_PROD: dkumlin-keyVault-prod
+  KEY_VAULT_NAME_PROD: dkumlin-keyvault-prod
 
   # General
   KEY_VAULT_SECRET_ACR_USERNAME: acr-username
   KEY_VAULT_SECRET_ACR_PASSWORD0: acr-password0
 
 jobs:
+  check-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+
   build-dev:
+    needs: check-changes
+    if: needs.check-changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
     env:
       ENV: ghci
@@ -101,8 +116,9 @@ jobs:
           docker push ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:latest
 
   deploy-dev:
+    needs: [check-changes, deploy-dev]
+    if: needs.check-changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
-    needs: build-dev
     environment:
       name: "Development"
     steps:
@@ -118,7 +134,10 @@ jobs:
           images: "${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:${{ needs.build-dev.outputs.image-version }}"
 
   build-uat:
-    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
+    needs: [check-changes, deploy-dev]
+    if: |
+      needs.check-changes.outputs.backend == 'true' && 
+      (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     env:
       ENV: ghci
@@ -178,9 +197,11 @@ jobs:
           docker push ${{ env.CONTAINER_REGISTRY_SERVER_URL_UAT }}/${{ env.IMAGE_NAME_UAT }}:latest
 
   deploy-uat:
-    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
+    needs: [check-changes, build-uat]
+    if: |
+      needs.check-changes.outputs.backend == 'true' && 
+      (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
-    needs: build-uat
     environment:
       name: "UAT"
     steps:

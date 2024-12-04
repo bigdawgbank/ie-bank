@@ -24,8 +24,22 @@ env:
   IMAGE_NAME: ie-bank-fe
 
 jobs:
-  # Development Environment
+  check-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'frontend/**'
+
   build-deploy-dev:
+    needs: check-changes
+    if: needs.check-changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
     environment: Development
     steps:
@@ -65,10 +79,11 @@ jobs:
           NODE_ENV: ${{ vars.NODE_ENV }}
           VUE_APP_ROOT_API: ${{ vars.VUE_APP_ROOT_API }}
 
-  # UAT Environment
   build-deploy-uat:
-    # Run on PRs to main, pushes to main, or manual triggers
-    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
+    needs: [check-changes, build-deploy-dev]
+    if: |
+      needs.check-changes.outputs.frontend == 'true' && 
+      (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     environment: UAT
     steps:
