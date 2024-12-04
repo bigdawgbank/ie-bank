@@ -134,7 +134,7 @@ jobs:
     # Only run when PR is merged to main or manual triggers
     runs-on: ubuntu-latest
     needs: [build, deploy-uat] # Requires UAT deployment to succeed
-    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+    if: (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true) || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     environment: PROD
     steps:
       - uses: actions/checkout@v3
