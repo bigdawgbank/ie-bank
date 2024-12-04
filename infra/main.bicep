@@ -57,6 +57,10 @@ param appServiceAPIDBHostFLASK_APP string
 @description('The value for the environment variable FLASK_DEBUG')
 param appServiceAPIDBHostFLASK_DEBUG string
 
+@description('The value for the environment variable JWT_SECRET_KEY')
+@secure()
+param appServiceAPIEnvVarJWT_SECRET_KEY string
+
 @description('Name of the Azure Container Registry')
 param containerRegistryName string
 
@@ -221,6 +225,10 @@ module appServiceBE 'modules/app-service-be.bicep' = {
       {
         name: 'FLASK_DEBUG'
         value: appServiceAPIDBHostFLASK_DEBUG
+      }
+      {
+        name: 'JWT_SECRET_KEY'
+        value: appServiceAPIEnvVarJWT_SECRET_KEY
       }
     ]
   }
