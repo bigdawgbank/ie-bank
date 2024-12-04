@@ -23,8 +23,23 @@
     "location": {
       "value": "North Europe"
     },
+    "containerRegistryName": {
+      "value": "dkumlinacruat"
+    },
+    "dockerRegistryImageName": {
+      "value": "dkumlin-be-uat"
+    },
+    "dockerRegistryImageTag": {
+      "value": "latest"
+    },
+    "logAnalyticsWorkspaceName": {
+      "value": "dkumlin-logAnalyticsWorkspace-uat"
+    },
+    "appInsightsName": {
+      "value": "dkumlin-appInsights-uat"
+    },
     "keyVaultName": {
-      "value": "dkumlin-keyVault-uat"
+      "value": "dkumlin-keyvault-uat"
     },
     "keyVaultRoleAssignments": {
       "value": [
@@ -32,24 +47,13 @@
           "principalId": "daa3436a-d1fb-44fe-b34b-053db433cdb7",
           "roleDefinitionIdOrName": "Key Vault Administrator",
           "principalType": "Group"
+        },
+        {
+          "principalId": "37841ca3-42b3-4aed-b215-44d6f5dcb57d",
+          "roleDefinitionIdOrName": "Key Vault Secrets User",
+          "principalType": "ServicePrincipal"
         }
       ]
     },
-    "containerRegistryName": {
-        "value": "dkumlinacruat"
-    },
-    "dockerRegistryImageName": {
-        "value": "dkumlin-be-uat"
-    },
-    "dockerRegistryImageTag": {
-        "value": "latest"
-    },
-    "logAnalyticsWorkspaceName": {
-      "value": "dkumlin-logAnalyticsWorkspace-uat" 
-    },
-    "appInsightsName": {
-      "value": "dkumlin-appInsights-uat"
-  } 
   }
 }
-

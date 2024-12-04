@@ -1,19 +1,17 @@
 # Dockerfile
-FROM python:3.10-slim-buster
+FROM python:3.11
+
+# Install PostgreSQL development files and other necessary packages
+RUN apt-get update && apt-get install -y build-essential libpq-dev gcc
 
 WORKDIR /app
 
-# Install PostgreSQL development files and other necessary packages
-RUN apt-get update \
-    && apt-get install -y libpq-dev gcc \
-    && rm -rf /var/lib/apt/lists/*
-
 COPY requirements.txt requirements.txt
 
-RUN pip install -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-EXPOSE 5000
+EXPOSE 50505
 
-CMD ["python3", "-m", "flask", "run", "--host=0.0.0.0"]
+ENTRYPOINT ["gunicorn", "app:app", "-b", "0.0.0.0:50505"]
