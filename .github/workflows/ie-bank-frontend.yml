@@ -80,7 +80,7 @@ jobs:
           VUE_APP_ROOT_API: ${{ vars.VUE_APP_ROOT_API }}
 
   build-deploy-uat:
-    needs: [check-changes, build-deploy-dev]
+    needs: [check-changes]
     if: |
       needs.check-changes.outputs.frontend == 'true' && 
       (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch')
@@ -168,4 +168,3 @@ jobs:
   #       env:
   #         NODE_ENV: ${{ vars.NODE_ENV }}
   #         VUE_APP_ROOT_API: ${{ vars.VUE_APP_ROOT_API }}
-
