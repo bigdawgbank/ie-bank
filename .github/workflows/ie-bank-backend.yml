@@ -116,7 +116,7 @@ jobs:
           docker push ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:latest
 
   deploy-dev:
-    needs: [check-changes, deploy-dev]
+    needs: [check-changes, build-dev]
     if: needs.check-changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
     environment:
@@ -134,7 +134,7 @@ jobs:
           images: "${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:${{ needs.build-dev.outputs.image-version }}"
 
   build-uat:
-    needs: [check-changes, deploy-dev]
+    needs: [check-changes]
     if: |
       needs.check-changes.outputs.backend == 'true' && 
       (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch')
@@ -294,4 +294,3 @@ jobs:
   #       with:
   #         app-name: ${{ env.BACKEND_WEBAPP_PROD }}
   #         images: "${{ env.CONTAINER_REGISTRY_SERVER_URL_PROD }}/${{ env.IMAGE_NAME_PROD }}:${{ needs.build-prod.outputs.image-version }}"
-
