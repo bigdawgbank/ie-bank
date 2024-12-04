@@ -389,34 +389,64 @@ We will use Azure Application Insights built on top of our Log Analytics to prov
 ---
 
 ## 2. Use Case and Sequential Model Design
-- **Description**: Update the use case and sequential model diagrams for each use case in the application.
 
-| Use Case Name                       | **Register for a New Bank Account**                                         | **Manage Bank Users (Admin)**                               | **View Accounts and Transactions**                           |
-|------------------------|----------------------------------------------------------------------|-----------------------------------------------------------|-------------------------------------------------------------|
-| **Description**        | A user creates a new account in the system.                         | The admin creates, updates, deletes, and views users.      | Users view details of their accounts, including transactions. |
-| **Actors**             | Bank User                                                          | Admin User                                                | Bank User                                                   |
-| **Primary Flow**       | 1. User navigates to the registration page.<br>2. Fills out the registration form with details.<br>3. Submits the form.<br>4. System creates a default account for the user. | 1. Admin logs into the admin portal.<br>2. Selects "Manage Users."<br>3. Performs actions such as creating, updating, or deleting users. | 1. User logs in.<br>2. Navigates to the "My Accounts" section.<br>3. Selects an account to view transaction history.<br>4. Transaction details are displayed. |
-| **Alternate Flows**    | 1. Missing required fields: The system prompts the user to complete the form.<br>2. Invalid email format: System rejects submission with an error message. | 1. Invalid data provided: System rejects changes and shows error.<br>2. Unauthorized action: System restricts operations for unauthorized accounts. | 1. User has no accounts: System displays "No accounts found" message.<br>2. Transaction list is empty: System shows an appropriate message. |
-| **System Requirements**| - User details must be validated.<br>- Account number must be unique.<br>- Default balance set to 0. | - Admin role must be validated for access.<br>- Actions must trigger logs for auditing purposes. | - Transactions must be linked to accounts.<br>- Secure access to account data is required. |
+### Description
+Use case and sequential model diagrams for each use case in the BigDawgBank application.
+
+| **Use Case Name**                 | **Register for a New Bank Account**                                         | **User Login**                                              | **Manage Bank Users (Admin)**                              |
+|-----------------------------------|------------------------------------------------------------------------------|-------------------------------------------------------------|------------------------------------------------------------|
+| **Description**                   | A user creates a new account in the system.                                 | A registered user securely logs into their account.         | Admin manages users (create, update, delete) and assigns roles. |
+| **Actors**                        | Bank User                                                                   | Bank User                                                   | Admin User                                                |
+| **Primary Flow**                  | 1. User navigates to the registration page.<br>2. Fills out the registration form with details.<br>3. Submits the form.<br>4. System creates a default account for the user. | 1. User navigates to the login page.<br>2. Provides credentials.<br>3. System validates credentials.<br>4. On success, user is redirected to the dashboard.<br>5. Secure session is created for the user. | 1. Admin logs into the admin portal.<br>2. Selects "Manage Users" or "Manage Roles."<br>3. Performs actions such as creating, updating, deleting users, or assigning roles.<br>4. System validates JWT token for privileges and processes the request.<br>5. Database updates user data. |
+| **Alternate Flows**               | 1. Missing required fields: The system prompts the user to complete the form.<br>2. Invalid email format: System rejects submission with an error message. | 1. Invalid credentials: System denies access and shows an error.<br>2. Account locked: System notifies the user and suggests contacting support.<br>3. Session timeout: System logs out the user after inactivity. | 1. Invalid role: System rejects the request with an error message.<br>2. Unauthorized action: Non-admin users are restricted from accessing this functionality.<br>3. Database operation failure: System notifies the admin of the issue. |
+| **System Requirements**           | - User details must be validated.<br>- Account number must be unique.<br>- Default balance set to 0. | - Passwords must be securely hashed.<br>- Session management must enforce expiration policies. | - Role-based access control must be enforced.<br>- Changes to roles must be logged.<br>- Admin validation required via JWT. |
+
+**Sequence Diagram: Register for a New Bank Account**
+
+![Register for a New Bank Account](./images/Sequence_diagram.png)
+
+**Sequence Diagram: User Login**
+
+![User Login](./images/Sequence_2.png)
+
+**Sequence Diagram: Manage Bank Users (Admin)**
+
+![Manage Bank Users](./images/Sequence_diagram3.png)
 
 
-### INPUT SEQUENTIAL MODELS HERE FOR FIRST 3 USE CASES
+---
 
-|           Use Case Name             | **Transfer Funds**                                                  | **Admin Role Assignment**                                  | **User Login**                                              |
-|------------------------|----------------------------------------------------------------------|-----------------------------------------------------------|-------------------------------------------------------------|
-| **Description**        | Users transfer funds between accounts within the bank.             | Admin assigns roles and permissions to users.             | A registered user securely logs into their account.         |
-| **Actors**             | Bank User                                                          | Admin User                                                | Bank User                                                   |
-| **Primary Flow**       | 1. User logs in.<br>2. Navigates to the "Transfer Funds" section.<br>3. Provides recipient account number and amount.<br>4. Submits the transfer request.<br>5. System validates and completes the transfer. | 1. Admin logs in and navigates to "Manage Roles."<br>2. Selects a user and assigns roles and permissions.<br>3. Confirms the action.<br>4. System applies and logs the changes. | 1. User navigates to the login page.<br>2. Provides credentials.<br>3. System validates credentials.<br>4. On success, user is redirected to the dashboard.<br>5. Secure session is created for the user. |
-| **Alternate Flows**    | 1. Insufficient funds: System rejects transfer and notifies the user.<br>2. Invalid account number: System rejects the request.<br>3. Transfer limit exceeded: User is notified and action is denied. | 1. Invalid role: System rejects the request with an error message.<br>2. Unauthorized action: Non-admin users are restricted from accessing this functionality. | 1. Invalid credentials: System denies access and shows an error.<br>2. Account locked: System notifies the user and suggests contacting support.<br>3. Session timeout: System logs out the user after inactivity. |
-| **System Requirements**| - Validate recipient account before transfer.<br>- Real-time balance updates.<br>- Log all transactions for auditing purposes. | - Role-based access control must be enforced.<br>- Changes to roles must be logged.<br>- Admin validation required. | - Passwords must be securely hashed.<br>- Session management must enforce expiration policies. |
+| **Use Case Name**                 | **Transfer Money Between Accounts**                                         | **Deposit Money**                                           | **View Account and Transaction History**                   |
+|-----------------------------------|------------------------------------------------------------------------------|-------------------------------------------------------------|------------------------------------------------------------|
+| **Description**                   | Users transfer funds between accounts within the bank.                      | Users deposit money into an account.                       | Users view details of their accounts, including transactions. |
+| **Actors**                        | Bank User                                                                   | Bank User                                                   | Bank User                                                |
+| **Primary Flow**                  | 1. User logs in.<br>2. Navigates to the "Transfer Funds" section.<br>3. Provides recipient account number and amount.<br>4. Submits the transfer request.<br>5. System validates and completes the transfer. | 1. User logs in.<br>2. Navigates to "Deposit Funds" section.<br>3. Provides account ID and deposit amount.<br>4. Submits the deposit request.<br>5. System validates and updates the account balance. | 1. User logs in.<br>2. Navigates to the "My Accounts" section.<br>3. Selects an account to view transaction history.<br>4. Transaction details are displayed. |
+| **Alternate Flows**               | 1. Insufficient funds: System rejects transfer and notifies the user.<br>2. Invalid account number: System rejects the request.<br>3. Transfer limit exceeded: User is notified and action is denied. | 1. Invalid account ID: System rejects the request.<br>2. Negative deposit amount: System prompts the user to provide a positive value.<br>3. Database operation failure: System notifies the user of the issue. | 1. User has no accounts: System displays "No accounts found" message.<br>2. Transaction list is empty: System shows an appropriate message. |
+| **System Requirements**           | - Validate recipient account before transfer.<br>- Real-time balance updates.<br>- Log all transactions for auditing purposes. | - Account validation must be performed.<br>- Deposits must be logged for auditing.<br>- Balance updates must occur in real-time. | - Transactions must be linked to accounts.<br>- Secure access to account data is required.<br>- Display should be user-friendly. |
+
+---
+
+**Sequence Diagram: Transfer Money Between Accounts**
+
+![Transfer Money Between Accounts](./images/Sequence_diagram_4.png)
+
+**Sequence Diagram: Deposit money in individual Account**
+
+![Deposit Money](./images/Sequence_diagram5.png)
 
 
 
 ## 3. Entity Relationship Diagram
 - **Description**: Update and document the Entity Relationship Diagram for the database.
+![ER](./images/Entity_relationship_DIagram.png)
+
+---
 
 ## 4. Data Flow Diagram
 - **Description**: Update and document the Data Flow Diagram for the application.
+![DataFlow Diagram](./images/DataFlow.png)
+
+---
 
 ## 5. Twelve-Factor App Design
 - **Description**: Document how the Twelve-Factor App principles are applied to the project.
