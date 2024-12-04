@@ -52,7 +52,7 @@ const router = new VueRouter({
   routes,
 });
 
-// Route guard from Flask API
+// Route guard from Flask JWT
 router.beforeEach(async (to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (authService.checkSession()) {
