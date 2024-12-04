@@ -14,4 +14,4 @@ COPY . .
 
 EXPOSE 50505
 
-ENTRYPOINT ["gunicorn", "app:app"]
+ENTRYPOINT ["gunicorn", "app:app", "-b", "0.0.0.0:50505"]
