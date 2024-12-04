@@ -6,13 +6,14 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
 
+load_dotenv()
+app = Flask(__name__)
+
 # Create extensions first
 db = SQLAlchemy()
 jwt_manager = JWTManager()
 bcrypt = Bcrypt()
 
-app = Flask(__name__)
-load_dotenv()
 
 # Your environment config loading stays the same
 if os.getenv("ENV") == "local":
