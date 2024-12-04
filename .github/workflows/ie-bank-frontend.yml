@@ -141,7 +141,7 @@ jobs:
 
       - name: Install Dependencies
         working-directory: ${{ env.APP_LOCATION }}
-        run: npm install
+        run: npm install --include=dev
 
       - name: Azure Login
         uses: azure/login@v2
