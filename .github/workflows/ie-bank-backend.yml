@@ -238,81 +238,82 @@ jobs:
           app-name: ${{ env.BACKEND_WEBAPP_UAT }}
           images: "${{ env.CONTAINER_REGISTRY_SERVER_URL_UAT }}/${{ env.IMAGE_NAME_UAT }}:${{ needs.build-uat.outputs.image-version }}"
 
-  # build-prod:
-  #   # Only run on pushes to main or manual triggers
-  #   if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
-  #   runs-on: ubuntu-latest
-  #   env:
-  #     ENV: ghci
-  #     JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-  #     PYTHONPATH: backend
-  #   outputs:
-  #     image-version: ${{ steps.image-version.outputs.version }}
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #
-  #     - name: Set up Python 3.11
-  #       uses: actions/setup-python@v3
-  #       with:
-  #         python-version: "3.11"
-  #
-  #     - name: Install dependencies
-  #       run: pip install -r backend/requirements.txt
-  #
-  #     - name: Lint with flake8
-  #       run: |
-  #         pip install flake8 pytest
-  #         flake8 backend/ --count --select=E9,F63,F7,F82 --show-source --statistics
-  #         flake8 backend/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-  #
-  #     - name: Test with pytest
-  #       run: python -m pytest -v
-  #
-  #     - name: Login to Azure CLI
-  #       uses: azure/login@v1
-  #       with:
-  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
-  #
-  #     - name: Get Docker Registry Credentials (PROD)
-  #       id: acr-creds
-  #       uses: azure/CLI@v1
-  #       with:
-  #         inlineScript: |
-  #           echo "username=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_USERNAME }} --vault-name ${{ env.KEY_VAULT_NAME_PROD }} --query value -o tsv)" >> $GITHUB_OUTPUT
-  #           echo "password=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_PASSWORD0 }} --vault-name ${{ env.KEY_VAULT_NAME_PROD }} --query value -o tsv)" >> $GITHUB_OUTPUT
-  #
-  #     - name: Docker Login (PROD)
-  #       uses: azure/docker-login@v2
-  #       with:
-  #         login-server: ${{ env.CONTAINER_REGISTRY_SERVER_URL_PROD }}
-  #         username: ${{ steps.acr-creds.outputs.username }}
-  #         password: ${{ steps.acr-creds.outputs.password }}
-  #
-  #     - name: Set Image Version
-  #       id: image-version
-  #       run: echo "version=$(date +'%Y.%m.%d.%H.%M')" >> $GITHUB_OUTPUT
-  #
-  #     - name: Build and Push Docker Image (PROD)
-  #       run: |
-  #         docker build -t ${{ env.CONTAINER_REGISTRY_SERVER_URL_PROD }}/${{ env.IMAGE_NAME_PROD }}:${{ steps.image-version.outputs.version }} backend/
-  #         docker tag ${{ env.CONTAINER_REGISTRY_SERVER_URL_PROD }}/${{ env.IMAGE_NAME_PROD }}:${{ steps.image-version.outputs.version }} ${{ env.CONTAINER_REGISTRY_SERVER_URL_PROD }}/${{ env.IMAGE_NAME_PROD }}:latest
-  #         docker push ${{ env.CONTAINER_REGISTRY_SERVER_URL_PROD }}/${{ env.IMAGE_NAME_PROD }}:${{ steps.image-version.outputs.version }}
-  #         docker push ${{ env.CONTAINER_REGISTRY_SERVER_URL_PROD }}/${{ env.IMAGE_NAME_PROD }}:latest
+  build-prod:
+    # Only run when PR is merged to main or manual triggers
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      ENV: ghci
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      PYTHONPATH: backend
+    outputs:
+      image-version: ${{ steps.image-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v3
 
-  # deploy-prod:
-  #   if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
-  #   runs-on: ubuntu-latest
-  #   needs: [build-prod, deploy-uat]  # Requires UAT deployment to succeed
-  #   environment:
-  #     name: "Production"
-  #   steps:
-  #     - name: Login to Azure CLI
-  #       uses: azure/login@v2
-  #       with:
-  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
-  #
-  #     - name: Deploy to Azure Web App (PROD)
-  #       uses: azure/webapps-deploy@v2
-  #       with:
-  #         app-name: ${{ env.BACKEND_WEBAPP_PROD }}
-  #         images: "${{ env.CONTAINER_REGISTRY_SERVER_URL_PROD }}/${{ env.IMAGE_NAME_PROD }}:${{ needs.build-prod.outputs.image-version }}"
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Lint with flake8
+        run: |
+          pip install flake8 pytest
+          flake8 backend/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 backend/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Test with pytest
+        run: python -m pytest -v
+
+      - name: Login to Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get Docker Registry Credentials (PROD)
+        id: acr-creds
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            echo "username=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_USERNAME }} --vault-name ${{ env.KEY_VAULT_NAME_PROD }} --query value -o tsv)" >> $GITHUB_OUTPUT
+            echo "password=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_PASSWORD0 }} --vault-name ${{ env.KEY_VAULT_NAME_PROD }} --query value -o tsv)" >> $GITHUB_OUTPUT
+
+      - name: Docker Login (PROD)
+        uses: azure/docker-login@v2
+        with:
+          login-server: ${{ env.CONTAINER_REGISTRY_SERVER_URL_PROD }}
+          username: ${{ steps.acr-creds.outputs.username }}
+          password: ${{ steps.acr-creds.outputs.password }}
+
+      - name: Set Image Version
+        id: image-version
+        run: echo "version=$(date +'%Y.%m.%d.%H.%M')" >> $GITHUB_OUTPUT
+
+      - name: Build and Push Docker Image (PROD)
+        run: |
+          docker build -t ${{ env.CONTAINER_REGISTRY_SERVER_URL_PROD }}/${{ env.IMAGE_NAME_PROD }}:${{ steps.image-version.outputs.version }} backend/
+          docker tag ${{ env.CONTAINER_REGISTRY_SERVER_URL_PROD }}/${{ env.IMAGE_NAME_PROD }}:${{ steps.image-version.outputs.version }} ${{ env.CONTAINER_REGISTRY_SERVER_URL_PROD }}/${{ env.IMAGE_NAME_PROD }}:latest
+          docker push ${{ env.CONTAINER_REGISTRY_SERVER_URL_PROD }}/${{ env.IMAGE_NAME_PROD }}:${{ steps.image-version.outputs.version }}
+          docker push ${{ env.CONTAINER_REGISTRY_SERVER_URL_PROD }}/${{ env.IMAGE_NAME_PROD }}:latest
+
+  deploy-prod:
+    # Only run when PR is merged to main or manual triggers
+    if: (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true) || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    needs: [build-prod, deploy-uat] # Requires UAT deployment to succeed
+    environment:
+      name: PROD
+    steps:
+      - name: Login to Azure CLI
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Web App (PROD)
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.BACKEND_WEBAPP_PROD }}
+          images: "${{ env.CONTAINER_REGISTRY_SERVER_URL_PROD }}/${{ env.IMAGE_NAME_PROD }}:${{ needs.build-prod.outputs.image-version }}"
