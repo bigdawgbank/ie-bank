@@ -39,14 +39,25 @@ class DevelopmentConfig(Config):
         DEBUG = True
 
 
-class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = "sqlite:///local.db"
-    DEBUG = True
-
-
 # Added custom config
 class UATConfig(Config):
     if os.getenv("ENV") == "uat":
+        credential = DefaultAzureCredential()
+        SQLALCHEMY_DATABASE_URI = (
+            "postgresql://{dbuser}:{dbpass}@{dbhost}/{dbname}".format(
+                dbuser=os.getenv("DBUSER"),
+                dbpass=credential.get_token(
+                    "https://ossrdbms-aad.database.windows.net"
+                ).token,
+                dbhost=os.getenv("DBHOST"),
+                dbname=os.getenv("DBNAME"),
+            )
+        )
+        DEBUG = True
+
+
+class ProductionConfig(Config):
+    if os.getenv("ENV") == "prod":
         credential = DefaultAzureCredential()
         SQLALCHEMY_DATABASE_URI = (
             "postgresql://{dbuser}:{dbpass}@{dbhost}/{dbname}".format(
