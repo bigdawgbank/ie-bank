@@ -1,44 +1,59 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-      "environmentType": {
-        "value": "nonprod"
-      },
-      "postgreSQLServerName": {
-        "value": "dkumlin-dbsrv-prod"
-      },
-      "postgreSQLDatabaseName": {
-        "value": "dkumlin-db-prod"
-      },
-      "appServicePlanName": {
-        "value": "dkumlin-asp-prod"
-      },
-      "appServiceAPIAppName": {
-        "value": "dkumlin-be-prod"
-      },
-      "staticWebAppName": {
-        "value": "dkumlin-fe-prod"
-      },
-      "location": {
-        "value": "North Europe"
-      },
-      "containerRegistryName": {
-          "value": "dkumlinacrprod"
-      },
-      "dockerRegistryImageName": {
-          "value": "dkumlin-be-prod"
-      },
-      "dockerRegistryImageTag": {
-          "value": "latest"
-      },
-      "logAnalyticsWorkspaceName": {
-        "value": "dkumlin-logAnalyticsWorkspace-prod" 
-      },
-      "appInsightsName": {
-        "value": "dkumlin-appInsights-prod"
-    } 
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentType": {
+      "value": "nonprod"
+    },
+    "postgreSQLServerName": {
+      "value": "dkumlin-dbsrv-prod"
+    },
+    "postgreSQLDatabaseName": {
+      "value": "dkumlin-db-prod"
+    },
+    "appServicePlanName": {
+      "value": "dkumlin-asp-prod"
+    },
+    "appServiceAPIAppName": {
+      "value": "dkumlin-be-prod"
+    },
+    "staticWebAppName": {
+      "value": "dkumlin-fe-prod"
+    },
+    "location": {
+      "value": "North Europe"
+    },
+    "containerRegistryName": {
+      "value": "dkumlinacrprod"
+    },
+    "dockerRegistryImageName": {
+      "value": "dkumlin-be-prod"
+    },
+    "dockerRegistryImageTag": {
+      "value": "latest"
+    },
+    "logAnalyticsWorkspaceName": {
+      "value": "dkumlin-logAnalyticsWorkspace-prod"
+    },
+    "appInsightsName": {
+      "value": "dkumlin-appInsights-prod"
+    },
+    "keyVaultName": {
+      "value": "dkumlin-keyvault-prod"
+    },
+    "keyVaultRoleAssignments": {
+      "value": [
+        {
+          "principalId": "daa3436a-d1fb-44fe-b34b-053db433cdb7",
+          "roleDefinitionIdOrName": "Key Vault Administrator",
+          "principalType": "Group"
+        },
+        {
+          "principalId": "37841ca3-42b3-4aed-b215-44d6f5dcb57d",
+          "roleDefinitionIdOrName": "Key Vault Secrets User",
+          "principalType": "ServicePrincipal"
+        }
+      ]
     }
   }
-  
-  
+}

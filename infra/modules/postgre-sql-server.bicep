@@ -44,7 +44,7 @@ resource postgresSQLServer 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01
     version: version
     authConfig: {
       activeDirectoryAuth: 'Enabled'
-      passwordAuth: 'Enabled'
+      passwordAuth: 'Disabled'
       tenantId: subscription().tenantId
     }
   }
