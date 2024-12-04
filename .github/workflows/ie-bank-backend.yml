@@ -90,19 +90,30 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Get Docker Registry Credentials
-        id: acr-creds
+        id: acr-creds-dev
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            echo "username=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_USERNAME }} --vault-name ${{ env.KEY_VAULT_NAME_DEV }} --query value -o tsv)" >> $GITHUB_OUTPUT
-            echo "password=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_PASSWORD0 }} --vault-name ${{ env.KEY_VAULT_NAME_DEV }} --query value -o tsv)" >> $GITHUB_OUTPUT
+            echo "Attempting to access key vault: ${{ env.KEY_VAULT_NAME_DEV }}"
+
+            # Get and store values
+            username=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_USERNAME }} --vault-name ${{ env.KEY_VAULT_NAME_DEV }} --query value -o tsv)
+            password=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_PASSWORD0 }} --vault-name ${{ env.KEY_VAULT_NAME_DEV }} --query value -o tsv)
+
+            # Debug: Check if we got values (don't print actual values)
+            if [ -n "$username" ]; then echo "Username was retrieved"; else echo "Username is empty"; fi
+            if [ -n "$password" ]; then echo "Password was retrieved"; else echo "Password is empty"; fi
+
+            # Set outputs
+            echo "username=$username" >> $GITHUB_OUTPUT
+            echo "password=$password" >> $GITHUB_OUTPUT
 
       - name: Docker Login
         uses: azure/docker-login@v2
         with:
           login-server: ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}
-          username: ${{ steps.acr-creds.outputs.username }}
-          password: ${{ steps.acr-creds.outputs.password }}
+          username: ${{ steps.acr-creds-dev.outputs.username }}
+          password: ${{ steps.acr-creds-dev.outputs.password }}
 
       - name: Set Image Version
         id: image-version
@@ -171,19 +182,30 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Get Docker Registry Credentials (UAT)
-        id: acr-creds
+        id: acr-creds-uat
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            echo "username=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_USERNAME }} --vault-name ${{ env.KEY_VAULT_NAME_UAT }} --query value -o tsv)" >> $GITHUB_OUTPUT
-            echo "password=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_PASSWORD0 }} --vault-name ${{ env.KEY_VAULT_NAME_UAT }} --query value -o tsv)" >> $GITHUB_OUTPUT
+            echo "Attempting to access key vault: ${{ env.KEY_VAULT_NAME_UAT }}"
+
+            # Get and store values
+            username=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_USERNAME }} --vault-name ${{ env.KEY_VAULT_NAME_UAT }} --query value -o tsv)
+            password=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_PASSWORD0 }} --vault-name ${{ env.KEY_VAULT_NAME_UAT }} --query value -o tsv)
+
+            # Debug: Check if we got values (don't print actual values)
+            if [ -n "$username" ]; then echo "Username was retrieved"; else echo "Username is empty"; fi
+            if [ -n "$password" ]; then echo "Password was retrieved"; else echo "Password is empty"; fi
+
+            # Set outputs
+            echo "username=$username" >> $GITHUB_OUTPUT
+            echo "password=$password" >> $GITHUB_OUTPUT
 
       - name: Docker Login (UAT)
         uses: azure/docker-login@v2
         with:
           login-server: ${{ env.CONTAINER_REGISTRY_SERVER_URL_UAT }}
-          username: ${{ steps.acr-creds.outputs.username }}
-          password: ${{ steps.acr-creds.outputs.password }}
+          username: ${{ steps.acr-creds-uat.outputs.username }}
+          password: ${{ steps.acr-creds-uat.outputs.password }}
 
       - name: Set Image Version
         id: image-version
