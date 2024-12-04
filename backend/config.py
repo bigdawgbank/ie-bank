@@ -22,7 +22,6 @@ class GithubCIConfig(Config):
     DEBUG = True
 
 
-# Use for both uat and dev
 class DevelopmentConfig(Config):
     if os.getenv("ENV") == "dev":
         credential = DefaultAzureCredential()
@@ -39,7 +38,6 @@ class DevelopmentConfig(Config):
         DEBUG = True
 
 
-# Added custom config
 class UATConfig(Config):
     if os.getenv("ENV") == "uat":
         credential = DefaultAzureCredential()

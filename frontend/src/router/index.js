@@ -37,7 +37,8 @@ const routes = [
     name: "Admin",
     component: Admin,
     meta: { requiresAuth: true },
-},{
+  },
+  {
     path: "/transfer",
     name: "Transfer",
     component: Transfer,
@@ -53,16 +54,14 @@ const router = new VueRouter({
 
 // Route guard from Flask API
 router.beforeEach(async (to, from, next) => {
-  // Check if the route requires authentication
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    // Make a simple request to any protected endpoint
     if (authService.checkSession()) {
       next();
     } else {
       next("/login");
     }
   } else {
-    next(); // Not a protected route, proceed
+    next();
   }
 });
 
