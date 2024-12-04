@@ -5,6 +5,7 @@
 ])
 param environmentType string = 'nonprod'
 
+param userAlias string = 'dkumlin'
 @description('The PostgreSQL Server name')
 @minLength(3)
 @maxLength(24)
@@ -114,7 +115,7 @@ resource keyVaultReference 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
 
 // Use Key Vault for administrator login password later
 module postgresSQLServerModule 'modules/postgre-sql-server.bicep' = {
-  name: 'postgresSQLServerModule'
+  name: 'psqlsrv-${userAlias}'
   params: {
     postgreSQLServerName: postgreSQLServerName
     location: location
