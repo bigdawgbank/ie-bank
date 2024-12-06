@@ -14,13 +14,14 @@ The BigDawg IE Bank Application builds upon the success of the previous IE Bank 
 
 This section serves to provide each role the ability to navigate to their specific page and document all of the information relevant to their tasks/work done for our Banking application. The documentation should be updated and maintained consistently throughout the project's lifecycle. This structure ensures that each individual team member can express their workings without interference and with ease.
 
-### Product Owner
-Defines the product backlog and ensures the product aligns with business needs.
-- [Product Owner](./PO.md)
 
 ### Cloud Architect
 Designs and implements scalable cloud solutions and CI/CD pipelines.
 - [Cloud Architect](./CloudArchitect.md)
+
+### Product Owner
+Defines the product backlog and ensures the product aligns with business needs.
+- [Product Owner](./PO.md)
 
 ### Cloud Full Stack Developer
 Develops frontend and backend features using Vue.js and Flask.
