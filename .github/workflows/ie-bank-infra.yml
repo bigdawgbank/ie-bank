@@ -48,22 +48,23 @@ jobs:
       - uses: actions/checkout@v3
       - name: Run Bicep linter
         run: az bicep build --file ./infra/main.bicep
-
-      - name: Run checkov
-        uses: bridgecrewio/checkov-action@master
-        with:
-          file: infra/main.bicep
-        continue-on-error: true
       
-      # Validate whether a template is valid at subscription scope
+            # Validate whether a template is valid at subscription scope
       - name: Bicep Validate
         uses: Azure/cli@v1
         with:
           inlineScript: |
             az deployment sub validate \
               --name validate-${{ github.run_id }} \
-              --template-file main.bicep \
+              --template-file infra/main.bicep \
               --location $LOCATION
+
+      - name: Run checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          file: infra/main.bicep
+        continue-on-error: true
+  
 
   deploy-dev:
     needs: [check-changes, build]
