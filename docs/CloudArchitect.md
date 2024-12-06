@@ -557,7 +557,7 @@ The workflows use the following GitHub variables:
 
 ---
 
-This document provides a comprehensive overview of the environment design and configuration for each Azure service in the development, UAT, and production environments. It ensures that all team members are aligned and aware of the infrastructure setup and deployment processes.
+Here we've showcased BigDawgBanks' environment design and configuration for each Azure service in the development, UAT, and production environments. It ensures that all our team members are aligned and aware of the infrastructure setup and deployment processes.
 
 ## Well-Architected Framework Design
 
@@ -845,6 +845,20 @@ The Data Flow Diagram (DFD) illustrates the interaction between users, admins, p
   3. If valid:
      - The sender's balance is debited, and the recipient's balance is credited in the **Accounts Database**.
      - A record of the transfer is created in the **Transfers Database**.
+
+
+### Key Features of the DFD
+
+#### Authentication with JWT Tokens
+- Tokens are issued upon successful login and used for session management.
+#### Role-Based Access Control
+- Admins can manage users and accounts, while regular users are limited to their accounts.
+#### Scalability
+- Multiple users and accounts can interact simultaneously with secure data flows.
+#### Data Validation
+- All processes validate inputs before updating the respective data stores.
+#### Transaction Logging
+- Transfers are securely logged in the Transfers Database, ensuring auditability.
 
 ---
 
