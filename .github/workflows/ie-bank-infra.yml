@@ -53,7 +53,7 @@ jobs:
         subscriptionId: ${{ env.SUBSCRIPTION_ID_DEV }}
         resourceGroupName: ${{ env.RESOURCE_GROUP_DEV }}
         template: infra/main.bicep
-        parameters: ./parameters/dev.parameters.json
+        parameters: infra/parameters/dev.parameters.json
           branch=${{ github.ref_name }}
           repositoryUrl=https://github.com/bigdawgbank/ie-bank 
           appServiceAPIEnvVarENV=${{ vars.ENV }} 
