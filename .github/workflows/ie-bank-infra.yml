@@ -39,7 +39,7 @@ jobs:
             infra:
               - 'infra/**'
               - '!infra/scripts/**'
-  validate_dev:  
+  validate_deveplment_template:  
     runs-on: ubuntu-latest
     environment: Development 
     steps:
