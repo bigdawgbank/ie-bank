@@ -85,12 +85,24 @@ jobs:
           appServiceAPIEnvVarJWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
 
         deploymentMode: Validate
-        
+
+
     - name: Detect Resource Drift
       run: |
         az deployment group what-if \
           --resource-group ${{ env.RESOURCE_GROUP_DEV }} \
-          --template-file infra/main.bicep
+          --template-file infra/main.bicep \
+          --parameters infra/parameters/dev.parameters.json \
+          branch=${{ github.ref_name }} \
+          repositoryUrl=https://github.com/bigdawgbank/ie-bank \
+          appServiceAPIEnvVarENV=${{ vars.ENV }} \
+          appServiceAPIEnvVarDBHOST=${{ vars.DBHOST }} \
+          appServiceAPIEnvVarDBNAME=${{ vars.DBNAME }} \
+          appServiceAPIEnvVarDBPASS=${{ secrets.DBPASS }} \
+          appServiceAPIDBHostDBUSER=${{ secrets.DBUSER }} \
+          appServiceAPIDBHostFLASK_APP=${{ vars.FLASK_APP }} \
+          appServiceAPIDBHostFLASK_DEBUG=${{ vars.FLASK_DEBUG }} \
+          appServiceAPIEnvVarJWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
   
   validate_uat_template: 
     needs: [build, check-changes] 
