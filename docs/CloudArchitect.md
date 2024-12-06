@@ -335,7 +335,7 @@ We will use Azure Application Insights built on top of our Log Analytics to prov
 
 ---
 
-## 3. Environment Design
+## Environment Design
 - **Description**: Collaborate with the Infrastructure Developer and Full Stack Developer to document and update the environments required for development, UAT, and production. Include the configuration for each Azure service in each environment.
 
 ---
@@ -388,7 +388,7 @@ We will use Azure Application Insights built on top of our Log Analytics to prov
 
 ---
 
-## 2. Use Case and Sequential Model Design
+## Use Case and Sequential Model Design
 
 ### Description
 Use case and sequential model diagrams for each use case in the BigDawgBank application.
@@ -436,19 +436,19 @@ Use case and sequential model diagrams for each use case in the BigDawgBank appl
 
 
 
-## 3. Entity Relationship Diagram
+## Entity Relationship Diagram
 - **Description**: Update and document the Entity Relationship Diagram for the database.
 ![ER](./images/Entity_relationship_DIagram.png)
 
 ---
 
-## 4. Data Flow Diagram
+## Data Flow Diagram
 - **Description**: Update and document the Data Flow Diagram for the application.
 ![DataFlow Diagram](./images/DataFlow.png)
 
 ---
 
-## 5. Twelve-Factor App Design
+## Twelve-Factor App Design
 - **Description**: Document how the Twelve-Factor App principles are applied to the project.
 
 ---
