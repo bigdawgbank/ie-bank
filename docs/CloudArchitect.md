@@ -342,107 +342,170 @@ Collaborate with the Infrastructure Developer and Full Stack Developer to docume
 
 ### Environments
 
-#### Development Environment(DEV)
-The development environment serves as a controlled building and tesdting environment for BigdawgBank. It is used for experimental deployments and testing infrastructure configurations. It is designed to be flexible and allow for rapid changes.
+#### Development Environment
+The development environment is used as a controlled environment for building and testing BigDawgBanks new features. it is used for experimental deployments and testing infrastructure configurations. It is designed to be flexible and allow for rapid changes.
 
 - **Azure App Service**: 
   - **Configuration**: 
     - Plan: Basic
     - Instance Count: 1
     - SKU: B1
-  - **Purpose**: Host the backend and frontend applications for development.
+    - Location: `westeurope`
+    - Environment Variables:
+      - `ENV`: Development
+      - `DBHOST`: Development Database Host
+      - `DBNAME`: Development Database Name
+      - `DBPASS`: Development Database Password
+      - `DBUSER`: Development Database User
+      - `FLASK_APP`: Flask Application Name
+      - `FLASK_DEBUG`: True
+      - `JWT_SECRET_KEY`: Development JWT Secret Key
+
 - **Azure Database for PostgreSQL**: 
   - **Configuration**: 
     - Server Name: `dev-postgres-server`
     - Database Name: `dev-db`
     - SKU: Basic
     - Backup Retention: 7 days
-  - **Purpose**: Store development data.
+    - Location: `westeurope`
+
 - **Azure Key Vault**: 
   - **Configuration**: 
     - Name: `dev-keyvault`
+    - Location: `westeurope`
     - Access Policies: Development team access
-  - **Purpose**: Securely store secrets and keys.
+
 - **Azure Log Analytics Workspace**: 
   - **Configuration**: 
     - Name: `dev-log-analytics`
-  - **Purpose**: Centralized logging and monitoring.
+    - Location: `westeurope`
+
 - **Azure Application Insights**: 
   - **Configuration**: 
     - Name: `dev-app-insights`
-  - **Purpose**: Monitor application performance.
+    - Location: `westeurope`
+    - Linked Log Analytics Workspace ID: `dev-log-analytics`
+    - Retention In Days: 90
+    - Ingestion Mode: LogAnalytics
+    - Public Network Access for Ingestion: Enabled
+    - Public Network Access for Query: Enabled
+
 - **Azure Container Registry**: 
   - **Configuration**: 
     - Name: `dev-container-registry`
-  - **Purpose**: Store and manage container images.
+    - Location: `westeurope`
+    - Admin Username: Stored in Key Vault
+    - Admin Password: Stored in Key Vault
 
 #### UAT Environment
-The UAT (User Acceptance Testing) environment is used by BigdawgBank for thorough user testing. It mirrors the production environment closely to ensure that the application behaves as expected before going live, guage feedback from testers and ensure no faults.
+The UAT (User Acceptance Testing) environment is used by our team at BigdawgBank for extensive stakeholder testing. It mirrors the production environment closely to ensure that the application behaves as expected before going live, guaging errors and allowing us to fix any faulty functionality of the application.
 
 - **Azure App Service**: 
   - **Configuration**: 
     - Plan: Standard
     - Instance Count: 2
     - SKU: S1
-  - **Purpose**: Host the backend and frontend applications for UAT.
+    - Location: `westeurope`
+    - Environment Variables:
+      - `ENV`: UAT
+      - `DBHOST`: UAT Database Host
+      - `DBNAME`: UAT Database Name
+      - `DBPASS`: UAT Database Password
+      - `DBUSER`: UAT Database User
+      - `FLASK_APP`: Flask Application Name
+      - `FLASK_DEBUG`: False
+      - `JWT_SECRET_KEY`: UAT JWT Secret Key
+
 - **Azure Database for PostgreSQL**: 
   - **Configuration**: 
     - Server Name: `uat-postgres-server`
     - Database Name: `uat-db`
     - SKU: Standard
     - Backup Retention: 14 days
-  - **Purpose**: Store UAT data.
+    - Location: `westeurope`
+
 - **Azure Key Vault**: 
   - **Configuration**: 
     - Name: `uat-keyvault`
+    - Location: `westeurope`
     - Access Policies: UAT team access
-  - **Purpose**: Securely store secrets and keys.
+
 - **Azure Log Analytics Workspace**: 
   - **Configuration**: 
     - Name: `uat-log-analytics`
-  - **Purpose**: Centralized logging and monitoring.
+    - Location: `westeurope`
+
 - **Azure Application Insights**: 
   - **Configuration**: 
     - Name: `uat-app-insights`
-  - **Purpose**: Monitor application performance.
+    - Location: `westeurope`
+    - Linked Log Analytics Workspace ID: `uat-log-analytics`
+    - Retention In Days: 90
+    - Ingestion Mode: LogAnalytics
+    - Public Network Access for Ingestion: Enabled
+    - Public Network Access for Query: Enabled
+
 - **Azure Container Registry**: 
   - **Configuration**: 
     - Name: `uat-container-registry`
-  - **Purpose**: Store and manage container images.
+    - Location: `westeurope`
+    - Admin Username: Stored in Key Vault
+    - Admin Password: Stored in Key Vault
 
-#### Production Environment(PROD)
-We use the production environment is the live environment where the BigdawgBank application will be available to end-users. We have designed for high availability, scalability, and security.
+#### Production Environment
+The production environment is the live environment where the BigdawgBank application will be available to end-users. It is designed for high availability, scalability, and security.
 
 - **Azure App Service**: 
   - **Configuration**: 
     - Plan: Premium
     - Instance Count: 3
     - SKU: P1V2
-  - **Purpose**: Host the backend and frontend applications for production.
+    - Location: `westeurope`
+    - Environment Variables:
+      - `ENV`: Production
+      - `DBHOST`: Production Database Host
+      - `DBNAME`: Production Database Name
+      - `DBPASS`: Production Database Password
+      - `DBUSER`: Production Database User
+      - `FLASK_APP`: Flask Application Name
+      - `FLASK_DEBUG`: False
+      - `JWT_SECRET_KEY`: Production JWT Secret Key
+
 - **Azure Database for PostgreSQL**: 
   - **Configuration**: 
     - Server Name: `prod-postgres-server`
     - Database Name: `prod-db`
     - SKU: Premium
     - Backup Retention: 35 days
-  - **Purpose**: Store production data.
+    - Location: `westeurope`
+
 - **Azure Key Vault**: 
   - **Configuration**: 
     - Name: `prod-keyvault`
+    - Location: `westeurope`
     - Access Policies: Production team access
-  - **Purpose**: Securely store secrets and keys.
+
 - **Azure Log Analytics Workspace**: 
   - **Configuration**: 
     - Name: `prod-log-analytics`
-  - **Purpose**: Centralized logging and monitoring.
+    - Location: `westeurope`
+
 - **Azure Application Insights**: 
   - **Configuration**: 
     - Name: `prod-app-insights`
-  - **Purpose**: Monitor application performance.
+    - Location: `westeurope`
+    - Linked Log Analytics Workspace ID: `prod-log-analytics`
+    - Retention In Days: 90
+    - Ingestion Mode: LogAnalytics
+    - Public Network Access for Ingestion: Enabled
+    - Public Network Access for Query: Enabled
+
 - **Azure Container Registry**: 
   - **Configuration**: 
     - Name: `prod-container-registry`
-  - **Purpose**: Store and manage container images.
+    - Location: `westeurope`
+    - Admin Username: Stored in Key Vault
+    - Admin Password: Stored in Key Vault
 
 ### Configuration Variables
 To determine different configuration options for each environment, we will make use of the files under the `parameters` folder.
@@ -470,6 +533,8 @@ The workflows use the following GitHub variables:
 - `FLASK_APP`: Name of the Flask app to run.
 
 ---
+
+This document provides a comprehensive overview of the environment design and configuration for each Azure service in the development, UAT, and production environments. It ensures that all team members are aligned and aware of the infrastructure setup and deployment processes.
 
 ## Well-Architected Framework Design
 
