@@ -59,7 +59,7 @@ jobs:
               --name validate-${{ github.run_id }} \
               --template-file infra/main.bicep \
               --resource-group $RESOURCE_GROUP_DEV
-              --parameters infra/parameters/dev.parameters.json \
+              --parameters @./infra/parameters/dev.parameters.json \
                 repositoryUrl=https://github.com/bigdawgbank/ie-bank \
                 branch=${{ github.ref_name }} \
                 appServiceAPIEnvVarENV=${{ vars.ENV }} \
