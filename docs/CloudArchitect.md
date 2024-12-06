@@ -357,7 +357,8 @@ The development environment is used as a controlled environment for building and
     - Plan: Basic
     - Instance Count: 1
     - SKU: B1
-    - Location: `westeurope`
+    - Location: `North Europe`
+    - Name: `dkumlin-be-dev`
     - Environment Variables:
       - `ENV`: Development
       - `DBHOST`: Development Database Host
@@ -370,28 +371,28 @@ The development environment is used as a controlled environment for building and
 
 - **Azure Database for PostgreSQL**: 
   - **Configuration**: 
-    - Server Name: `dev-postgres-server`
-    - Database Name: `dev-db`
+    - Server Name: `dkumlin-dbsrv-dev`
+    - Database Name: `dkumlin-db-dev`
     - SKU: Basic
     - Backup Retention: 7 days
-    - Location: `westeurope`
+    - Location: `North Europe`
 
 - **Azure Key Vault**: 
   - **Configuration**: 
-    - Name: `dev-keyvault`
-    - Location: `westeurope`
+    - Name: `dkumlin-keyvault-dev`
+    - Location: `North Europe`
     - Access Policies: Development team access
 
 - **Azure Log Analytics Workspace**: 
   - **Configuration**: 
-    - Name: `dev-log-analytics`
-    - Location: `westeurope`
+    - Name: `dkumlin-logAnalyticsWorkspace-dev`
+    - Location: `North Europe`
 
 - **Azure Application Insights**: 
   - **Configuration**: 
-    - Name: `dev-app-insights`
-    - Location: `westeurope`
-    - Linked Log Analytics Workspace ID: `dev-log-analytics`
+    - Name: `dkumlin-appInsights-dev`
+    - Location: `North Europe`
+    - Linked Log Analytics Workspace ID: `dkumlin-logAnalyticsWorkspace-dev`
     - Retention In Days: 90
     - Ingestion Mode: LogAnalytics
     - Public Network Access for Ingestion: Enabled
@@ -399,12 +400,11 @@ The development environment is used as a controlled environment for building and
 
 - **Azure Container Registry**: 
   - **Configuration**: 
-    - Name: `dev-container-registry`
-    - Location: `westeurope`
+    - Name: `dkumlinacrdev`
+    - Location: `North Europe`
     - Admin Username: Stored in Key Vault
     - Admin Password: Stored in Key Vault
 
----
 
 ### UAT Environment
 The UAT (User Acceptance Testing) environment is used by our team at BigDawgBank for extensive stakeholder testing. It mirrors the production environment closely to ensure that the application behaves as expected before going live, gauging errors and allowing us to fix any faulty functionality of the application.
@@ -416,7 +416,8 @@ The UAT (User Acceptance Testing) environment is used by our team at BigDawgBank
     - Plan: Standard
     - Instance Count: 2
     - SKU: S1
-    - Location: `westeurope`
+    - Location: `North Europe`
+    - Name: `dkumlin-be-uat`
     - Environment Variables:
       - `ENV`: UAT
       - `DBHOST`: UAT Database Host
@@ -429,28 +430,28 @@ The UAT (User Acceptance Testing) environment is used by our team at BigDawgBank
 
 - **Azure Database for PostgreSQL**: 
   - **Configuration**: 
-    - Server Name: `uat-postgres-server`
-    - Database Name: `uat-db`
+    - Server Name: `dkumlin-dbsrv-uat`
+    - Database Name: `dkumlin-db-uat`
     - SKU: Standard
     - Backup Retention: 14 days
-    - Location: `westeurope`
+    - Location: `North Europe`
 
 - **Azure Key Vault**: 
   - **Configuration**: 
-    - Name: `uat-keyvault`
-    - Location: `westeurope`
+    - Name: `dkumlin-keyvault-uat`
+    - Location: `North Europe`
     - Access Policies: UAT team access
 
 - **Azure Log Analytics Workspace**: 
   - **Configuration**: 
-    - Name: `uat-log-analytics`
-    - Location: `westeurope`
+    - Name: `dkumlin-logAnalyticsWorkspace-uat`
+    - Location: `North Europe`
 
 - **Azure Application Insights**: 
   - **Configuration**: 
-    - Name: `uat-app-insights`
-    - Location: `westeurope`
-    - Linked Log Analytics Workspace ID: `uat-log-analytics`
+    - Name: `dkumlin-appInsights-uat`
+    - Location: `North Europe`
+    - Linked Log Analytics Workspace ID: `dkumlin-logAnalyticsWorkspace-uat`
     - Retention In Days: 90
     - Ingestion Mode: LogAnalytics
     - Public Network Access for Ingestion: Enabled
@@ -458,8 +459,8 @@ The UAT (User Acceptance Testing) environment is used by our team at BigDawgBank
 
 - **Azure Container Registry**: 
   - **Configuration**: 
-    - Name: `uat-container-registry`
-    - Location: `westeurope`
+    - Name: `dkumlinacruat`
+    - Location: `North Europe`
     - Admin Username: Stored in Key Vault
     - Admin Password: Stored in Key Vault
 
@@ -475,7 +476,8 @@ The production environment is the live environment where the BigDawgBank applica
     - Plan: Premium
     - Instance Count: 3
     - SKU: P1V2
-    - Location: `westeurope`
+    - Location: `North Europe`
+    - Name: `dkumlin-be-prod`
     - Environment Variables:
       - `ENV`: Production
       - `DBHOST`: Production Database Host
@@ -488,28 +490,28 @@ The production environment is the live environment where the BigDawgBank applica
 
 - **Azure Database for PostgreSQL**: 
   - **Configuration**: 
-    - Server Name: `prod-postgres-server`
-    - Database Name: `prod-db`
+    - Server Name: `dkumlin-dbsrv-prod`
+    - Database Name: `dkumlin-db-prod`
     - SKU: Premium
     - Backup Retention: 35 days
-    - Location: `westeurope`
+    - Location: `North Europe`
 
 - **Azure Key Vault**: 
   - **Configuration**: 
-    - Name: `prod-keyvault`
-    - Location: `westeurope`
+    - Name: `dkumlin-keyvault-prod`
+    - Location: `North Europe`
     - Access Policies: Production team access
 
 - **Azure Log Analytics Workspace**: 
   - **Configuration**: 
-    - Name: `prod-log-analytics`
-    - Location: `westeurope`
+    - Name: `dkumlin-logAnalyticsWorkspace-prod`
+    - Location: `North Europe`
 
 - **Azure Application Insights**: 
   - **Configuration**: 
-    - Name: `prod-app-insights`
-    - Location: `westeurope`
-    - Linked Log Analytics Workspace ID: `prod-log-analytics`
+    - Name: `dkumlin-appInsights-prod`
+    - Location: `North Europe`
+    - Linked Log Analytics Workspace ID: `dkumlin-logAnalyticsWorkspace-prod`
     - Retention In Days: 90
     - Ingestion Mode: LogAnalytics
     - Public Network Access for Ingestion: Enabled
@@ -517,8 +519,8 @@ The production environment is the live environment where the BigDawgBank applica
 
 - **Azure Container Registry**: 
   - **Configuration**: 
-    - Name: `prod-container-registry`
-    - Location: `westeurope`
+    - Name: `dkumlinacrprod`
+    - Location: `North Europe`
     - Admin Username: Stored in Key Vault
     - Admin Password: Stored in Key Vault
 
