@@ -85,7 +85,7 @@ jobs:
   
 
   deploy-dev:
-    needs: [check-changes, build, validate_dev]
+    needs: [check-changes, build, validate_deveplment_template]
     if: needs.check-changes.outputs.infra == 'true'
     runs-on: ubuntu-latest
     environment: Development
