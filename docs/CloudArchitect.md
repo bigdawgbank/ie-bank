@@ -657,11 +657,192 @@ Use case and sequential model diagrams for each use case in the BigDawgBank appl
 - **Description**: Update and document the Entity Relationship Diagram for the database.
 ![ER](./images/Entity_relationship_DIagram.png)
 
+The Entity-Relationship Diagram (ERD) represents the logical structure and relationships of the database for the bank application. The diagram defines three main entities: **Users**, **Accounts**, and a **Logical Bank Transfers Entity**.
+
+---
+
+#### Users Table
+- Represents the individuals interacting with the bank application, such as customers or administrators.
+- **Attributes**:
+  - **id (Primary Key):** Unique identifier for each user.
+  - **username:** Unique name for the user.
+  - **email:** Unique email address.
+  - **password_hash:** Securely hashed password for authentication.
+  - **role:** Defines the role of the user, such as "admin" or "user".
+  - **created_at:** Timestamp indicating when the user was created.
+
+---
+
+#### Accounts Table
+- Represents the bank accounts owned by users.
+- **Attributes**:
+  - **id (Primary Key):** Unique identifier for each account.
+  - **name:** Name or label of the account.
+  - **account_number:** Unique 20-digit account number.
+  - **balance:** The current balance in the account.
+  - **currency:** Currency type for the account (e.g., €, $, £).
+  - **status:** Indicates if the account is active or inactive.
+  - **country:** Country associated with the account.
+  - **created_at:** Timestamp indicating when the account was created.
+  - **user_id (Foreign Key):** Links the account to a user in the **Users** table.
+
+---
+
+#### Bank Transfers Logical Entity
+- Represents the conceptual structure for transactions between accounts.
+- **Attributes**:
+  - **from_account_id (Foreign Key):** ID of the account from which money is sent.
+  - **to_account_id (Foreign Key):** ID of the account to which money is received.
+  - **amount:** Amount of money transferred.
+  - **created_at:** Timestamp of the transaction.
+
+---
+
+### Relationships
+
+#### User to Account
+- **Type:** One-to-Many
+- **Description:** Each user can own multiple bank accounts, but each account belongs to one specific user.
+- **Implementation:** 
+  - The `user_id` in the **Accounts** table serves as a foreign key referencing the `id` in the **Users** table.
+
+---
+
+#### Account to Bank Transfers
+- **Type:** 0-to-Many
+- **Description:** An account may participate in many bank transfers as a sender or a recipient. However, an account may also exist without participating in any transfer.
+- **Implementation:**
+  - `from_account_id` and `to_account_id` in the **Bank Transfers Logical Entity** are foreign keys referencing the `id` in the **Accounts** table.
+
+---
+
+### Key Features
+
+#### Logical Entity for Bank Transfers
+- This entity is logical and not stored as a separate table in the database. Instead, it provides a clear abstraction for managing account-to-account transactions.
+
+#### Admin Role for Users
+- The `role` attribute in the **Users** table allows distinguishing between administrative users and regular users.
+- Admins can manage accounts, assign roles, and oversee user operations.
+
+#### Scalability
+- The One-to-Many relationship between **Users** and **Accounts** ensures scalability as users can have multiple accounts.
+- The 0-to-Many relationship for **Bank Transfers** supports a flexible and dynamic transaction model.
+
+#### Secure Data Handling
+- Passwords are hashed securely in the **Users** table, ensuring data security.
+- Transactions are validated before being logically processed in the **Bank Transfers** entity.
+
 ---
 
 ## Data Flow Diagram
 - **Description**: Update and document the Data Flow Diagram for the application.
 ![DataFlow Diagram](./images/DataFlow.png)
+
+The Data Flow Diagram (DFD) illustrates the interaction between users, admins, processes, and data stores in the bank application. It captures key functionalities such as authentication, registration, user and account management, and bank transfers. The DFD highlights how data flows through the system.
+
+---
+
+### External Entities
+1. **Bank User**
+   - Represents the end users of the application (e.g., customers performing transactions or viewing accounts).
+2. **Bank Admin**
+   - Represents administrative users with elevated privileges for managing users and accounts.
+
+---
+
+### Processes
+1. **Authentication**
+   - Handles user login and session management.
+   - Input: Login credentials (username, password).
+   - Output: JWT Token issued to the user for session management.
+2. **Registration**
+   - Handles new user sign-ups.
+   - Input: Registration details (username, email, password).
+   - Output: New user created in the Users Database with a default account in the Accounts Database.
+3. **User Management**
+   - Allows Bank Admin to perform CRUD (Create, Read, Update, Delete) operations on users.
+   - Input: Admin requests to manage users.
+   - Output: Updates made to the Users Database.
+4. **Account Management**
+   - Handles operations such as account creation, updates, and retrieval.
+   - Input: User or Admin requests for account-related operations.
+   - Output: Updates to the Accounts Database.
+5. **Bank Transfer**
+   - Facilitates money transfers between user accounts.
+   - Input: Transfer request specifying sender account, recipient account, and amount.
+   - Output: Updated balances in the Accounts Database and a new transfer record in the Transfers Database.
+
+---
+
+### Data Stores
+1. **Users Database**
+   - Stores user credentials, hashed passwords, roles, and metadata.
+2. **Accounts Database**
+   - Stores account details such as balance, currency, status, and associated user.
+3. **Transfers Database**
+   - Logs bank transfers, including sender, recipient, amount, and timestamp.
+
+---
+
+### External Systems
+1. **JWT System**
+   - Used for authentication and authorization through token-based sessions.
+2. **Email Service (Optional)**
+   - Sends email notifications for registrations, transactions, or account updates.
+
+---
+
+### Data Flow Steps
+
+#### 1. Authentication Process
+- **Actors**: Bank User/Bank Admin
+- **Steps**:
+  1. The user/admin submits login credentials (username, password) to the **Authentication** process.
+  2. The process validates the credentials against the **Users Database**.
+  3. If successful, a **JWT Token** is issued and returned to the user/admin.
+
+---
+
+#### 2. Registration Process
+- **Actors**: Bank User
+- **Steps**:
+  1. The user submits registration details (username, email, password) to the **Registration** process.
+  2. The process validates the input (e.g., ensures unique email and strong password).
+  3. A new user is created in the **Users Database**.
+  4. A default bank account is created in the **Accounts Database**.
+
+---
+
+#### 3. User Management (Admin)
+- **Actors**: Bank Admin
+- **Steps**:
+  1. The admin performs CRUD operations (e.g., add, update, delete users) via the **User Management** process.
+  2. The process validates the admin's JWT token to confirm privileges.
+  3. Changes are made to the **Users Database**.
+
+---
+
+#### 4. Account Management (User/Admin)
+- **Actors**: Bank User/Bank Admin
+- **Steps**:
+  1. Users request account details or create/update accounts via the **Account Management** process.
+  2. Admins manage accounts linked to users.
+  3. The **Account Management** process interacts with the **Accounts Database** to retrieve or update data.
+
+---
+
+#### 5. Bank Transfer Process
+- **Actors**: Bank User
+- **Steps**:
+  1. The user initiates a money transfer by specifying the sender account, recipient account, and amount.
+  2. The **Bank Transfer** process validates:
+     - The sender account belongs to the user.
+     - Sufficient balance exists in the sender account.
+     - The recipient account is valid.
+  3. If valid:
+     - The sender's balance is debited, and the recipient's balance is credited in the **Accounts Database**.
+     - A record of the transfer is created in the **Transfers Database**.
 
 ---
 
