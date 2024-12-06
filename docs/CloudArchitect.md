@@ -335,15 +335,22 @@ We will use Azure Application Insights built on top of our Log Analytics to prov
 
 ---
 
-## Environment Design
+# Environment Design
 
-### Description
+## Description
 Collaborate with the Infrastructure Developer and Full Stack Developer to document and update the environments required for development, UAT, and production. This section includes the configuration for each Azure service in each environment.
 
-### Environments
+![Environments](./images/Environments.png)
 
-#### Development Environment
-The development environment is used as a controlled environment for building and testing BigDawgBanks new features. it is used for experimental deployments and testing infrastructure configurations. It is designed to be flexible and allow for rapid changes.
+---
+
+## Environments
+
+### Development Environment
+The development environment is used as a controlled environment for building and testing BigDawgBank's new features. It is used for experimental deployments and testing infrastructure configurations. It is designed to be flexible and allow for rapid changes.
+
+![Development](./images/Development.png)
+
 
 - **Azure App Service**: 
   - **Configuration**: 
@@ -397,8 +404,12 @@ The development environment is used as a controlled environment for building and
     - Admin Username: Stored in Key Vault
     - Admin Password: Stored in Key Vault
 
-#### UAT Environment
-The UAT (User Acceptance Testing) environment is used by our team at BigdawgBank for extensive stakeholder testing. It mirrors the production environment closely to ensure that the application behaves as expected before going live, guaging errors and allowing us to fix any faulty functionality of the application.
+---
+
+### UAT Environment
+The UAT (User Acceptance Testing) environment is used by our team at BigDawgBank for extensive stakeholder testing. It mirrors the production environment closely to ensure that the application behaves as expected before going live, gauging errors and allowing us to fix any faulty functionality of the application.
+
+![UAT](./images/UAT.png)
 
 - **Azure App Service**: 
   - **Configuration**: 
@@ -452,8 +463,12 @@ The UAT (User Acceptance Testing) environment is used by our team at BigdawgBank
     - Admin Username: Stored in Key Vault
     - Admin Password: Stored in Key Vault
 
-#### Production Environment
-The production environment is the live environment where the BigdawgBank application will be available to end-users. It is designed for high availability, scalability, and security.
+---
+
+### Production Environment
+The production environment is the live environment where the BigDawgBank application will be available to end-users. It is designed for high availability, scalability, and security.
+
+![PROD](./images/PROD.png)
 
 - **Azure App Service**: 
   - **Configuration**: 
@@ -507,13 +522,17 @@ The production environment is the live environment where the BigdawgBank applica
     - Admin Username: Stored in Key Vault
     - Admin Password: Stored in Key Vault
 
-### Configuration Variables
+---
+
+## Configuration Variables
 To determine different configuration options for each environment, we will make use of the files under the `parameters` folder.
 - File `parameters/dev.parameters.json` contains the configuration for the development environment.
 - File `parameters/uat.parameters.json` contains the configuration for the UAT environment.
 - File `parameters/prod.parameters.json` contains the configuration for the production environment.
 
-### Continuous Delivery
+---
+
+## Continuous Delivery
 The CI/CD pipelines for each environment are defined in the following GitHub Actions workflow files:
 - `.github/workflows/ie-bank-backend.yml` for the backend.
 - `.github/workflows/ie-bank-frontend.yml` for the frontend.
@@ -526,6 +545,8 @@ The workflows use the following GitHub secrets:
 - `DBPASS`: Password for the PostgreSQL server.
 - `DBHOST`: Hostname for the PostgreSQL server.
 - `DBNAME`: Name for the PostgreSQL database.
+
+---
 
 ### GitHub Variables
 The workflows use the following GitHub variables:
