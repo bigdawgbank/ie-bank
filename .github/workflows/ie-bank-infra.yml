@@ -52,7 +52,7 @@ jobs:
       with:
         subscriptionId: ${{ env.SUBSCRIPTION_ID_DEV }}
         resourceGroupName: ${{ env.RESOURCE_GROUP_DEV }}
-        template: ./main.bicep
+        template: infra/main.bicep
         parameters: ./parameters/dev.parameters.json
           branch=${{ github.ref_name }}
           repositoryUrl=https://github.com/bigdawgbank/ie-bank 
