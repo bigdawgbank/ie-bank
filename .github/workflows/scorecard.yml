@@ -16,7 +16,7 @@ jobs:
 
       - name: Run OSSF Scorecard
         id: scorecard
-        uses: ossf/scorecard-action@v2
+        uses: ossf/scorecard-action@v2.1.0
         with:
           results_file: .github/reports/ossf-scorecard-results.json
           repo_token: ${{ secrets.GITHUB_TOKEN }}
