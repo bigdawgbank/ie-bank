@@ -4,6 +4,75 @@ The Cloud Architect is responsible for designing and implementing scalable, reli
 
 ---
 
+## Table of Contents
+
+1. [BigDawgBank Functional and Non-Functional Requirements](#bigdawgbank-functional-and-non-functional-requirements)
+2. [Infrastructure Architecture Design](#infrastructure-architecture-design)
+   - [GitHub](#github)
+   - [App Service for Containers](#app-service-for-containers)
+   - [App Service Plan](#app-service-plan)
+   - [PostgreSQL Database](#postgresql-database)
+   - [Static Web App](#static-web-app)
+   - [Azure Container Registry(ACR)](#azure-container-registryacr)
+   - [Key Vault](#key-vault)
+   - [Log Analytics Workspace](#log-analytics-workspace)
+   - [Application Insights](#application-insights)
+   - [Azure Workbook](#azure-workbook)
+   - [Infra Architecture Design Diagram](#infra-architecture-design-diagram)
+3. [Environment Design](#environment-design)
+   - [Description](#description)
+   - [Environments](#environments)
+     - [Development Environment](#development-environment)
+     - [UAT Environment](#uat-environment)
+     - [Production Environment](#production-environment)
+   - [Configuration Variables](#configuration-variables)
+   - [Continuous Delivery](#continuous-delivery)
+   - [GitHub Secrets](#github-secrets)
+   - [GitHub Variables](#github-variables)
+4. [Well-Architected Framework Design](#well-architected-framework-design)
+   - [1. Reliability Pillar](#1-reliability-pillar)
+   - [2. Security Pillar](#2-security-pillar)
+   - [3. Cost Optimization Pillar](#3-cost-optimization-pillar)
+     - [Static Web App for Frontend](#static-web-app-for-frontend)
+   - [4. Operational Excellence Pillar](#4-operational-excellence-pillar)
+   - [5. Performance Efficiency Pillar](#5-performance-efficiency-pillar)
+5. [Test Driven Design(TDD)](#test-driven-designtdd)
+6. [Release Strategy](#release-strategy)
+   - [Development (Dev)](#development-dev)
+   - [User Acceptance Testing (UAT)](#user-acceptance-testing-uat)
+   - [Production (Prod)](#production-prod)
+   - [Infrastructure Release Strategy](#infrastructure-release-strategy)
+   - [Rollback Mechanisms and Disaster Recovery](#rollback-mechanisms-and-disaster-recovery)
+7. [Use Case and Sequential Model Design](#use-case-and-sequential-model-design)
+8. [Entity Relationship Diagram](#entity-relationship-diagram)
+   - [Users Table](#users-table)
+   - [Accounts Table](#accounts-table)
+   - [Bank Transfers Logical Entity](#bank-transfers-logical-entity)
+   - [Relationships](#relationships)
+     - [User to Account](#user-to-account)
+     - [Account to Bank Transfers](#account-to-bank-transfers)
+   - [Key Features](#key-features-of-the-ER)
+9. [Data Flow Diagram](#data-flow-diagram)
+   - [External Entities](#external-entities)
+   - [Processes](#processes)
+   - [Data Stores](#data-stores)
+   - [External Systems](#external-systems)
+   - [Data Flow Steps](#data-flow-steps)
+   - [Key Features](#key-features-of-the-dfd)
+10. [Twelve-Factor App Principles in BigDawgBank](#twelve-factor-app-principles-in-bigdawgbank)
+   - [I. Codebase](#i-codebase)
+   - [II. Dependencies](#ii-dependencies)
+   - [III. Config](#iii-config)
+   - [IV. Backing Services](#iv-backing-services)
+   - [V. Build, Release, Run](#v-build-release-run)
+   - [VI. Processes](#vi-processes)
+   - [VII. Port Binding](#vii-port-binding)
+   - [VIII. Concurrency](#viii-concurrency)
+   - [IX. Disposability](#ix-disposability)
+   - [X. Dev/Prod Parity](#x-devprod-parity)
+   - [XI. Logs](#xi-logs)
+   - [XII. Admin Processes](#xii-admin-processes)
+
 ## BigDawgBank Functional and Non-Functional Requirements
 
 ### Functional Requirements (FR)
@@ -526,7 +595,7 @@ The production environment is the live environment where the BigDawgBank applica
 
 ---
 
-## Configuration Variables
+### Configuration Variables
 To determine different configuration options for each environment, we will make use of the files under the `parameters` folder.
 - File `parameters/dev.parameters.json` contains the configuration for the development environment.
 - File `parameters/uat.parameters.json` contains the configuration for the UAT environment.
@@ -534,7 +603,7 @@ To determine different configuration options for each environment, we will make 
 
 ---
 
-## Continuous Delivery
+### Continuous Delivery
 The CI/CD pipelines for each environment are defined in the following GitHub Actions workflow files:
 - `.github/workflows/ie-bank-backend.yml` for the backend.
 - `.github/workflows/ie-bank-frontend.yml` for the frontend.
@@ -1147,7 +1216,7 @@ The Entity-Relationship Diagram (ERD) represents the logical structure and relat
 
 ---
 
-### Key Features
+### Key Features of the ER
 
 #### Logical Entity for Bank Transfers
 - This entity is logical and not stored as a separate table in the database. Instead, it provides a clear abstraction for managing account-to-account transactions.
