@@ -564,6 +564,97 @@ Here we've showcased BigDawgBanks' environment design and configuration for each
 ### 1. Reliability Pillar
 - **Description**: Collaborate with the Site Reliability Engineer to document decisions related to system reliability.
 
+#### Points Considered When Taking Design Decisions
+- **Design for Business Requirements**
+- **Design for Resilience**
+- **Design for Recovery**
+- **Design for Operations**
+- **Keep it Simple**
+
+We have taken all of these points into deep consideration when Designing the reliability for our application, this was mainly done by our taleneted SRE.
+
+#### Reliability Checklist With BigdawgBank:
+
+- **RE:01.** Design your workload to align with business objectives and avoid unnecessary complexity or overhead.
+  - The BigDawgBank application is designed to meet specific business objectives, such as providing a secure and user-friendly banking platform. The architecture avoids unnecessary complexity by using well-defined infrastructure components and services.
+
+- **RE:02.** Identify and rate user and system flows.
+  - User and system flows are identified and rated based on their importance and impact. For our team critical flows were identified, such as account management and money transfers, are prioritized to ensure reliability.
+
+- **RE:03.** Use failure mode analysis (FMA) to identify and prioritize potential failures in your solution components.
+  - BigDawgBank has not yet implemented this.
+
+- **RE:04.** Define reliability and recovery targets for the components.
+  - Reliability and recovery targets are defined for each component. For example, the frontend aims for 99.95% uptime, and the backend ensures API response times do not exceed 2 seconds.
+
+- **RE:05.** Add redundancy at different levels, especially for critical flows.
+  - Redundancy is added at various levels to ensure reliability. For instance, the database uses replicas, and load balancing is implemented for frontend and backend services.
+
+- **RE:06.** Implement a timely and reliable scaling strategy at the application, data, and infrastructure levels.
+  - A reliable scaling strategy is implemented to handle varying workloads. Horizontal scaling is used for the frontend and backend to accommodate increased user demand.
+
+- **RE:07.** Strengthen the resiliency and recoverability of your workload by implementing self-preservation and self-healing measures.
+  - Self-preservation and self-healing measures are implemented to enhance resiliency. BigDawgBank has an automated and clear release strategy in case of a crash. We also have Deployment rollback capabilities that are in place to recover from failures.
+
+- **RE:08. NOT DONE** Test for resiliency and availability scenarios by applying the principles of chaos engineering in your test and production environments.
+  - Chaos engineering principles are applied to test the system's behavior under failure conditions. This helps ensure that the application can handle unexpected disruptions.
+
+- **RE:09. NOT DONE!!** Implement structured, tested, and documented business continuity and disaster recovery (BCDR) plans that align with the recovery targets.
+  - Structured and documented BCDR plans are implemented and tested regularly. These plans align with the defined recovery targets to ensure minimal disruption during failures. 
+
+- **RE:10.** Measure and model the solution's health signals.
+  - The health of the solution in BigDawgBank is continuously measured and modeled using monitoring tools like Azure Monitor, Application Insights, Log Analytics and Azure Workbook. This helps detect and address issues proactively.
+
+
+To ensure reliability for the  BigDawgBank application, several strategies and practices have been implemented across different parts of our organization. Here are some key aspects:
+
+#### Service Level Objectives (SLOs) and Indicators (SLIs):
+The Site Reliability Engineer (SRE) outlines specific SLOs and SLIs to measure and ensure reliability:
+- **Frontend Availability**: Maintain 99.95% uptime for the frontend.
+- **Backend Latency**: Ensure API response times do not exceed 2 seconds.
+- **Database Performance**: Guarantee query response times of less than 500ms.
+- **Error Rate**: Keep application error rates below 0.1% over a rolling 24-hour window.
+- **Incident Resolution**: Resolve critical incidents within 1 hour of detection.
+
+#### Monitoring and Alerts:
+The monitoring strategy includes:
+- **Monitoring Tools**: Use tools like Azure Monitor, Application Insights, and Log Analytics for tracking metrics.
+- **Alerts**: Configure alerts for key performance indicators (e.g., high response times, downtime).
+- **Dashboards**: Create real-time dashboards to visualize critical metrics.
+- **Log Analysis**: Implement log monitoring for identifying trends and potential issues.
+
+#### Incident Response Plan:
+The incident response plan includes:
+- **Incident Detection**: Use monitoring tools and alerts to detect incidents promptly.
+- **Incident Triage**: Classify incidents based on severity and impact.
+- **Incident Resolution**: Define procedures for diagnosing and resolving incidents quickly.
+- **Post-Incident Review**: Conduct reviews to identify root causes and prevent recurrence.
+
+#### Automated Testing and CI/CD Pipelines
+Automated tests and CI/CD pipelines ensure that code changes do not introduce reliability issues:
+- **Functional Tests**: Functional tests for routes like [`test_wire_transfer_money_route`](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_routes.py) and [`test_bank_transfer_process_route`](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_routes.py) ensure that critical functionalities work as expected.
+- **CI/CD Pipelines**: GitHub Actions workflows like `.github/workflows/ie-bank-frontend.yml`and `.github/workflows/ie-bank-backend.yml` automate the build, test, and deployment processes, ensuring consistent and reliable deployments.
+
+#### Infrastructure as Code (IaC):
+Using Bicep templates for infrastructure provisioning ensures that the infrastructure is consistently deployed and configured:
+- **Bicep Templates**: The `infra/main.bicep` file defines the infrastructure components, ensuring that the infrastructure is reproducible and reliable.
+
+#### Scalability and Fault Tolerance:
+The application is designed to handle peak loads and ensure fault tolerance:
+- **Horizontal Scaling**: The application supports horizontal scaling for the frontend and backend to accommodate increased user demand.
+- **Fault Tolerance**: Design fault-tolerant systems to minimize the impact of failures.
+
+#### Backup and Recovery:
+The system includes backup and recovery mechanisms:
+- **Point-in-Time Restore**: Our PostgresSQL database supports point-in-time restore.
+- **Deployment Rollback**: Deployment rollback capabilities are in place in case of failure.
+
+#### Environment Design:
+The environment design includes separate environments for development, UAT, and production, ensuring that changes are tested thoroughly before reaching production.
+
+---
+By implementing these strategies and practices, the BigDawgBank ensures the highest possible reliability, minimizing downtime and ensuring a consistent user experience which is what we strive for.
+
 ### 2. Security Pillar
 - **Description**: Collaborate with the Cybersecurity Engineer to document security decisions.
 
