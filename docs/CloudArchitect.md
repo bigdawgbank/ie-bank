@@ -955,6 +955,8 @@ The development environment is used for initial development and testing of new f
   - Docker images are built and pushed to the development container registry.
   - The application is deployed to the Azure Web App for the development environment.
 
+![Dev](./images/Dev_workflow.png)
+
 ---
 
 ### User Acceptance Testing (UAT)
@@ -966,6 +968,8 @@ The UAT environment is used for stakeholder testing and validation of new featur
   - Linting and testing are performed to ensure code quality.
   - Docker images are built and pushed to the UAT container registry.
   - The application is deployed to the Azure Web App for the UAT environment.
+
+![UAT](./images/UAT_Workflow.png)
 
 ---
 
@@ -979,9 +983,9 @@ The production environment is used for the live application, serving end-users.
   - Docker images are built and pushed to the production container registry.
   - The application is deployed to the Azure Web App for the production environment.
 
----
+![PROD](./images/prod_workflow.png)
 
-By following this release strategy, the BigDawgBank application ensures a structured and secure deployment process, minimizing the risk of errors and ensuring that only thoroughly tested code reaches the production environment. This strategy also aligns with GitHub Security best practices by preventing direct pushes to the `main` branch and enforcing code reviews through pull requests.
+---
 
 ### Infrastructure Release Strategy
 - **Description**: Document the infrastructure release strategy, including the use of IaC tools (e.g., Bicep templates, ARM templates) and GitHub Actions workflows. Detail the process for provisioning and updating infrastructure in each environment:
@@ -1028,7 +1032,7 @@ To ensure the reliability and stability of the infrastructure, the following mec
 - **Rollback Mechanisms**: In case of deployment failures, the infrastructure can be rolled back to the previous stable state using the versioned Bicep templates and GitHub Actions workflows.
 - **Disaster Recovery**: Regular backups and point-in-time restore capabilities are implemented for critical resources such as the PostgreSQL database to ensure data integrity and availability in case of failures.
 
-By following this infrastructure release strategy, the BigDawgBank application ensures a structured and secure deployment process, minimizing the risk of errors and ensuring that only thoroughly tested infrastructure changes reach the production environment. This strategy also aligns with GitHub Security best practices by preventing direct pushes to the `main` branch and enforcing code reviews through pull requests.
+By following this release strategy, the BigDawgBank application ensures a structured and secure deployment process, minimizing the risk of errors and ensuring that only thoroughly tested infrastructure changes reach the production environment. This strategy also aligns with GitHub Security best practices by preventing direct pushes to the `main` branch and enforcing code reviews through pull requests.
 
 ---
 
