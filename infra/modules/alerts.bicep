@@ -7,13 +7,9 @@ param slackWebhookUrl string
 @description('Environment name (e.g., dev, uat, prod)')
 param environment string
 
-@description('The Azure region for the resources (e.g., North Europe)')
-param location string
-
-// Create Slack Action Group
 resource slackActionGroup 'microsoft.insights/actionGroups@2022-06-01' = {
   name: 'ag-slack-${environment}'
-  location: 'global' // Supported location
+  location: 'global'
   properties: {
     groupShortName: 'slack'
     enabled: true
@@ -27,16 +23,15 @@ resource slackActionGroup 'microsoft.insights/actionGroups@2022-06-01' = {
   }
 }
 
-// Sample alert definition (Uptime Alert)
 resource uptimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
   name: 'uptimeAlert-${environment}'
-  location: 'global' // Updated to use the same location as existing resource
+  location: 'global'
   properties: {
     description: 'Alert when availability falls below SLA threshold.'
     severity: 3
     enabled: true
     scopes: [
-      resourceId('microsoft.insights/components', appInsightsName)
+      appInsightsName
     ]
     evaluationFrequency: 'PT5M'
     windowSize: 'PT15M'

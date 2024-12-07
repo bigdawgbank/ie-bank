@@ -276,10 +276,9 @@ output keyVaultResourceId string = keyVault.outputs.keyVaultResourceId
 module alertsModule './modules/alerts.bicep' = {
   name: 'alertsModule'
   params: {
-    appInsightsName: appInsights.name
+    appInsightsName: resourceId('Microsoft.Insights/components', appInsightsName)
     slackWebhookUrl: slackWebhookUrl
     environment: environment
-    location: location
+    location: 'global'
   }
 }
-
