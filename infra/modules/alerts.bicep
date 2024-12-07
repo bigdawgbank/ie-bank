@@ -13,7 +13,7 @@ param location string
 // Create Slack Action Group
 resource slackActionGroup 'microsoft.insights/actionGroups@2022-06-01' = {
   name: 'ag-slack-${environment}'
-  location: location
+  location: 'global' // Updated to use a supported location
   properties: {
     groupShortName: 'slack'
     enabled: true
@@ -33,6 +33,7 @@ resource uptimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
   location: location
   properties: {
     description: 'Alert when availability falls below SLA threshold.'
+    severity: 3 // Added the missing severity property
     enabled: true
     scopes: [
       resourceId('microsoft.insights/components', appInsightsName)
