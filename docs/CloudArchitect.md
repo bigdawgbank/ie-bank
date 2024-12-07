@@ -1291,7 +1291,70 @@ The Data Flow Diagram (DFD) illustrates the interaction between users, admins, p
 
 ---
 
-## Twelve-Factor App Design
-- **Description**: Document how the Twelve-Factor App principles are applied to the project.
+## Twelve-Factor App Principles in BigDawgBank
+
+The BigDawgBank application adheres to the Twelve-Factor App methodology to ensure a scalable, maintainable, and portable software-as-a-service application. Below is a detailed explanation of how each of the twelve factors is implemented in the BigDawgBank application.
+
+### I. Codebase
+**One codebase tracked in revision control, many deploys.**
+- The BigDawgBank application uses Git for version control, with the same repo for the frontend, backend, and infrastructure code which allows for a centralized version control.
+- Example: The frontend code is tracked in the `frontend` Folder, the backend code in the `backend` Folder, and the infrastructure code in the `infra` FOlder.
+
+### II. Dependencies
+**Explicitly declare and isolate dependencies.**
+- Dependencies are explicitly declared and isolated using package managers.
+- Example: The frontend uses `npm` to manage dependencies, as specified in the `package.json` file in the `frontend` directory. The backend uses `pip` to manage dependencies, as specified in the `requirements.txt` file in the `backend` directory.
+
+### III. Config
+**Store config in the environment.**
+- Configuration is stored in environment variables to ensure that it can vary between deploys without changing the code.
+- Example: The `ie-bank-backend.yml` GitHub Actions workflow uses environment variables to store configuration values such as `BACKEND_WEBAPP_DEV`, `CONTAINER_REGISTRY_SERVER_URL_DEV`, `IMAGE_NAME_DEV`, and `KEY_VAULT_NAME_DEV`. These variables are all defined for the DEV environment, defined on our Repo. These environment variables are defined in the `env` section of the workflow file, ensuring that configuration is managed separately from the code.
+
+### IV. Backing Services
+**Treat backing services as attached resources.**
+- Backing services such as databases and message queues are treated as attached resources, accessed via URLs or credentials stored in the environment.
+- Example: The PostgreSQL database is accessed using environment variables such as `DBHOST`, `DBNAME`, `DBUSER`, and `DBPASS` in the `infra/main.bicep` file.
+
+### V. Build, Release, Run
+**Strictly separate build and run stages.**
+- The build, release, and run stages are strictly separated in the CI/CD pipelines.
+- Example: The `ie-bank-frontend.yml` and `ie-bank-backend.yml` workflows define separate jobs for building, testing, and deploying the application.
+
+### VI. Processes
+**Execute the app as one or more stateless processes.**
+- The application is executed as stateless processes, with state stored in backing services.
+- Example: The backend services are deployed as Docker containers, ensuring that they are stateless and can be scaled horizontally.
+
+### VII. Port Binding
+**Export services via port binding.**
+- The application exports services via port binding, making them accessible over the network.
+- Example: The backend API is exposed via port binding in the Dockerfile, allowing it to be accessed by the frontend and other services.
+
+### VIII. Concurrency
+**Scale out via the process model.**
+- The application scales out by running multiple instances of stateless processes.
+- Example: Auto-scaling rules are configured for Azure App Services to handle increased load by scaling out the number of instances.
+
+### IX. Disposability
+**Maximize robustness with fast startup and graceful shutdown.**
+- The application is designed for fast startup and graceful shutdown to maximize robustness.
+- Example: Docker containers are used to ensure that services can be started and stopped quickly, and health checks are implemented to monitor the application's state.
+
+### X. Dev/Prod Parity
+**Keep development, staging, and production as similar as possible.**
+- The development, UAT, and production environments are kept as similar as possible to minimize divergence.
+- Example: The `infra/main.bicep` file defines the infrastructure for all environments, ensuring consistency across development, UAT, and production.
+
+### XI. Logs
+**Treat logs as event streams.**
+- Logs are treated as event streams and aggregated for analysis.
+- Example: Azure Log Analytics is used to collect and analyze logs from the application, providing insights into its performance and behavior.
+
+### XII. Admin Processes
+**Run admin/management tasks as one-off processes.**
+- Admin and management tasks are run as one-off processes.
+- Example: Database migrations and other administrative tasks are executed using GitHub Actions workflows, ensuring that they are run in a controlled and repeatable manner.
+
+By adhering to the Twelve-Factor App principles, the BigDawgBank application ensures a scalable, maintainable, and portable architecture that can be easily deployed and managed across different environments.
 
 ---
