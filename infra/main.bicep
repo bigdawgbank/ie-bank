@@ -5,6 +5,7 @@
 ])
 param environmentType string = 'nonprod'
 
+param userAlias string = 'dkumlin'
 @description('The PostgreSQL Server name')
 @minLength(3)
 @maxLength(24)
@@ -57,6 +58,10 @@ param appServiceAPIDBHostFLASK_APP string
 @description('The value for the environment variable FLASK_DEBUG')
 param appServiceAPIDBHostFLASK_DEBUG string
 
+@description('The value for the environment variable JWT_SECRET_KEY')
+@secure()
+param appServiceAPIEnvVarJWT_SECRET_KEY string
+
 @description('Name of the Azure Container Registry')
 param containerRegistryName string
 
@@ -94,7 +99,7 @@ var skuName = (environmentType == 'prod') ? 'B1' : 'B1' //modify according to de
 
 // Use Key Vault for administrator login password later
 module postgresSQLServerModule 'modules/postgre-sql-server.bicep' = {
-  name: 'postgresSQLServerModule'
+  name: 'psqlsrv-${userAlias}'
   params: {
     postgreSQLServerName: postgreSQLServerName
     location: location
@@ -226,6 +231,10 @@ module appServiceBE 'modules/app-service-be.bicep' = {
       {
         name: 'FLASK_DEBUG'
         value: appServiceAPIDBHostFLASK_DEBUG
+      }
+      {
+        name: 'JWT_SECRET_KEY'
+        value: appServiceAPIEnvVarJWT_SECRET_KEY
       }
     ]
   }

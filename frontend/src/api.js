@@ -20,7 +20,6 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // If response is 401 Unauthorized, clear token and redirect to login
     if (error.response?.status === 401) {
       localStorage.removeItem("token");
       router.push("/login");
@@ -222,3 +221,4 @@ export const wireTransferService = {
     }
   },
 };
+

@@ -6,9 +6,6 @@ param postgreSQLServerName string
 @description('The Azure location where the server will be deployed')
 param location string = resourceGroup().location
 
-@description('The administrator login name for the PostgreSQL server')
-param administratorLogin string = 'iebankdbadmin'
-
 @description('The SKU name for the PostgreSQL server')
 param skuName string = 'Standard_B1ms'
 
@@ -47,7 +44,7 @@ resource postgresSQLServer 'Microsoft.DBforPostgreSQL/flexibleServers@2022-12-01
     version: version
     authConfig: {
       activeDirectoryAuth: 'Enabled'
-      passwordAuth: 'Enabled'
+      passwordAuth: 'Disabled'
       tenantId: subscription().tenantId
     }
   }
@@ -76,5 +73,4 @@ resource postgreSQLAdministrators 'Microsoft.DBforPostgreSQL/flexibleServers/adm
 }
 
 output postgresSQLServerName string = postgresSQLServer.name
-output postgresSQLServerAdminLogin string = administratorLogin
 output postgresSQLServerResourceId string = postgresSQLServer.id

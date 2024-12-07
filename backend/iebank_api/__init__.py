@@ -1,5 +1,8 @@
 import os
+<<<<<<< HEAD
 import logging
+=======
+>>>>>>> 67baa060467d9012f1e228ab482c20ba9d572dc2
 from dotenv import load_dotenv
 from flask import Flask
 from flask_bcrypt import Bcrypt
@@ -8,10 +11,15 @@ from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 
+load_dotenv()
 app = Flask(__name__)
 
-load_dotenv()
+# Create extensions first
+db = SQLAlchemy()
+jwt_manager = JWTManager()
+bcrypt = Bcrypt()
 
+<<<<<<< HEAD
 # Logger setup for Application Insights
 logger = logging.getLogger("iebank_logger")
 logger.setLevel(logging.INFO)  # Adjust log level as needed
@@ -24,6 +32,10 @@ if connection_string:
     logger.addHandler(handler)
 
 # Select environment based on the ENV environment variable
+=======
+
+# Your environment config loading stays the same
+>>>>>>> 67baa060467d9012f1e228ab482c20ba9d572dc2
 if os.getenv("ENV") == "local":
     logger.info("Running in local mode")
     app.config.from_object("config.LocalConfig")
@@ -40,38 +52,42 @@ else:
     logger.info("Running in production mode")
     app.config.from_object("config.ProductionConfig")
 
-db = SQLAlchemy(app)
-jwt_manager = JWTManager(app)
-bcrypt = Bcrypt(app)
+# Initialize extensions with app
+db.init_app(app)
+jwt_manager.init_app(app)
+bcrypt.init_app(app)
 
+# Import models
+from iebank_api.models import Account, User
 
-def create_admin_user():
-    """Create admin user if it doesn't exist"""
-    # Check if admin user exists
-    admin_user = User.query.filter_by(
-        email=os.getenv("ADMIN_EMAIL", "admin@admin.com")
-    ).first()
+# Create tables and initialize admin in a single context
+with app.app_context():
+    db.create_all()
 
-    if not admin_user:
-        print("Creating admin user...")
+    try:
+        # Check if admin user exists
+        admin_user = User.query.filter_by(
+            email=os.getenv("ADMIN_EMAIL", "admin@admin.com")
+        ).first()
 
-        admin_user = User(
-            username="admin",
-            email=os.getenv("ADMIN_EMAIL", "admin@admin.com"),
-            password=os.getenv("ADMIN_PASSWORD", "Password1234"),
-            role="admin",
-        )
-
-        try:
+        if not admin_user:
+            print("Creating admin user...")
+            admin_user = User(
+                username="admin",
+                email=os.getenv("ADMIN_EMAIL", "admin@admin.com"),
+                password=os.getenv("ADMIN_PASSWORD", "Password1234"),
+                role="admin",
+            )
             db.session.add(admin_user)
             db.session.commit()
             print("Admin user created successfully!")
-        except Exception as e:
-            print(f"Error creating admin user: {e}")
-            db.session.rollback()
-    else:
-        print("Admin user already exists")
+        else:
+            print("Admin user already exists")
+    except Exception as e:
+        print(f"Error creating admin user: {e}")
+        db.session.rollback()
 
+<<<<<<< HEAD
 
 from iebank_api.models import Account, User
 
@@ -81,4 +97,7 @@ with app.app_context():
 
 CORS(app)
 
+=======
+CORS(app, supports_credentials=True)
+>>>>>>> 67baa060467d9012f1e228ab482c20ba9d572dc2
 from iebank_api import routes
