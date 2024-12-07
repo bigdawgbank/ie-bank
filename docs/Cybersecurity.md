@@ -199,9 +199,9 @@ This document outlines the GitHub security strategy implemented for the IE Bank 
 
 ## **7. References**
 - **CodeQL Workflow:** [View Workflow](https://github.com/bigdawgbank/ie-bank/actions/workflows/github-code-scanning/codeql)
-- **Dependabot Alerts:** [View Alerts](#)
-- **OSSF Scorecard Workflow:** [View Workflow](#)
-- **CODEOWNERS File:** [View CODEOWNERS](#)
-- **Azure Key Vault Bicep File:** [View File](#)
+- **Dependabot Alerts:** [View Alerts](https://github.com/bigdawgbank/ie-bank/security/dependabot)
+- **OSSF Scorecard Workflow:** [View Workflow](https://github.com/bigdawgbank/ie-bank/actions/workflows/scorecard.yml)
+- **CODEOWNERS File:** [View CODEOWNERS](https://github.com/bigdawgbank/ie-bank/blob/main/.github/CODEOWNERS)
+- **Azure Key Vault Bicep File:** [View File](https://github.com/bigdawgbank/ie-bank/blob/main/infra/modules/keyvault.bicep)
 
 ---
