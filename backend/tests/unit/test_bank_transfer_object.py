@@ -1,6 +1,5 @@
 from iebank_api.models import Account
 from iebank_api import db
-import pytest
 from iebank_api.models import BankTransfer
 
 def test_bank_transfer_object_process(testing_client):

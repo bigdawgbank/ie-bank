@@ -98,6 +98,19 @@ export const accountService = {
     }
   },
 
+  async getAccountByNumber(accountNumber) {
+    try {
+      const response = await api.get(`/accounts/queryby`, {
+        params: {
+          account_number_arg: accountNumber,
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  },
+
   async updateAccount(id, accountData) {
     try {
       const response = await api.put(`/accounts/${id}`, accountData);
@@ -220,5 +233,21 @@ export const wireTransferService = {
       throw error.response.data;
     }
   },
+};
+
+export const exchangeRateService = {
+  async getExchangeRate(from_currency, to_currency) {
+    try {
+      const response = await api.get(`/exchangerate`, {
+        params: {
+          from_currency: encodeURIComponent(from_currency),
+          to_currency: encodeURIComponent(to_currency)
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response.data;
+    }
+  }
 };
 
