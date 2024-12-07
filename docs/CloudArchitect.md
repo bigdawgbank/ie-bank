@@ -985,10 +985,50 @@ By following this release strategy, the BigDawgBank application ensures a struct
 
 ### Infrastructure Release Strategy
 - **Description**: Document the infrastructure release strategy, including the use of IaC tools (e.g., Bicep templates, ARM templates) and GitHub Actions workflows. Detail the process for provisioning and updating infrastructure in each environment:
-  - **Development Environment**: Describe experimental deployments and testing infrastructure configurations.
-  - **UAT Environment**: Explain the controlled deployment of infrastructure for stakeholder testing.
-  - **Production Environment**: Provide a strategy for deploying final, stable infrastructure to support the live application.
-  - Highlight rollback mechanisms and disaster recovery strategies for infrastructure deployments.
+
+The infrastructure release strategy for the BigDawgBank application ensures a structured and secure deployment process across different environments. This strategy leverages Infrastructure as Code (IaC) tools such as Bicep templates and GitHub Actions workflows to automate the provisioning and updating of infrastructure.
+
+---
+
+### Development Environment
+The development environment is used for experimental deployments and testing infrastructure configurations.
+- **Environment**: Development
+- **CI/CD Pipeline**: The `ie-bank-infra.yml` workflow is triggered on pushes to any branch except pull request branches.
+- **Steps**:
+  - **Template Validation**: The Bicep template is validated using the `azure/arm-deploy@v1` action to ensure the template is syntactically correct.
+  - **Detect Resource Drift**: The `az deployment group what-if` command is used to detect resource drift between the current deployment and the new one.
+  - **Deployment**: The infrastructure is deployed to the Azure resource group for the development environment using the `azure/arm-deploy@v1` action.
+
+---
+
+### User Acceptance Testing (UAT) Environment
+The UAT environment is used for stakeholder testing and validation of infrastructure changes before they are released to production.
+- **Environment**: UAT
+- **CI/CD Pipeline**: The `ie-bank-infra.yml` workflow is triggered on pull requests to the `main` branch and on pushes to the `main` branch.
+- **Steps**:
+  - **Template Validation**: The Bicep template is validated using the `azure/arm-deploy@v1` action to ensure the template is syntactically correct.
+  - **Detect Resource Drift**: The `az deployment group what-if` command is used to detect resource drift between the current deployment and the new one.
+  - **Deployment**: The infrastructure is deployed to the Azure resource group for the UAT environment using the `azure/arm-deploy@v1` action.
+
+---
+
+### Production Environment
+The production environment is used for the live application, serving end-users.
+- **Environment**: Production
+- **CI/CD Pipeline**: The `ie-bank-infra.yml` workflow is triggered when pull requests are merged to the `main` branch or on manual triggers.
+- **Steps**:
+  - **Template Validation**: The Bicep template is validated using the `azure/arm-deploy@v1` action to ensure the template is syntactically correct.
+  - **Detect Resource Drift**: The `az deployment group what-if` command is used to detect resource drift between the current deployment and the new one.
+  - **Deployment**: The infrastructure is deployed to the Azure resource group for the production environment using the `azure/arm-deploy@v1` action.
+
+---
+
+### Rollback Mechanisms and Disaster Recovery
+To ensure the reliability and stability of the infrastructure, the following mechanisms are in place:
+- **Rollback Mechanisms**: In case of deployment failures, the infrastructure can be rolled back to the previous stable state using the versioned Bicep templates and GitHub Actions workflows.
+- **Disaster Recovery**: Regular backups and point-in-time restore capabilities are implemented for critical resources such as the PostgreSQL database to ensure data integrity and availability in case of failures.
+
+By following this infrastructure release strategy, the BigDawgBank application ensures a structured and secure deployment process, minimizing the risk of errors and ensuring that only thoroughly tested infrastructure changes reach the production environment. This strategy also aligns with GitHub Security best practices by preventing direct pushes to the `main` branch and enforcing code reviews through pull requests.
 
 ---
 
