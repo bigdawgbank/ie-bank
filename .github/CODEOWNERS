@@ -1,2 +1,17 @@
+# Fullstack (frontend/backend)
+frontend/* @RestartDK @ADRIANDLT
+backend/* @RestartDK @ADRIANDLT
 
-@RestartDK
+# Infra (cloud/azure setup)
+infra/* @albipuliga @paulopasso
+
+# Security
+.github/workflows/* @Wisammad
+
+# Cloud Architect
+infra/* @Matzmuda
+frontend/* @Matzmuda
+backend/* @Matzmuda
+
+# Default Owner
+* @RestartDK
