@@ -74,7 +74,7 @@ The backend CI workflow validates changes to backend services by running tests a
 
 ## Test/Behavior-Driven Development Strategy
 A Precise Description of this can be found in the Cloud Architect Page:
-- [Release Strategy](./CloudArchitect.md#test-driven-designtdd)
+- [TTD](./CloudArchitect.md#test-driven-designtdd)
 
 ---
 
