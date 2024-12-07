@@ -941,19 +941,47 @@ We can see the immense focus our team had on ensuring the authentication aspect 
 ## Release Strategy
 - **Description**: Document the release strategy, including environment design, and ensure alignment with the DevOps checklist and GitHub Security best practices.
 
----
-
-### Development(Dev)
+The release strategy for the BigDawgBank application is designed to ensure a smooth and secure deployment process across different environments. This strategy aligns with the DevOps checklist and GitHub Security best practices, including the enforcement of branch protection rules to prevent direct pushes to the `main` branch.
 
 ---
 
-### User Acceptance Testing(UAT)
+### Development (Dev)
+The development environment is used for initial development and testing of new features. The following practices are implemented:
+- **Environment**: Development
+- **CI/CD Pipeline**: The `ie-bank-frontend.yml` and `ie-bank-backend.yml` workflows are triggered on pushes to any branch except pull request branches. This ensures that changes are tested in isolation before being merged.
+- **Steps**:
+  - Code is checked out and dependencies are installed.
+  - Linting and testing are performed to ensure code quality.
+  - Docker images are built and pushed to the development container registry.
+  - The application is deployed to the Azure Web App for the development environment.
 
 ---
 
-### Production(prod)
+### User Acceptance Testing (UAT)
+The UAT environment is used for stakeholder testing and validation of new features before they are released to production.
+- **Environment**: UAT
+- **CI/CD Pipeline**: The `ie-bank-frontend.yml` and `ie-bank-backend.yml` workflows are triggered on pull requests to the `main` branch and on pushes to the `main` branch, however pushes to the main branch aren't allowed due to the appropriate branch protection rules.
+- **Steps**:
+  - Code is checked out and dependencies are installed.
+  - Linting and testing are performed to ensure code quality.
+  - Docker images are built and pushed to the UAT container registry.
+  - The application is deployed to the Azure Web App for the UAT environment.
 
 ---
+
+### Production (Prod)
+The production environment is used for the live application, serving end-users.
+- **Environment**: Production
+- **CI/CD Pipeline**: The `ie-bank-frontend.yml` and `ie-bank-backend.yml` workflows are triggered when pull requests are merged to the `main` branch or on manual triggers.
+- **Steps**:
+  - Code is checked out and dependencies are installed.
+  - Linting and testing are performed to ensure code quality.
+  - Docker images are built and pushed to the production container registry.
+  - The application is deployed to the Azure Web App for the production environment.
+
+---
+
+By following this release strategy, the BigDawgBank application ensures a structured and secure deployment process, minimizing the risk of errors and ensuring that only thoroughly tested code reaches the production environment. This strategy also aligns with GitHub Security best practices by preventing direct pushes to the `main` branch and enforcing code reviews through pull requests.
 
 ### Infrastructure Release Strategy
 - **Description**: Document the infrastructure release strategy, including the use of IaC tools (e.g., Bicep templates, ARM templates) and GitHub Actions workflows. Detail the process for provisioning and updating infrastructure in each environment:
