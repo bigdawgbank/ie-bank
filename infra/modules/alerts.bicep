@@ -177,7 +177,7 @@ resource incidentResolutionAlert 'microsoft.insights/scheduledQueryRules@2021-08
     autoMitigate: true
     checkWorkspaceAlertsStorageConfigured: false
     skipQueryValidation: false
-    overrideQueryTimeRange: false
+    overrideQueryTimeRange: null
     muteActionsDuration: 'PT0M'
     targetResourceTypes: [
       'Microsoft.OperationalInsights/workspaces'
