@@ -11,6 +11,7 @@ This document outlines the GitHub security strategy implemented for the IE Bank 
 ## **1. GitHub Hardening Strategy**
 
 ### **1.1 Branch Protection Rules**
+![Branch Protection](./images/Branch_Protection.png)
 - **Description:**
   - Enforced branch protection rules on the `main` branch to ensure secure code development.
 - **Enforced Rules:**
