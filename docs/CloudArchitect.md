@@ -734,6 +734,9 @@ The system includes backup and recovery mechanisms:
 #### Environment Design:
 The environment design includes separate environments for development, UAT, and production, ensuring that changes are tested thoroughly before reaching production.
 
+For more detailed Documentation of the Site Reliability in BigDawgBank, please refer to the SREs page:
+- [Site Reliability Engineer(SRE)](./Sitereliable.md)
+
 ---
 By implementing these strategies and practices, the BigDawgBank ensures the highest possible reliability, minimizing downtime and ensuring a consistent user experience which is what we strive for. For more in depth information please refer to [Site Reliability Engineer](./Sitereliable.md)
 
@@ -784,6 +787,9 @@ By implementing these strategies and practices, the BigDawgBank ensures the high
 
 - **SE:12.** Define and test effective incident response procedures.
   - BigDawgBank has not yet implemented this.
+
+For more detailed Documentation of the Security in BigDawgBank, please refer to the SREs page:
+- [Cybersecurity Engineer](./Cybersecurity.md)
 
 --- 
 

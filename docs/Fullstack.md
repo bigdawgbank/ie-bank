@@ -22,9 +22,8 @@ The Full Stack Engineer is responsible for designing and implementing cloud solu
 ---
 
 ## Test/Behavior-Driven Development Strategy
-
-### 1. Testing Strategy Overview
-- **Description**: Document the test/behavior-driven development strategy. Include details of the designed tests, selected user stories, and how the strategy ensures code quality and functionality.
+A Precise Description of this can be found in the Cloud Architect Page:
+- [Release Strategy](./CloudArchitect.md#test-driven-designtdd)
 
 ---
 
@@ -36,6 +35,7 @@ The Full Stack Engineer is responsible for designing and implementing cloud solu
 ---
 
 ## Release Strategy
+Please refer to the Cloud Architect Release Strategy Section:
 - [Release Strategy](./CloudArchitect.md#release-strategy)
 
 ---
