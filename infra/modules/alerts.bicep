@@ -46,7 +46,7 @@ resource slackActionGroup 'microsoft.insights/actionGroups@2022-06-01' = {
   }
 }
 
-// Uptime Alert (metricAlerts using older API and proper criteria format)
+// Uptime Alert
 resource uptimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
   name: 'uptimeAlert-${environment}'
   location: 'global'
@@ -60,7 +60,7 @@ resource uptimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
     evaluationFrequency: 'PT5M'
     windowSize: 'PT15M'
     criteria: {
-      type: 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
+      'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
       metrics: [
         {
           name: 'LowUptime'
@@ -80,7 +80,7 @@ resource uptimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
   }
 }
 
-// Response Time Alert (metricAlerts with updated criteria format)
+// Response Time Alert
 resource responseTimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
   name: 'responseTimeAlert-${environment}'
   location: 'global'
@@ -94,7 +94,7 @@ resource responseTimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
     evaluationFrequency: 'PT5M'
     windowSize: 'PT15M'
     criteria: {
-      type: 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
+      'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
       metrics: [
         {
           name: 'HighResponseTime'
@@ -115,7 +115,7 @@ resource responseTimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
   }
 }
 
-// Error Rate Alert (metricAlerts with updated criteria format)
+// Error Rate Alert
 resource errorRateAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
   name: 'errorRateAlert-${environment}'
   location: 'global'
@@ -129,7 +129,7 @@ resource errorRateAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
     evaluationFrequency: 'PT1M'
     windowSize: 'PT5M'
     criteria: {
-      type: 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
+      'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
       metrics: [
         {
           name: 'HighFailedRequests'
@@ -149,7 +149,7 @@ resource errorRateAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
   }
 }
 
-// Incident Resolution Time Alert (scheduledQueryRules stays the same)
+// Incident Resolution Time Alert (no changes)
 resource incidentResolutionAlert 'microsoft.insights/scheduledQueryRules@2021-08-01' = {
   name: 'incidentResolutionAlert-${environment}'
   location: location
