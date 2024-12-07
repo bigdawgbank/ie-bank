@@ -653,10 +653,56 @@ The system includes backup and recovery mechanisms:
 The environment design includes separate environments for development, UAT, and production, ensuring that changes are tested thoroughly before reaching production.
 
 ---
-By implementing these strategies and practices, the BigDawgBank ensures the highest possible reliability, minimizing downtime and ensuring a consistent user experience which is what we strive for.
+By implementing these strategies and practices, the BigDawgBank ensures the highest possible reliability, minimizing downtime and ensuring a consistent user experience which is what we strive for. For more in depth information please refer to [Site Reliability Engineer](./Sitereliable.md)
 
 ### 2. Security Pillar
 - **Description**: Collaborate with the Cybersecurity Engineer to document security decisions.
+
+#### Security Design Principles in BigDawgBank
+
+- **Design to Protect Confidentiality**
+- **Design to Protect Integrity**
+- **Design to Protect Availability**
+- **Sustain and Evolve Your Security Posture**
+
+#### **Security Checklist**:
+
+- **SE:01.** Establish a security baseline that's aligned to compliance requirements, industry standards, and platform recommendations.
+  - The BigDawgBank application establishes a security baseline by adhering to industry standards and platform recommendations. This includes using HTTPS for all communications and enforcing encryption for data at rest and in transit.
+
+- **SE:02.** Maintain a secure development lifecycle.
+  - The development lifecycle includes security practices such as code reviews, automated security testing, and dependency scanning using Dependabot as configured in `.github/dependabot.yml`.
+
+- **SE:03.** Classify and consistently apply sensitivity and information type labels.
+  - BigDawgBank has not yet implemented this.
+
+- **SE:04.** Create intentional segmentation and perimeters in your architecture design and in the workload's footprint on the platform.
+  - The architecture design includes segmentation of different environments (development, UAT, production) and the use of network security groups (NSGs) to isolate backend resources from public access.
+
+- **SE:05.** Implement strict, conditional, and auditable identity and access management (IAM) across all workload users, team members, and system components.
+  - Role-Based Access Control (RBAC) is enforced in Azure, restricting administrative functions to authorized personnel. GitHub repository access is also controlled with appropriate permissions.
+
+- **SE:06.** Isolate, filter, and control network traffic across both ingress and egress flows.
+  - Network traffic is controlled using NSGs and firewalls to restrict access to the Azure Database for PostgreSQL to specific IP addresses.
+
+- **SE:07.** Encrypt data by using modern, industry-standard methods to guard confidentiality and integrity.
+  - Data is encrypted at rest using Azure-managed disk encryption and in transit using TLS for database and API communications.
+
+- **SE:08.** Harden all workload components by reducing extraneous surface area and tightening configurations to increase attacker cost.
+  - The GitHub repository is hardened with branch protection rules, signed commits, required pull request approvals, and automated checks before merging.
+
+- **SE:09.** Protect application secrets by hardening their storage and restricting access and manipulation and by auditing those actions.
+  - Secrets such as database credentials and API keys are securely managed using Azure Key Vault and GitHub repository secrets.
+
+- **SE:10.** Implement a holistic monitoring strategy that relies on modern threat detection mechanisms that can be integrated with the platform.
+  - Azure Security Center and Advanced Threat Protection are integrated for anomaly detection and alerts. Azure Monitor and Application Insights are used for real-time security monitoring.
+
+- **SE:11.** Establish a comprehensive testing regimen.
+  - Automated security testing is part of the CI/CD pipelines, including static code analysis and dependency scanning.
+
+- **SE:12.** Define and test effective incident response procedures.
+  - BigDawgBank has not yet implemented this.
+
 
 ### 3. Cost Optimization Pillar
 - **Description**: Collaborate with the Infrastructure Developer to document cost optimization strategies.
