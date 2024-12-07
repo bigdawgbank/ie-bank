@@ -983,7 +983,7 @@ The production environment is used for the live application, serving end-users.
   - Docker images are built and pushed to the production container registry.
   - The application is deployed to the Azure Web App for the production environment.
 
-![PROD](./images/prod_workflow.png)
+![PROD](./images/Prod_workflow.png)
 
 ---
 
