@@ -703,12 +703,112 @@ By implementing these strategies and practices, the BigDawgBank ensures the high
 - **SE:12.** Define and test effective incident response procedures.
   - BigDawgBank has not yet implemented this.
 
+--- 
 
 ### 3. Cost Optimization Pillar
 - **Description**: Collaborate with the Infrastructure Developer to document cost optimization strategies.
 
+#### Cost Optimization Design Principles in BigDawgBank
+
+- **Develop a Cost Management Discipline**
+- **Design with a Cost-Efficiency Mindset**
+- **Design for Usage Optimization**
+- **Design for Rate Optimization**
+- **Monitor and Optimize Over Time**
+
+#### **Cost Optimization Checklist**:
+
+- **CO:01.** Create a culture of financial responsibility.
+  - The BigDawgBank team fosters a culture of financial responsibility by regularly reviewing budget, expenses, and cost tracking. This ensures that all team members are aware of the financial implications of their decisions.
+
+- **CO:02.** Create and maintain a cost model. A cost model should estimate the initial cost, run rates, and ongoing costs.
+  - A cost model is maintained to estimate initial costs, run rates, and ongoing costs. This helps in planning and budgeting for the project.
+
+- **CO:03.** Collect and review cost data. Data collection should capture daily costs.
+  - Cost data is collected and reviewed regularly to capture daily costs. This helps in identifying areas where cost savings can be achieved.
+
+- **CO:04.** Set spending guardrails.
+  - Spending guardrails are set to ensure that the project stays within budget. This includes setting limits on spending for different components and environments.
+
+- **CO:05.** Get the best rates from providers.
+  - The team negotiates with providers to get the best rates for services. This includes leveraging reserved instances and other cost-saving options offered by Azure.
+
+- **CO:06.** Align usage to billing increments.
+  - Usage is aligned to billing increments to ensure that resources are used efficiently and costs are minimized.
+
+- **CO:07.** Optimize component costs.
+  - Component costs are optimized by selecting cost-effective options for each component. For example, using Azure Static Web Apps for the frontend minimizes hosting costs.
+
+- **CO:08.** Optimize environment costs. Align spending to prioritize preproduction, production, operations, and disaster recovery environments.
+  - Environment costs are optimized by aligning spending to prioritize preproduction, production, operations, and disaster recovery environments. This ensures that resources are allocated efficiently.
+
+- **CO:09.** Optimize flow costs. Align the cost of each flow with flow priority.
+  - Flow costs are optimized by aligning the cost of each flow with its priority. This ensures that critical flows receive the necessary resources while minimizing costs for less critical flows.
+
+- **CO:10.** Optimize data costs.
+  - Data costs are optimized by implementing retention policies for logs and backups. This helps in managing storage costs effectively.
+
+- **CO:11.** Optimize code costs. Evaluate and modify code to meet functional and nonfunctional requirements with fewer or cheaper resources.
+  - Code costs are optimized by evaluating and modifying code to meet functional and nonfunctional requirements with fewer or cheaper resources. This includes optimizing database queries and container orchestration.
+
+- **CO:12.** Optimize scaling costs. Evaluate alternative scaling within your scale units.
+  - Scaling costs are optimized by evaluating alternative scaling options within scale units. This includes configuring auto-scaling rules for Azure App Services and databases based on performance metrics.
+
+- **CO:13.** Optimize personnel time. Align the time personnel spends on tasks with the priority of the task. The goal is to reduce the time spent on tasks without degrading the outcome.
+  - Personnel time is optimized by aligning the time spent on tasks with the priority of the task. This helps in reducing the time spent on tasks without degrading the outcome.
+
+- **CO:14.** Consolidate resources and responsibility.
+  - Resources and responsibilities are consolidated to ensure efficient use of resources and minimize costs.
+
+#### Static Web App for Frontend
+
+The BigDawgBank application leverages a **Static Web App** for its frontend, ensuring a cost-efficient and scalable solution while maintaining a high-quality user experience. Cost optimization is a critical design pillar, and using a static web app aligns with this principle by reducing operational expenses and resource usage.
+
+- 1. **Pay-as-You-Go Pricing Model**
+  - Azure Static Web Apps operate on a consumption-based pricing model, ensuring you only pay for the resources you use.
+  - Ideal for workloads with varying traffic, as costs scale with demand.
+
+- 2. **Free Tier for Basic Usage**
+  - The free tier includes custom domain support, SSL certificates, and basic hosting for static content, which significantly reduces costs for development and testing environments.
+
+- 3. **Elimination of Server Costs**
+  - Static Web Apps do not require dedicated servers to host the frontend, as all content is pre-rendered and served via a global content delivery network (CDN).
+  - This removes the need for virtual machines or traditional web servers, saving infrastructure costs.
+
+- 4. **Integrated CI/CD Workflow**
+  - Built-in GitHub Actions integration for CI/CD eliminates the need for external deployment tools, reducing additional expenses on third-party services.
+  - Automated builds and deployments streamline the process without incurring extra operational overhead.
+
+- 5. **Global Content Delivery**
+  - Static Web Apps leverage Azure's global CDN to cache and serve content closer to end-users, minimizing latency and optimizing bandwidth usage.
+  - Efficient delivery reduces data transfer costs, especially during high traffic periods.
+
+- 6. **Reduced Maintenance Costs**
+  - Static content requires minimal maintenance compared to dynamic servers, which reduces the time and resources spent on operational support.
+  - Security updates, server patching, and backend dependencies are minimized, leading to long-term cost savings.
+
+- 7. **Efficient Scaling**
+  - Static Web Apps automatically scale based on demand without additional configuration or costs for scaling infrastructure.
+  - This ensures consistent performance without incurring expenses associated with over-provisioning.
+- **Other Key points:**
+  - **Free SSL Certificates**
+    - The frontend benefits from built-in SSL certificates at no additional cost, ensuring secure communications while keeping expenses low.
+
+  - **Lightweight Design**
+    - The static nature of the app ensures that only essential resources are loaded, reducing bandwidth usage and associated costs.
+
+  - **Integrated Application Insights**
+    - Performance monitoring and usage analytics are included without requiring a separate service, saving costs while enabling data-driven optimizations.
+
+  - **Multi-Environment Deployment**
+    - Separate instances for **Development**, **UAT**, and **Production** environments are configured with cost-effective tiers, using the free tier where applicable for non-production environments.
+
+---
+
 ### 4. Operational Excellence Pillar
 - **Description**: Collaborate with the Full Stack Developer to document operational excellence strategies.
+
+---
 
 ### 5. Performance Efficiency Pillar
 - **Description**: Collaborate with the Infrastructure Developer and Site Reliability Engineer to document performance efficiency decisions.
