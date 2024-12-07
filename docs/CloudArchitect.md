@@ -871,6 +871,53 @@ By integrating Gateway Routing into its architecture, **BigDawgBank** optimizes 
 ### 5. Performance Efficiency Pillar
 - **Description**: Collaborate with the Infrastructure Developer and Site Reliability Engineer to document performance efficiency decisions.
 
+#### Performance Efficiency Design Principles in BigDawgBank
+
+- **Define Performance Targets**
+- **Design to Meet Capacity Requirements**
+- **Achieve and Sustain Performance**
+- **Improve Efficiency Through Optimization**
+
+#### **Performance Efficiency Checklist**:
+
+- **PE:01.** Define performance targets.
+  - Performance targets are defined based on the intended user experience and pre-established business requirements. For example, the backend API response times are targeted to not exceed 2 seconds.
+
+- **PE:02.** Conduct capacity planning.
+  - Capacity planning is conducted to ensure that the system can handle anticipated demand. This includes planning for peak loads and ensuring that resources are available to meet user demand.
+
+- **PE:03.** Select the right services. The services, infrastructure, and tier selections must support your ability to reach the workload's performance targets and accommodate expected capacity changes.
+  - The BigDawgBank application uses Azure App Services and Azure Database for PostgreSQL to meet performance targets and accommodate expected capacity changes.
+
+- **PE:04.** Collect performance data.
+  - Performance data is collected using Azure Application Insights, which tracks metrics such as request latency, error rates, and resource consumption.
+
+- **PE:05.** Optimize scaling and partitioning.
+  - Auto-scaling rules are configured for Azure App Services and databases based on performance metrics to ensure efficient scaling and partitioning.
+
+- **PE:06.** Test performance. Perform regular testing in an environment that matches the production environment.
+  - Regular performance testing is conducted in the User Acceptance Testing (UAT) environment, which mimics the production environment.
+
+- **PE:07.** Optimize code and infrastructure.
+  - Code and infrastructure are optimized to meet performance targets. This includes optimizing database queries and container orchestration.
+
+- **PE:08.** Optimize data usage.
+  - Data usage is optimized by implementing retention policies for logs and backups, ensuring efficient storage management.
+
+- **PE:09.** Prioritize the performance of critical flows.
+  - The performance of critical flows, such as account management and money transfers, is prioritized to ensure a seamless user experience.
+
+- **PE:10.** Optimize operational tasks.
+  - Operational tasks are optimized through automation and efficient resource management.
+
+- **PE:11.** Respond to live performance issues.
+  - Not yet implemented in the BigDawgBank Application.
+
+- **PE:12.** Continuously optimize performance.
+  - Continuous performance optimization is achieved through regular monitoring and data-driven decision-making.
+
+  By implementing these strategies and practices, the BigDawgBank application ensures performance efficiency, providing a responsive and reliable user experience while optimizing resource utilization and operational costs.
+
 ---
 
 ## Test Driven Design(TDD)
