@@ -2,6 +2,7 @@ import random
 import string
 from datetime import datetime, timezone
 from enum import Enum
+import os
 
 from sqlalchemy import Enum as SQLAlchemyEnum
 
@@ -135,10 +136,30 @@ class BankTransfer:
         self.amount = amount
 
     def process_transfer(self):
-        transfer_suceess = False
+        transfer_success = False
+
+        
+        if self.from_account.balance < self.amount:
+            return transfer_success
+        
+        exchange_rate_obj = ExchangeRate()
+        exchange_rate_value = exchange_rate_obj.get_exchange_rate(
+            self.from_account.currency, self.to_account.currency
+        )
+        converted_amount = self.amount * exchange_rate_value
+
         self.from_account.withdraw(self.amount)
-        self.to_account.deposit(self.amount)
+        self.to_account.deposit(converted_amount)
         db.session.commit()
-        transfer_suceess = True
-        # Success of the transfer can be True or False
-        return transfer_suceess
+        transfer_success = True
+        return transfer_success
+
+
+class ExchangeRate:
+    def get_exchange_rate(self, from_currency, to_currency):
+        if from_currency == to_currency:
+            return 1
+        
+        env_var_name = f"{from_currency}_TO_{to_currency}_EXCHANGE_RATE"
+        exchange_rate = float(os.getenv(env_var_name))
+        return exchange_rate

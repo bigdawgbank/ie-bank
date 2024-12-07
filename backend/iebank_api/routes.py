@@ -5,7 +5,9 @@ from flask import jsonify, request
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 
 from iebank_api import app, bcrypt, db
-from iebank_api.models import Account, BankTransfer, Role, User
+from iebank_api.models import Account, BankTransfer, Role, User, ExchangeRate
+
+import urllib.parse
 
 
 def admin_required(f):
@@ -379,6 +381,14 @@ def get_account_by_name(account_name):
     return jsonify(format_account(account)), 200
 
 
+@app.route("/accounts/queryby", methods=["GET"])
+@jwt_required()
+def get_account_by_number():
+    account_number_arg = request.args.get('account_number_arg')
+    account = Account.query.filter_by(account_number=account_number_arg).first()
+    return jsonify(format_account(account)), 200
+
+
 @app.route("/accounts/<int:id>", methods=["PUT"])
 @jwt_required()
 def update_account(id):
@@ -433,8 +443,8 @@ def format_account(account: Account):
 @app.route("/transfer", methods=["POST"])
 @jwt_required()
 def transfer_money():
-    user_id = int(get_jwt_identity())
-    user = db.session.get(User, user_id)
+    # user_id = int(get_jwt_identity())
+    # user = db.session.get(User, user_id)
 
     data = request.get_json()
     from_account_id = data.get("sender_account_id")
@@ -448,17 +458,24 @@ def transfer_money():
     to_account = db.session.get(Account, to_account_id)
 
     if not from_account or not to_account:
-        return jsonify({"error": "Invalid account details"}), 400
+        return jsonify({"error": "Invalid account IDs"}), 400
 
     try:
         bank_transfer = BankTransfer(from_account, to_account, amount)
-        bank_transfer.process_transfer()
-        return jsonify({"message": "Transfer successful", "receipt": {
+        transfer_result = bank_transfer.process_transfer()
+
+        ret_messsage = jsonify({"error": "Transfer failed"})
+        if transfer_result is True:
+            ret_messsage = jsonify({"message": "Transfer successful", "receipt": {
             "sender_account_id": from_account.id,
             "recipient_account_id": to_account.id,
             "amount": amount,
             "timestamp": datetime.now(timezone.utc).isoformat()
-        }}), 200
+            }})
+            return ret_messsage, 200
+        else:
+            ret_messsage = jsonify({"Transfer Incorrect": "Transfer failed"})
+            return ret_messsage, 400
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
@@ -466,39 +483,62 @@ def transfer_money():
 @app.route("/wiretransfer", methods=["POST"])
 @jwt_required()
 def wire_transfer_money():
-    user_id = int(get_jwt_identity())
-    user = db.session.get(User, user_id)
+    # user_id = int(get_jwt_identity())
+    # user = db.session.get(User, user_id)
 
     data = request.get_json()
     from_account_id = data.get("sender_account_id")
-    to_account_number = data.get("recipient_account_number")
+    recipient_account_number = data.get("recipient_account_number")
     amount = data.get("amount")
 
-    if not from_account_id or not to_account_number or not amount:
+    if not from_account_id or not recipient_account_number or not amount:
         return jsonify({"error": "Missing required fields"}), 400
 
     from_account = db.session.get(Account, from_account_id)
-    to_account = db.session.query(Account).filter_by(account_number=to_account_number).first()
+    to_account = db.session.query(Account).filter_by(account_number=recipient_account_number).first()
 
     if not from_account or not to_account:
-        return jsonify({"error": "Invalid account details"}), 400
+        return jsonify({"error": "Invalid account IDs"}), 400
 
     try:
         bank_transfer = BankTransfer(from_account, to_account, amount)
-        bank_transfer.process_transfer()
-        return (
-            jsonify(
-                {
-                    "message": "Transfer successful",
-                    "receipt": {
-                        "sender_account_id": from_account.id,
-                        "recipient_account_id": to_account.id,
-                        "amount": amount,
-                        "timestamp": datetime.now(timezone.utc).isoformat(),
-                    },
-                }
-            ),
-            200,
-        )
+        transfer_result = bank_transfer.process_transfer()
+
+        ret_messsage = jsonify({"error": "Wire Transfer failed"})
+        if transfer_result is True:
+            ret_messsage = jsonify({"message": "Wire Transfer successful", "receipt": {
+            "sender_account_id": from_account.id,
+            "recipient_account_id": to_account.id,
+            "amount": amount,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+            }})
+            return ret_messsage, 200
+        else:
+            ret_messsage = jsonify({"Wire Transfer Incorrect": "Wire Transfer failed"})
+            return ret_messsage, 400
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
+
+
+@app.route("/exchangerate", methods=["GET"])
+@jwt_required()
+def get_exchange_rate():
+    from_currency = request.args.get('from_currency')
+    to_currency = request.args.get('to_currency')
+    
+    if from_currency and to_currency:
+         # Manually decode the URL-encoded parameters
+        from_currency = urllib.parse.unquote(from_currency)
+        to_currency = urllib.parse.unquote(to_currency)
+
+        exchange_rate_obj = ExchangeRate()
+        exchange_rate_value = exchange_rate_obj.get_exchange_rate(
+            from_currency, to_currency
+        )
+        return jsonify({
+            'from_currency': from_currency,
+            'to_currency': to_currency,
+            'exchange_rate': exchange_rate_value
+        })
+    else:
+        return jsonify({'error': 'Missing required parameters'}), 400
