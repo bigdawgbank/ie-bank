@@ -9,7 +9,6 @@ param environment string
 
 resource slackActionGroup 'microsoft.insights/actionGroups@2022-06-01' = {
   name: 'ag-slack-${environment}'
-  location: 'global'
   properties: {
     groupShortName: 'slack'
     enabled: true
@@ -25,7 +24,6 @@ resource slackActionGroup 'microsoft.insights/actionGroups@2022-06-01' = {
 
 resource uptimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
   name: 'uptimeAlert-${environment}'
-  location: 'global'
   properties: {
     description: 'Alert when availability falls below SLA threshold.'
     severity: 3
