@@ -1,9 +1,4 @@
-Here's the full **README.md** document for your GitHub Hardening Strategy and Security Implementation:
-
----
-
-# **GitHub Hardening Strategy Documentation**
-## IE Bank System GitHub Security Design Document
+# IE Bank System GitHub Security Design Document
 
 ---
 
