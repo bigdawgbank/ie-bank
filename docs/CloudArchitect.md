@@ -801,7 +801,7 @@ The BigDawgBank application leverages a **Static Web App** for its frontend, ens
     - Performance monitoring and usage analytics are included without requiring a separate service, saving costs while enabling data-driven optimizations.
 
   - **Multi-Environment Deployment**
-    - Separate instances for **Development**, **UAT**, and **Production** environments are configured with cost-effective tiers, using the free tier where applicable for non-production environments.
+    - Separate instances for our **Development**, **UAT**, and **Production** environments are configured with cost-effective tiers, using the free tier where applicable for non-production environments to save significant costs.
 
 ---
 
