@@ -93,8 +93,13 @@ param branch string
 @description('The Github URL used for the static web app')
 param repositoryUrl string = 'https://github.com/bigdawgbank/ie-bank'
 
-var logAnalyticsWorkspaceId = resourceId('Microsoft.OperationalInsights/workspaces', logAnalyticsWorkspaceName)
+@description('Slack webhook URL for alert notifications')
+param slackWebhookUrl string
 
+@description('Environment name (e.g., dev, uat, prod)')
+param environment string
+
+var logAnalyticsWorkspaceId = resourceId('Microsoft.OperationalInsights/workspaces', logAnalyticsWorkspaceName)
 var skuName = (environmentType == 'prod') ? 'B1' : 'B1' //modify according to desired capacity
 
 // Use Key Vault for administrator login password later
@@ -266,3 +271,18 @@ module appServiceFE 'modules/app-service-fe.bicep' = {
 output frontendAppHostName string = appServiceFE.outputs.staticWebAppDefaultHostname
 output backendAppHostName string = appServiceBE.outputs.backendAppHostName
 output keyVaultResourceId string = keyVault.outputs.keyVaultResourceId
+
+// New Module: Alerts
+module alerts 'modules/alerts.bicep' = {
+  name: 'alertsDeployment'
+  params: {
+    appInsightsName: appInsightsName
+    location: location
+    slackWebhookUrl: slackWebhookUrl
+    environment: environment
+    logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', logAnalyticsWorkspaceName)
+  }
+  dependsOn: [
+    appInsights
+  ]
+}
