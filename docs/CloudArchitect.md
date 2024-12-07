@@ -390,8 +390,21 @@ We will use Azure Application Insights built on top of our Log Analytics to prov
 
 ---
 
-### Azure Workbook:
-#### key Features
+### Azure Workbook
+#### Description
+We have implemmented Azure Workbook to provide a flexible canvas for data analysis and the creation of rich visual reports within the Azure portal. It will allow us to combine text, queries, metrics, and parameters into interactive reports to monitor and analyze the performance and health of the BigDawgBank application and infrastructure.
+
+#### Key Features
+- **Customizable Reports**:
+  - Create and customize reports using a variety of visualizations such as charts, graphs, and tables.
+- **Interactive Data Exploration**:
+  - Use parameters and filters to interactively explore data and gain insights.
+- **Integration with Azure Services**:
+  - Integrates seamlessly with Azure Monitor, Application Insights, and Log Analytics to visualize data from various sources.
+- **Collaboration and Sharing**:
+  - Share workbooks with team members and collaborate on data analysis.
+- **Real-Time Monitoring**:
+  - Monitor real-time data and set up alerts to stay informed about critical metrics and events.
 
 ---
 ### Infra Architecture Design Diagram:
@@ -1003,7 +1016,7 @@ The Following Table highlights our TTD approach by showcasing the various tests 
 | **FR10: Money Transfer** | As a user, I want to transfer money to other accounts so that I can make payments easily. | [test_bank_transfer_process_route](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_routes.py#L50), [test_bank_transfer_object_process](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/unit/test_bank_transfer_object.py#L10) |
 | **FR11: Secure Password Handling** | As a developer, I want all passwords to be securely hashed so that user data is protected from breaches. | [test_create_user](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/unit/test_auth_model.py#L70) |
 
-We can see the immense focus our team had on ensuring the authentication aspect of our application was completely robust and error free. By adopting TDD, the BigDawgBank application ensures that all functional requirements are met with high code quality and reliability. The focus on writing tests before code helped our Fullstack team define clear requirements, catch issues early, and promote maintainable and modular code. This approach has proven to be effective in delivering a robust and secure banking application.
+We can see the immense focus our team had on ensuring the authentication aspect of our application was completely robust and error free. By adopting TDD, the BigDawgBank application ensures that all functional requirements are met with high code quality and reliability. The focus on writing tests before code helped our Fullstack team define clear requirements, catch issues early, and promote maintainable and modular code. This approach has proven to be effective in delivering a robust and secure banking application for our users.
 
 ---
 
