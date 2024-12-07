@@ -46,7 +46,7 @@ resource slackActionGroup 'microsoft.insights/actionGroups@2022-06-01' = {
   }
 }
 
-// Uptime Alert (Using older API version for metricAlerts)
+// Uptime Alert (metricAlerts using older API and proper criteria format)
 resource uptimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
   name: 'uptimeAlert-${environment}'
   location: 'global'
@@ -59,15 +59,18 @@ resource uptimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
     ]
     evaluationFrequency: 'PT5M'
     windowSize: 'PT15M'
-    criteria: [
-      {
-        name: 'LowUptime'
-        metricName: 'availabilityResults/availabilityPercentage'
-        operator: 'LessThan'
-        threshold: json(uptimeThreshold)
-        timeAggregation: 'Average'
-      }
-    ]
+    criteria: {
+      type: 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
+      metrics: [
+        {
+          name: 'LowUptime'
+          metricName: 'availabilityResults/availabilityPercentage'
+          operator: 'LessThan'
+          threshold: json(uptimeThreshold)
+          timeAggregation: 'Average'
+        }
+      ]
+    }
     actions: [
       {
         actionGroupId: slackActionGroup.id
@@ -77,7 +80,7 @@ resource uptimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
   }
 }
 
-// Response Time Alert (metricAlerts with older API)
+// Response Time Alert (metricAlerts with updated criteria format)
 resource responseTimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
   name: 'responseTimeAlert-${environment}'
   location: 'global'
@@ -90,16 +93,19 @@ resource responseTimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
     ]
     evaluationFrequency: 'PT5M'
     windowSize: 'PT15M'
-    criteria: [
-      {
-        name: 'HighResponseTime'
-        metricName: 'requests/duration'
-        operator: 'GreaterThan'
-        threshold: json(responseTimeThreshold)
-        timeAggregation: 'Percentile'
-        percentile: 95
-      }
-    ]
+    criteria: {
+      type: 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
+      metrics: [
+        {
+          name: 'HighResponseTime'
+          metricName: 'requests/duration'
+          operator: 'GreaterThan'
+          threshold: json(responseTimeThreshold)
+          timeAggregation: 'Percentile'
+          percentile: 95
+        }
+      ]
+    }
     actions: [
       {
         actionGroupId: slackActionGroup.id
@@ -109,7 +115,7 @@ resource responseTimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
   }
 }
 
-// Error Rate Alert (metricAlerts with older API)
+// Error Rate Alert (metricAlerts with updated criteria format)
 resource errorRateAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
   name: 'errorRateAlert-${environment}'
   location: 'global'
@@ -122,15 +128,18 @@ resource errorRateAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
     ]
     evaluationFrequency: 'PT1M'
     windowSize: 'PT5M'
-    criteria: [
-      {
-        name: 'HighFailedRequests'
-        metricName: 'requests/failedRequests'
-        operator: 'GreaterThan'
-        threshold: errorRateThreshold
-        timeAggregation: 'Total'
-      }
-    ]
+    criteria: {
+      type: 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
+      metrics: [
+        {
+          name: 'HighFailedRequests'
+          metricName: 'requests/failedRequests'
+          operator: 'GreaterThan'
+          threshold: errorRateThreshold
+          timeAggregation: 'Total'
+        }
+      ]
+    }
     actions: [
       {
         actionGroupId: slackActionGroup.id
