@@ -9,9 +9,9 @@ infra/* @albipuliga @paulopasso
 .github/workflows/* @Wisammad
 
 # Cloud Architect
-infra/* @Matzmuda
-frontend/* @Matzmuda
-backend/* @Matzmuda
+infra/* @Matzmuda4
+frontend/* @Matzmuda4
+backend/* @Matzmuda4
 
 # Default Owner
 * @RestartDK
