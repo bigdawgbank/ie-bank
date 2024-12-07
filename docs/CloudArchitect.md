@@ -808,6 +808,64 @@ The BigDawgBank application leverages a **Static Web App** for its frontend, ens
 ### 4. Operational Excellence Pillar
 - **Description**: Collaborate with the Full Stack Developer to document operational excellence strategies.
 
+#### Operational Excellence Design Principles in BigDawgBank
+
+- **Embrace DevOps Culture**
+- **Establish Development Standards**
+- **Evolve Operations with Observability**
+- **Deploy with Confidence**
+- **Automate for Efficiency**
+- **Adopt Safe Deployment Practices**
+
+#### **Operational Excellence Checklist**:
+
+- **OE:01.** Determine workload team members' specializations and integrate them into a robust set of practices to design, develop, deploy, and operate your workload to specification.
+  - The BigDawgBank team identifies and leverages the specializations of its members, integrating them into a cohesive set of practices for designing, developing, deploying, and operating the workload.
+
+- **OE:02.** Formalize the way you run routine, as needed, and emergency operational tasks by using documentation, checklists, or automation.
+  - Routine, as-needed, and emergency operational tasks are formalized through detailed documentation, checklists, and automation to ensure consistency and reliability.
+
+- **OE:03.** Formalize software ideation and planning processes.
+  - Software ideation and planning processes are formalized to ensure structured and efficient development cycles.
+
+- **OE:04.** Optimize software development and quality assurance processes by following industry-proven practices for development and testing.
+  - Software development and quality assurance processes are optimized by adhering to industry-proven practices, ensuring high-quality code and efficient testing.
+
+- **OE:05.** Prepare resources and their configurations by using a standardized infrastructure as code (IaC) approach.
+  - Resources and configurations are prepared using a standardized Infrastructure as Code (IaC) approach, ensuring consistency and repeatability in deployments.
+
+- **OE:06.** Build a workload supply chain that drives proposed changes through predictable, automated pipelines.
+  - Our Team has established a robus workload supply chain, enhancing efficiency and reducing manual intervention.
+
+- **OE:07.** Design and implement a monitoring system to validate design choices and inform future design and business decisions.
+  - A comprehensive monitoring system has been designed and implemented to validate design choices and inform future design and business decisions for the BigDawgBank application.
+
+- **OE:08.** Develop an effective emergency operations practice.
+  - This has not yet been implemented in the BigDawgBank Application.
+
+- **OE:09.** Automate all tasks that don't benefit from the insight and adaptability of human intervention, are highly procedural, and have a shelf-life that yields a return on automation investment.
+  - Tasks that do not benefit from human intervention, are highly procedural, and have a shelf-life that yields a return on automation investment are automated to improve efficiency and consistency.
+
+- **OE:10.** Design and implement automation upfront for operations such as lifecycle concerns, bootstrapping, and applying governance and compliance guardrails.
+  - Automation has been designed and implemented.
+
+- **OE:11.** Clearly define your workload's safe deployment practices. Emphasize the ideals of small, incremental, quality-gated release methods.
+  - Safe deployment practices are clearly defined, emphasizing small, incremental, quality-gated release methods to minimize risks.
+
+- **OE:12.** Implement a deployment failure mitigation strategy that addresses unexpected mid-rollout issues with rapid recovery.
+  - A deployment failure mitigation strategy is implemented to address unexpected mid-rollout issues and ensure rapid recovery.
+
+The **BigDawgBank** application achieves operational excellence by leveraging the **Gateway Routing** cloud pattern, defined in the [Microsoft Well-Architectured Framework](https://learn.microsoft.com/en-us/azure/well-architected/operational-excellence/design-patterns). This design pattern supports efficient request management and ensures the modularity and scalability of the application. Gateway Routing is imperative for optimizing interactions between the frontend, backend, and database layers by centralizing API management and routing client requests to the appropriate backend services based on their intent.
+
+By following this pattern, **BigDawgBank** achieves the core principles of optimization:
+
+- **Efficiency**: Routing requests to specific backend services reduces overhead and ensures that only necessary components are utilized.
+- **Scalability**: Decoupling the frontend and backend enables independent scaling, allowing each layer to handle increased loads effectively.
+- **Security**: The centralized API layer provides a single point for implementing robust encryption (e.g., HTTPS) and secure authentication (e.g., JWT tokens).
+- **Reliability**: Centralized handling of requests ensures consistent behavior across various components, reducing potential errors and ensuring smooth operations.
+
+By integrating Gateway Routing into its architecture, **BigDawgBank** optimizes performance, simplifies request management, and strengthens security, demonstrating operational excellence in every aspect of its design.
+
 ---
 
 ### 5. Performance Efficiency Pillar
@@ -835,6 +893,7 @@ We can see the immense focus our team had on ensuring the authentication aspect 
 
 ## Release Strategy
 - **Description**: Document the release strategy, including environment design, and ensure alignment with the DevOps checklist and GitHub Security best practices.
+
 ---
 
 ### Development(Dev)
