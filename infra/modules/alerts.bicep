@@ -22,7 +22,7 @@ param responseTimeThreshold string = '300'
 @description('Error Rate Threshold as an integer')
 param errorRateThreshold int = 5
 
-@description('The KQL query to detect unresolved incidents > 60 minutes. Modify as needed.')
+@description('The KQL query to detect unresolved incidents > 60 minutes.')
 param incidentResolutionKql string = '''
 Incidents_CL
 | where DurationInMinutes_d > 60
@@ -46,7 +46,7 @@ resource slackActionGroup 'microsoft.insights/actionGroups@2022-06-01' = {
   }
 }
 
-// Uptime Alert
+// Uptime Alert (metricAlert)
 resource uptimeAlert 'microsoft.insights/metricAlerts@2021-08-01' = {
   name: 'uptimeAlert-${environment}'
   location: 'global'
@@ -65,7 +65,7 @@ resource uptimeAlert 'microsoft.insights/metricAlerts@2021-08-01' = {
           name: 'LowUptime'
           metricName: 'availabilityResults/availabilityPercentage'
           operator: 'LessThan'
-          threshold: json(uptimeThreshold) // Convert string to numeric
+          threshold: json(uptimeThreshold)
           timeAggregation: 'Average'
         }
       ]
@@ -78,7 +78,7 @@ resource uptimeAlert 'microsoft.insights/metricAlerts@2021-08-01' = {
   }
 }
 
-// Response Time Alert
+// Response Time Alert (metricAlert)
 resource responseTimeAlert 'microsoft.insights/metricAlerts@2021-08-01' = {
   name: 'responseTimeAlert-${environment}'
   location: 'global'
@@ -97,7 +97,7 @@ resource responseTimeAlert 'microsoft.insights/metricAlerts@2021-08-01' = {
           name: 'HighResponseTime'
           metricName: 'requests/duration'
           operator: 'GreaterThan'
-          threshold: json(responseTimeThreshold) // Convert string to numeric
+          threshold: json(responseTimeThreshold)
           timeAggregation: 'Percentile'
           percentile: 95
         }
@@ -111,7 +111,7 @@ resource responseTimeAlert 'microsoft.insights/metricAlerts@2021-08-01' = {
   }
 }
 
-// Error Rate Alert (Simplified)
+// Error Rate Alert (metricAlert)
 resource errorRateAlert 'microsoft.insights/metricAlerts@2021-08-01' = {
   name: 'errorRateAlert-${environment}'
   location: 'global'
@@ -130,7 +130,7 @@ resource errorRateAlert 'microsoft.insights/metricAlerts@2021-08-01' = {
           name: 'HighFailedRequests'
           metricName: 'requests/failedRequests'
           operator: 'GreaterThan'
-          threshold: errorRateThreshold // int is fine here
+          threshold: errorRateThreshold
           timeAggregation: 'Total'
         }
       ]
@@ -143,36 +143,44 @@ resource errorRateAlert 'microsoft.insights/metricAlerts@2021-08-01' = {
   }
 }
 
-// Incident Resolution Time Alert (Placeholder)
+// Incident Resolution Time Alert (scheduledQueryRules)
 resource incidentResolutionAlert 'microsoft.insights/scheduledQueryRules@2021-08-01' = {
   name: 'incidentResolutionAlert-${environment}'
   location: location
   properties: {
+    displayName: 'Incident Resolution Time Alert'
     description: 'Alert when a critical incident exceeds 60 minutes resolution time.'
     severity: 3
     enabled: true
-    source: {
-      query: incidentResolutionKql
-      dataSourceId: logAnalyticsWorkspaceResourceId
-      queryType: 'ResultCount'
-    }
-    schedule: {
-      frequencyInMinutes: 5
-      timeWindowInMinutes: 15
-    }
-    action: {
-      actionGroupIds: [
+    evaluationFrequency: 'PT5M'
+    windowSize: 'PT15M'
+    scopes: [
+      logAnalyticsWorkspaceResourceId
+    ]
+    actions: {
+      actionGroups: [
         slackActionGroup.id
       ]
     }
     criteria: {
       allOf: [
         {
-          type: 'ResultCount'
-          threshold: 0
-          operator: 'GreaterThan'
+          query: incidentResolutionKql
+          timeAggregation: 'Count'
+          failingPeriods: {
+            minFailingPeriodsToAlert: 1
+            numberOfEvaluationPeriods: 1
+          }
         }
       ]
     }
+    autoMitigate: true
+    checkWorkspaceAlertsStorageConfigured: false
+    skipQueryValidation: false
+    overrideQueryTimeRange: false
+    muteActionsDuration: 'PT0M'
+    targetResourceTypes: [
+      'Microsoft.OperationalInsights/workspaces'
+    ]
   }
 }
