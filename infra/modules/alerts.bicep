@@ -1,33 +1,14 @@
 @description('The name of the Application Insights resource to monitor')
 param appInsightsName string
 
-@description('The Azure region for the resources (e.g., northeurope)')
-param location string
-
 @description('The Slack webhook URL for posting alerts')
 param slackWebhookUrl string
 
 @description('Environment name (e.g., dev, uat, prod)')
 param environment string
 
-@description('The Log Analytics Workspace Resource ID for log-based alerts')
-param logAnalyticsWorkspaceResourceId string
-
-@description('Uptime Threshold as string (e.g., "99.9")')
-param uptimeThreshold string = '99.9'
-
-@description('Response Time Threshold in ms (e.g., "300")')
-param responseTimeThreshold string = '300'
-
-@description('Error Rate Threshold as an integer')
-param errorRateThreshold int = 5
-
-@description('The KQL query to detect unresolved incidents > 60 minutes.')
-param incidentResolutionKql string = '''
-Incidents_CL
-| where DurationInMinutes_d > 60
-| summarize count() by bin(Timestamp, 1m)
-'''
+@description('The Azure region for the resources (e.g., North Europe)')
+param location string // Still used in some resources
 
 // Create Slack Action Group
 resource slackActionGroup 'microsoft.insights/actionGroups@2022-06-01' = {
@@ -46,13 +27,12 @@ resource slackActionGroup 'microsoft.insights/actionGroups@2022-06-01' = {
   }
 }
 
-// Uptime Alert
-resource uptimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
-  name: 'uptimeAlert-${environment}'
+// Sample alert definition (replace/update with actual usage of parameters)
+resource exampleMetricAlert 'microsoft.insights/metricAlerts@2021-08-01' = {
+  name: 'exampleAlert-${environment}'
   location: 'global'
   properties: {
-    description: 'Alert when availability falls below SLA threshold.'
-    severity: 3
+    description: 'Example alert to demonstrate parameter usage.'
     enabled: true
     scopes: [
       resourceId('microsoft.insights/components', appInsightsName)
@@ -64,11 +44,11 @@ resource uptimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
       allOf: [
         {
           criterionType: 'StaticThresholdCriterion'
-          name: 'LowUptime'
-          metricName: 'availabilityResults/availabilityPercentage'
-          operator: 'LessThan'
-          threshold: json(uptimeThreshold)
-          timeAggregation: 'Average'
+          name: 'ExampleCriterion'
+          metricName: 'requests/count'
+          operator: 'GreaterThan'
+          threshold: 10
+          timeAggregation: 'Total'
         }
       ]
     }
@@ -77,8 +57,5 @@ resource uptimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
         actionGroupId: slackActionGroup.id
       }
     ]
-    autoMitigate: true
   }
 }
-
-// Add similar updates for responseTimeAlert, errorRateAlert, and incidentResolutionAlert

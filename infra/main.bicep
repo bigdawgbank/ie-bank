@@ -272,17 +272,13 @@ output frontendAppHostName string = appServiceFE.outputs.staticWebAppDefaultHost
 output backendAppHostName string = appServiceBE.outputs.backendAppHostName
 output keyVaultResourceId string = keyVault.outputs.keyVaultResourceId
 
-// New Module: Alerts
-module alerts 'modules/alerts.bicep' = {
-  name: 'alertsDeployment'
+// Call the alerts.bicep module
+module alertsModule './modules/alerts.bicep' = {
+  name: 'alertsModule'
   params: {
-    appInsightsName: appInsightsName
-    location: location
+    appInsightsName: appInsights.name
     slackWebhookUrl: slackWebhookUrl
-    environment: environment
-    logAnalyticsWorkspaceResourceId: resourceId('Microsoft.OperationalInsights/workspaces', logAnalyticsWorkspaceName)
+    environment: 'dev' // Replace with dynamic value if needed
+    location: location
   }
-  dependsOn: [
-    appInsights
-  ]
 }
