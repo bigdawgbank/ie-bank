@@ -268,9 +268,6 @@ jobs:
             appServiceAPIDBHostDBUSER=${{ secrets.DBUSER }} 
             appServiceAPIDBHostFLASK_APP=${{ vars.FLASK_APP }} 
             appServiceAPIDBHostFLASK_DEBUG=${{ vars.FLASK_DEBUG }}
-<<<<<<< HEAD
-          deploymentName: ${{ env.USER_ALIAS }}-uat
-=======
             appServiceAPIEnvVarJWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
           deploymentName: ${{ env.USER_ALIAS }}-uat
 
@@ -316,4 +313,3 @@ jobs:
     
 
         
->>>>>>> 67baa060467d9012f1e228ab482c20ba9d572dc2

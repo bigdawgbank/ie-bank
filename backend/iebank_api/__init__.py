@@ -1,8 +1,4 @@
 import os
-<<<<<<< HEAD
-import logging
-=======
->>>>>>> 67baa060467d9012f1e228ab482c20ba9d572dc2
 from dotenv import load_dotenv
 from flask import Flask
 from flask_bcrypt import Bcrypt
@@ -19,23 +15,8 @@ db = SQLAlchemy()
 jwt_manager = JWTManager()
 bcrypt = Bcrypt()
 
-<<<<<<< HEAD
-# Logger setup for Application Insights
-logger = logging.getLogger("iebank_logger")
-logger.setLevel(logging.INFO)  # Adjust log level as needed
-
-# Configure Azure Log Handler
-connection_string = os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING")
-if connection_string:
-    handler = AzureLogHandler(connection_string=connection_string)
-    handler.setLevel(logging.INFO)
-    logger.addHandler(handler)
-
-# Select environment based on the ENV environment variable
-=======
 
 # Your environment config loading stays the same
->>>>>>> 67baa060467d9012f1e228ab482c20ba9d572dc2
 if os.getenv("ENV") == "local":
     logger.info("Running in local mode")
     app.config.from_object("config.LocalConfig")
@@ -87,17 +68,5 @@ with app.app_context():
         print(f"Error creating admin user: {e}")
         db.session.rollback()
 
-<<<<<<< HEAD
-
-from iebank_api.models import Account, User
-
-with app.app_context():
-    db.create_all()
-    logger.info("Database tables created successfully")
-
-CORS(app)
-
-=======
 CORS(app, supports_credentials=True)
->>>>>>> 67baa060467d9012f1e228ab482c20ba9d572dc2
 from iebank_api import routes
