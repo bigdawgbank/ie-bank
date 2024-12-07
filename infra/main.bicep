@@ -278,7 +278,8 @@ module alertsModule './modules/alerts.bicep' = {
   params: {
     appInsightsName: appInsights.name
     slackWebhookUrl: slackWebhookUrl
-    environment: 'dev' // Replace with dynamic value if needed
+    environment: environment
     location: location
   }
 }
+

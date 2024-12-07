@@ -8,12 +8,12 @@ param slackWebhookUrl string
 param environment string
 
 @description('The Azure region for the resources (e.g., North Europe)')
-param location string // Still used in some resources
+param location string
 
 // Create Slack Action Group
 resource slackActionGroup 'microsoft.insights/actionGroups@2022-06-01' = {
   name: 'ag-slack-${environment}'
-  location: 'global'
+  location: location
   properties: {
     groupShortName: 'slack'
     enabled: true
@@ -27,12 +27,12 @@ resource slackActionGroup 'microsoft.insights/actionGroups@2022-06-01' = {
   }
 }
 
-// Sample alert definition (replace/update with actual usage of parameters)
-resource exampleMetricAlert 'microsoft.insights/metricAlerts@2021-08-01' = {
-  name: 'exampleAlert-${environment}'
-  location: 'global'
+// Sample alert definition (Uptime Alert)
+resource uptimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
+  name: 'uptimeAlert-${environment}'
+  location: location
   properties: {
-    description: 'Example alert to demonstrate parameter usage.'
+    description: 'Alert when availability falls below SLA threshold.'
     enabled: true
     scopes: [
       resourceId('microsoft.insights/components', appInsightsName)
@@ -44,11 +44,11 @@ resource exampleMetricAlert 'microsoft.insights/metricAlerts@2021-08-01' = {
       allOf: [
         {
           criterionType: 'StaticThresholdCriterion'
-          name: 'ExampleCriterion'
-          metricName: 'requests/count'
-          operator: 'GreaterThan'
-          threshold: 10
-          timeAggregation: 'Total'
+          name: 'LowAvailability'
+          metricName: 'availabilityResults/availabilityPercentage'
+          operator: 'LessThan'
+          threshold: 95
+          timeAggregation: 'Average'
         }
       ]
     }
