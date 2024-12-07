@@ -1,14 +1,29 @@
-name: "OSSF Scorecard"
+name: OSSF Scorecard
+
 on:
   push:
-  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: "0 0 * * 1" # Runs every Monday at midnight (UTC)
+
 jobs:
   scorecard:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Run Scorecard
-        uses: ossf/scorecard-action@v1
+
+      - name: Run OSSF Scorecard
+        id: scorecard
+        uses: ossf/scorecard-action@v2
         with:
-          results-file: results.sarif
+          results_file: .github/reports/ossf-scorecard-results.json
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          minimum_score: 7
+
+      - name: Upload Scorecard Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: ossf-scorecard-results
+          path: .github/reports/ossf-scorecard-results.json
