@@ -198,7 +198,7 @@ This document outlines the GitHub security strategy implemented for the IE Bank 
 ---
 
 ## **7. References**
-- **CodeQL Workflow:** [View Workflow](#https://github.com/bigdawgbank/ie-bank/actions/workflows/github-code-scanning/codeql)
+- **CodeQL Workflow:** [View Workflow](https://github.com/bigdawgbank/ie-bank/actions/workflows/github-code-scanning/codeql)
 - **Dependabot Alerts:** [View Alerts](#)
 - **OSSF Scorecard Workflow:** [View Workflow](#)
 - **CODEOWNERS File:** [View CODEOWNERS](#)
