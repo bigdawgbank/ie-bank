@@ -236,7 +236,7 @@ This section provides an in-depth overview of the infrastructure components and 
 
 ### GitHub
 #### Description
-We will utilize GitHub as the central repository for version control, CI/CD pipelines, and documentation hosting. It integrates with Azure and other tools to streamline deployment and collaboration within our team. 
+We will utilize GitHub as the central repository for version control, CI/CD pipelines, and documentation hosting. It integrates with Azure and other tools to streamline deployment and collaboration within our team.
 
 #### Key Features
 - **Version Control**: 
@@ -247,16 +247,16 @@ We will utilize GitHub as the central repository for version control, CI/CD pipe
   - Provides role-based pages for team collaboration and documentation.
 - **GitHub Actions**: 
   - Automates CI/CD pipelines for application and infrastructure.
-  - Includes workflows for building, testing, and deploying to Azure environments(Dev, UAT and PROD).
+  - Includes workflows for building, testing, and deploying to Azure environments (Dev, UAT, and PROD).
 - **Integration with Azure**:
   - Deploys infrastructure using Bicep templates.
-  - Pushes Docker images to Azure Container Registry through Github actions.
+  - Pushes Docker images to Azure Container Registry through GitHub Actions.
 
 ---
 
 ### App Service for Containers
 #### Description
-We need and use the Azure App Service for Containers to host our backend Flask application, running in Docker containers. This service will allow us serverless scalability and ease of management.
+We use Azure App Service for Containers to host our backend Flask application, running in Docker containers. This service allows serverless scalability and ease of management.
 
 #### Key Features
 - **Containerized Backend**: 
@@ -276,7 +276,7 @@ We need and use the Azure App Service for Containers to host our backend Flask a
 
 ### App Service Plan
 #### Description
-We're using the App Service Plan to provide us with the compute resources for hosting the App Service for Containers. It defines the cost and performance tiers for the backend.
+We use the App Service Plan to provide compute resources for hosting the App Service for Containers. It defines the cost and performance tiers for the backend.
 
 #### Key Features
 - **Pricing Tiers**:
@@ -294,9 +294,9 @@ We're using the App Service Plan to provide us with the compute resources for ho
 
 ### PostgreSQL Database
 #### Description
-We will use Azure PostgreSQL Flexible Server as our managed database service for storing user profiles, account information, and transaction history.
+We use Azure PostgreSQL Flexible Server as our managed database service for storing user profiles, account information, and transaction history.
 
-### Key Features
+#### Key Features
 - **High Availability**:
   - Configured with zone redundancy to ensure uptime during failures.
   - Automated failover for seamless recovery.
@@ -314,7 +314,7 @@ We will use Azure PostgreSQL Flexible Server as our managed database service for
 
 ### Static Web App 
 #### Description
-We use the Azure Static Web Apps to host the Vue.js frontend of our banking application, ensuring fast and reliable delivery of the user interface.
+We use Azure Static Web Apps to host the Vue.js frontend of our banking application, ensuring fast and reliable delivery of the user interface.
 
 #### Key Features
 - **Global Content Delivery**:
@@ -330,9 +330,9 @@ We use the Azure Static Web Apps to host the Vue.js frontend of our banking appl
 
 ---
 
-### Azure Container Registry(ACR)
+### Azure Container Registry (ACR)
 #### Description
-We will use the Azure Container Registry(ACR) to effectively store and manage the Docker images used for our backend application.
+We use Azure Container Registry (ACR) to effectively store and manage the Docker images used for our backend application.
 
 #### Key Features
 - **Private Registry**:
@@ -363,7 +363,7 @@ Azure Key Vault securely manages sensitive information such as database credenti
 
 ### Log Analytics Workspace
 #### Description
-We will use the Log Analytics Workspace to consolidate logs and metrics from Azure resources, giving centralized monitoring and diagnostics for BigDawgBank.
+We use Log Analytics Workspace to consolidate logs and metrics from Azure resources, providing centralized monitoring and diagnostics for BigDawgBank.
 
 #### Key Features
 - **Centralized Logging**:
@@ -377,7 +377,7 @@ We will use the Log Analytics Workspace to consolidate logs and metrics from Azu
 
 ### Application Insights
 #### Description
-We will use Azure Application Insights built on top of our Log Analytics to provide us with real-time monitoring and telemetry for the BigDawgBank application, covering both frontend and backend performance.
+We use Azure Application Insights built on top of our Log Analytics to provide real-time monitoring and telemetry for the BigDawgBank application, covering both frontend and backend performance.
 
 #### Key Features
 - **Performance Metrics**:
@@ -392,7 +392,7 @@ We will use Azure Application Insights built on top of our Log Analytics to prov
 
 ### Azure Workbook
 #### Description
-We have implemmented Azure Workbook to provide a flexible canvas for data analysis and the creation of rich visual reports within the Azure portal. It will allow us to combine text, queries, metrics, and parameters into interactive reports to monitor and analyze the performance and health of the BigDawgBank application and infrastructure.
+We have implemented Azure Workbook to provide a flexible canvas for data analysis and the creation of rich visual reports within the Azure portal. It allows us to combine text, queries, metrics, and parameters into interactive reports to monitor and analyze the performance and health of the BigDawgBank application and infrastructure.
 
 #### Key Features
 - **Customizable Reports**:
