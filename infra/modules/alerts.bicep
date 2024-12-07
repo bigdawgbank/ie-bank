@@ -63,6 +63,7 @@ resource uptimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
       'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
       allOf: [
         {
+          criterionType: 'StaticThresholdCriterion'
           name: 'LowUptime'
           metricName: 'availabilityResults/availabilityPercentage'
           operator: 'LessThan'
@@ -97,6 +98,7 @@ resource responseTimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
       'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
       allOf: [
         {
+          criterionType: 'StaticThresholdCriterion'
           name: 'HighResponseTime'
           metricName: 'requests/duration'
           operator: 'GreaterThan'
@@ -132,6 +134,7 @@ resource errorRateAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
       'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
       allOf: [
         {
+          criterionType: 'StaticThresholdCriterion'
           name: 'HighFailedRequests'
           metricName: 'requests/failedRequests'
           operator: 'GreaterThan'
