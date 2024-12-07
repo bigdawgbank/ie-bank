@@ -30,8 +30,8 @@ resource staticWebApp 'Microsoft.Web/staticSites@2022-03-01' = {
   name: staticWebAppName
   location: staticWebbAppLocation
   sku: {
-    name: 'Free' // Change to 'Standard' if needed
-    tier: 'Free'
+    name: 'Standard' // Change to 'Standard' if needed
+    tier: 'Standard'
   }
   properties: {
     repositoryUrl: repositoryUrl
