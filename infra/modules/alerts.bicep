@@ -46,8 +46,8 @@ resource slackActionGroup 'microsoft.insights/actionGroups@2022-06-01' = {
   }
 }
 
-// Uptime Alert (metricAlert)
-resource uptimeAlert 'microsoft.insights/metricAlerts@2021-08-01' = {
+// Uptime Alert (Using older API version for metricAlerts)
+resource uptimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
   name: 'uptimeAlert-${environment}'
   location: 'global'
   properties: {
@@ -59,27 +59,26 @@ resource uptimeAlert 'microsoft.insights/metricAlerts@2021-08-01' = {
     ]
     evaluationFrequency: 'PT5M'
     windowSize: 'PT15M'
-    criteria: {
-      allOf: [
-        {
-          name: 'LowUptime'
-          metricName: 'availabilityResults/availabilityPercentage'
-          operator: 'LessThan'
-          threshold: json(uptimeThreshold)
-          timeAggregation: 'Average'
-        }
-      ]
-    }
+    criteria: [
+      {
+        name: 'LowUptime'
+        metricName: 'availabilityResults/availabilityPercentage'
+        operator: 'LessThan'
+        threshold: json(uptimeThreshold)
+        timeAggregation: 'Average'
+      }
+    ]
     actions: [
       {
         actionGroupId: slackActionGroup.id
       }
     ]
+    autoMitigate: true
   }
 }
 
-// Response Time Alert (metricAlert)
-resource responseTimeAlert 'microsoft.insights/metricAlerts@2021-08-01' = {
+// Response Time Alert (metricAlerts with older API)
+resource responseTimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
   name: 'responseTimeAlert-${environment}'
   location: 'global'
   properties: {
@@ -91,28 +90,27 @@ resource responseTimeAlert 'microsoft.insights/metricAlerts@2021-08-01' = {
     ]
     evaluationFrequency: 'PT5M'
     windowSize: 'PT15M'
-    criteria: {
-      allOf: [
-        {
-          name: 'HighResponseTime'
-          metricName: 'requests/duration'
-          operator: 'GreaterThan'
-          threshold: json(responseTimeThreshold)
-          timeAggregation: 'Percentile'
-          percentile: 95
-        }
-      ]
-    }
+    criteria: [
+      {
+        name: 'HighResponseTime'
+        metricName: 'requests/duration'
+        operator: 'GreaterThan'
+        threshold: json(responseTimeThreshold)
+        timeAggregation: 'Percentile'
+        percentile: 95
+      }
+    ]
     actions: [
       {
         actionGroupId: slackActionGroup.id
       }
     ]
+    autoMitigate: true
   }
 }
 
-// Error Rate Alert (metricAlert)
-resource errorRateAlert 'microsoft.insights/metricAlerts@2021-08-01' = {
+// Error Rate Alert (metricAlerts with older API)
+resource errorRateAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
   name: 'errorRateAlert-${environment}'
   location: 'global'
   properties: {
@@ -124,26 +122,25 @@ resource errorRateAlert 'microsoft.insights/metricAlerts@2021-08-01' = {
     ]
     evaluationFrequency: 'PT1M'
     windowSize: 'PT5M'
-    criteria: {
-      allOf: [
-        {
-          name: 'HighFailedRequests'
-          metricName: 'requests/failedRequests'
-          operator: 'GreaterThan'
-          threshold: errorRateThreshold
-          timeAggregation: 'Total'
-        }
-      ]
-    }
+    criteria: [
+      {
+        name: 'HighFailedRequests'
+        metricName: 'requests/failedRequests'
+        operator: 'GreaterThan'
+        threshold: errorRateThreshold
+        timeAggregation: 'Total'
+      }
+    ]
     actions: [
       {
         actionGroupId: slackActionGroup.id
       }
     ]
+    autoMitigate: true
   }
 }
 
-// Incident Resolution Time Alert (scheduledQueryRules)
+// Incident Resolution Time Alert (scheduledQueryRules stays the same)
 resource incidentResolutionAlert 'microsoft.insights/scheduledQueryRules@2021-08-01' = {
   name: 'incidentResolutionAlert-${environment}'
   location: location
