@@ -25,6 +25,82 @@ env:
   USER_ALIAS: dkumlin
 
 jobs:
+  check-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      infra: ${{ steps.filter.outputs.infra }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            infra:
+              - 'infra/**'
+              - '!infra/scripts/**'
+
+  build:
+    needs: check-changes
+    if: needs.check-changes.outputs.infra == 'true'
+    runs-on: ubuntu-latest
+    environment: Development
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Bicep linter
+        run: az bicep build --file ./infra/main.bicep
+      - name: Run checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          file: infra/main.bicep
+        continue-on-error: true
+
+  validate_development_template:
+    needs: [build, check-changes]
+    runs-on: ubuntu-latest
+    environment: Development
+    steps:
+      - uses: actions/checkout@v3
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - uses: azure/arm-deploy@v1
+        name: Validate Bicep file Development
+        with:
+          subscriptionId: ${{ env.SUBSCRIPTION_ID_DEV }}
+          resourceGroupName: ${{ env.RESOURCE_GROUP_DEV }}
+          template: infra/main.bicep
+          parameters: >
+            infra/parameters/dev.parameters.json 
+            branch=${{ github.ref_name }}
+            repositoryUrl=https://github.com/bigdawgbank/ie-bank 
+            appServiceAPIEnvVarENV=${{ vars.ENV }} 
+            appServiceAPIEnvVarDBHOST=${{ vars.DBHOST }} 
+            appServiceAPIEnvVarDBNAME=${{ vars.DBNAME }} 
+            appServiceAPIEnvVarDBPASS=${{ secrets.DBPASS }} 
+            appServiceAPIDBHostDBUSER=${{ secrets.DBUSER }} 
+            appServiceAPIDBHostFLASK_APP=${{ vars.FLASK_APP }} 
+            appServiceAPIDBHostFLASK_DEBUG=${{ vars.FLASK_DEBUG }}
+            appServiceAPIEnvVarJWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+            slackWebhookUrl=${{ secrets.SLACK_WEBHOOK_URL }}
+          deploymentMode: Validate
+      - name: Detect Resource Drift
+        run: |
+          az deployment group what-if \
+            --resource-group ${{ env.RESOURCE_GROUP_DEV }} \
+            --template-file infra/main.bicep \
+            --parameters infra/parameters/dev.parameters.json \
+            branch=${{ github.ref_name }} \
+            repositoryUrl=https://github.com/bigdawgbank/ie-bank \
+            appServiceAPIEnvVarENV=${{ vars.ENV }} \
+            appServiceAPIEnvVarDBHOST=${{ vars.DBHOST }} \
+            appServiceAPIEnvVarDBNAME=${{ vars.DBNAME }} \
+            appServiceAPIEnvVarDBPASS=${{ secrets.DBPASS }} \
+            appServiceAPIDBHostDBUSER=${{ secrets.DBUSER }} \
+            appServiceAPIDBHostFLASK_APP=${{ vars.FLASK_APP }} \
+            appServiceAPIDBHostFLASK_DEBUG=${{ vars.FLASK_DEBUG }} \
+            appServiceAPIEnvVarJWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
+            slackWebhookUrl=${{ secrets.SLACK_WEBHOOK_URL }}
+
   deploy-dev:
     needs: [validate_development_template, check-changes, build]
     if: needs.check-changes.outputs.infra == 'true'
