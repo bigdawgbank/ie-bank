@@ -61,7 +61,7 @@ resource uptimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
     windowSize: 'PT15M'
     criteria: {
       'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
-      metrics: [
+      allOf: [
         {
           name: 'LowUptime'
           metricName: 'availabilityResults/availabilityPercentage'
@@ -95,7 +95,7 @@ resource responseTimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
     windowSize: 'PT15M'
     criteria: {
       'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
-      metrics: [
+      allOf: [
         {
           name: 'HighResponseTime'
           metricName: 'requests/duration'
@@ -130,7 +130,7 @@ resource errorRateAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
     windowSize: 'PT5M'
     criteria: {
       'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
-      metrics: [
+      allOf: [
         {
           name: 'HighFailedRequests'
           metricName: 'requests/failedRequests'
@@ -149,7 +149,7 @@ resource errorRateAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
   }
 }
 
-// Incident Resolution Time Alert (no changes)
+// Incident Resolution Time Alert
 resource incidentResolutionAlert 'microsoft.insights/scheduledQueryRules@2021-08-01' = {
   name: 'incidentResolutionAlert-${environment}'
   location: location
