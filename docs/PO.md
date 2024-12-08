@@ -18,8 +18,7 @@ To deliver a modern digital banking solution that prioritizes user needs by offe
 ---
 
 ### 2. Product Vision Board
-[Product Vision Board Extended.pdf](https://github.com/user-attachments/files/18053556/Product.Vision.Board.Extended.pdf)
-
+![Product Vision Board](./images/Product_Vision.jpeg)
 
 ---
 
@@ -92,13 +91,13 @@ The Product Owner adopts the Scrum methodology to ensure the project follows agi
 
 ### 1. Backlog Grooming
 - Session to refine and prioritize the backlog with input from the Cloud Architect.
-- **Deliverable**: https://github.com/user-attachments/assets/79102738-8d94-456d-83a1-d398cb8976d5
+- **Deliverable**: [Click Here](https://github.com/user-attachments/assets/79102738-8d94-456d-83a1-d398cb8976d5)
 
 ---
 
 ### 2. Sprint Planning
 - Collaborate with the team to define sprint goals and assign tasks.
-- **Deliverable**: https://github.com/user-attachments/assets/62e52f59-9051-4e77-a7d2-2da49745e9e7
+- **Deliverable**: [Click Here](https://github.com/user-attachments/assets/62e52f59-9051-4e77-a7d2-2da49745e9e7)
 
 ---
 
@@ -106,17 +105,12 @@ The Product Owner adopts the Scrum methodology to ensure the project follows agi
 - Conduct at least three stand-up meetings to track progress and resolve blockers.
 - **Deliverables**:
 
-  - [Daily Scrum 1](#)
+  - [Daily Scrum 1](https://github.com/user-attachments/assets/d831bbf6-f219-4165-a821-f2f32df31e09)
 
-https://github.com/user-attachments/assets/d831bbf6-f219-4165-a821-f2f32df31e09
+  - [Daily Scrum 2](https://github.com/user-attachments/assets/15d52ee1-8494-4108-85e4-c47f8de9388a)
 
-  - [Daily Scrum 2](#)
+  - [Daily Scrum 3](https://github.com/user-attachments/assets/3f85c4cf-0e50-4f63-8def-ebc4f672bc7a)
 
-https://github.com/user-attachments/assets/15d52ee1-8494-4108-85e4-c47f8de9388a
-
-  - [Daily Scrum 3](#)
-
-https://github.com/user-attachments/assets/3f85c4cf-0e50-4f63-8def-ebc4f672bc7a
 
 ---
 

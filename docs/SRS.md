@@ -1,12 +1,26 @@
 # BigDawg Bank Design Document
 
-The BigDawg IE Bank Application builds upon the previous IE Bank Application developed during the first phase of the project. For the next phase, we aim to deliver a **Minimum Viable Product (MVP)** that includes additional features like the Admin Portal which is a user management system enabling administrators to create, update, and delete users, User Portal Enhancements which include Registration forms, bank account linking, and money transfer functionalities and Secure Deployment, which entails following DevOps best practices to automate CI/CD pipelines and ensure a robust DTAP (Development, Test, Acceptance, Production) workflow. This project emphasizes modularity, scalability, and security, ensuring compliance with financial industry standards and providing seamless user experiences.
+The BigDawg IE Bank Application builds upon the previous IE Bank Application developed during the first phase of the project. For the next phase, we aim to deliver a substantially more upgraded **Minimum Viable Product (MVP)** that includes additional features like the Admin Portal which is a user management system enabling administrators to create, update, and delete users, User Portal Enhancements which include Registration and log in with JWT authentication, bank account linking, and money transfer functionalities, and Secure Deployment, which entails following DevOps best practices to automate CI/CD pipelines and ensure a robust DTAP (Development, Test, Acceptance, Production) workflow. Through fostering a culture of care and collaboration over the past months, the team has produced a project exactly showcasing what was proimised. The BigDawgbank Application emphasizes modularity, scalability, and security, ensuring compliance with financial industry standards and providing a seamless, secure and simple user experience. We will take a deep dive into the various design aspects that have been introduced and masterfully brought to life by the team here at BigDawgbank. 
 
 
 ## Table of Contents
 
-1. [BigDawgBank Functional and Non-Functional Requirements](#bigdawgbank-functional-and-non-functional-requirements)
-2. [Infrastructure Architecture Design](#infrastructure-architecture-design)
+1. [Product Planning](#product-planning)
+   - [1. Product Vision & Mission Statements](#1-product-vision--mission-statements)
+     - [Product Vision](#product-vision)
+     - [Product Mission](#product-mission)
+   - [2. Product Vision Board](#2-product-vision-board)
+   - [3. Minimum Viable Product (MVP)](#3-minimum-viable-product-mvp)
+     - [Definition](#definition)
+     - [Requirements](#requirements)
+   - [4. Objectives and Key Results (OKRs)](#4-objectives-and-key-results-okrs)
+     - [Objective 1: Enhance User Experience](#objective-1-enhance-user-experience)
+     - [Objective 2: Strengthen Security](#objective-2-strengthen-security)
+     - [Objective 3: Optimize Performance](#objective-3-optimize-performance)
+     - [Objective 4: Foster Collaboration](#objective-4-foster-collaboration)
+     - [Objective 5: Streamline Deployment](#objective-5-streamline-deployment)
+2. [BigDawgBank Functional and Non-Functional Requirements](#bigdawgbank-functional-and-non-functional-requirements)
+3. [Infrastructure Architecture Design](#infrastructure-architecture-design)
    - [GitHub](#github)
    - [App Service for Containers](#app-service-for-containers)
    - [App Service Plan](#app-service-plan)
@@ -18,7 +32,7 @@ The BigDawg IE Bank Application builds upon the previous IE Bank Application dev
    - [Application Insights](#application-insights)
    - [Azure Workbook](#azure-workbook)
    - [Infra Architecture Design Diagram](#infra-architecture-design-diagram)
-3. [Environment Design](#environment-design)
+4. [Environment Design](#environment-design)
    - [Description](#description)
    - [Environments](#environments)
      - [Development Environment](#development-environment)
@@ -28,22 +42,22 @@ The BigDawg IE Bank Application builds upon the previous IE Bank Application dev
    - [Continuous Delivery](#continuous-delivery)
    - [GitHub Secrets](#github-secrets)
    - [GitHub Variables](#github-variables)
-4. [Well-Architected Framework Design](#well-architected-framework-design)
+5. [Well-Architected Framework Design](#well-architected-framework-design)
    - [1. Reliability Pillar](#1-reliability-pillar)
    - [2. Security Pillar](#2-security-pillar)
    - [3. Cost Optimization Pillar](#3-cost-optimization-pillar)
      - [Static Web App for Frontend](#static-web-app-for-frontend)
    - [4. Operational Excellence Pillar](#4-operational-excellence-pillar)
    - [5. Performance Efficiency Pillar](#5-performance-efficiency-pillar)
-5. [Test Driven Development(TDD)](#test-driven-developmenttdd)
-6. [Release Strategy](#release-strategy)
+6. [Test Driven Development(TDD)](#test-driven-developmenttdd)
+7. [Release Strategy](#release-strategy)
    - [Development (Dev)](#development-dev)
    - [User Acceptance Testing (UAT)](#user-acceptance-testing-uat)
    - [Production (Prod)](#production-prod)
    - [Infrastructure Release Strategy](#infrastructure-release-strategy)
    - [Rollback Mechanisms and Disaster Recovery](#rollback-mechanisms-and-disaster-recovery)
-7. [Use Case and Sequential Model Design](#use-case-and-sequential-model-design)
-8. [Entity Relationship Diagram](#entity-relationship-diagram)
+8. [Use Case and Sequential Model Design](#use-case-and-sequential-model-design)
+9. [Entity Relationship Diagram](#entity-relationship-diagram)
    - [Users Table](#users-table)
    - [Accounts Table](#accounts-table)
    - [Bank Transfers Logical Entity](#bank-transfers-logical-entity)
@@ -51,77 +65,158 @@ The BigDawg IE Bank Application builds upon the previous IE Bank Application dev
      - [User to Account](#user-to-account)
      - [Account to Bank Transfers](#account-to-bank-transfers)
    - [Key Features](#key-features-of-the-ER)
-9. [Data Flow Diagram](#data-flow-diagram)
-   - [External Entities](#external-entities)
-   - [Processes](#processes)
-   - [Data Stores](#data-stores)
-   - [External Systems](#external-systems)
-   - [Data Flow Steps](#data-flow-steps)
-   - [Key Features](#key-features-of-the-dfd)
-10. [Twelve-Factor App Principles in BigDawgBank](#twelve-factor-app-principles-in-bigdawgbank)
-   - [I. Codebase](#i-codebase)
-   - [II. Dependencies](#ii-dependencies)
-   - [III. Config](#iii-config)
-   - [IV. Backing Services](#iv-backing-services)
-   - [V. Build, Release, Run](#v-build-release-run)
-   - [VI. Processes](#vi-processes)
-   - [VII. Port Binding](#vii-port-binding)
-   - [VIII. Concurrency](#viii-concurrency)
-   - [IX. Disposability](#ix-disposability)
-   - [X. Dev/Prod Parity](#x-devprod-parity)
-   - [XI. Logs](#xi-logs)
-   - [XII. Admin Processes](#xii-admin-processes)
-11. [Team Documentation(PO)](#team-documentation)
-12. [Modularization Strategy](#modularization-strategy)
-   - [Description](#description)
-   - [Key Decisions](#key-decisions)
-   - [Naming Conventions](#naming-conventions)
-   - [Implementation](#implementation)
-   - [Team Collaboration](#team-collaboration)
-   - [Conclusion](#conclusion)
-13. [Git Feature Branch Strategy](#git-feature-branch-strategy)
-   - [1. Description of Git Feature Branch Strategy](#1-description-of-git-feature-branch-strategy)
-14. [Continuous Integration (CI) Workflows for Backend and Frontend](#continuous-integration-ci-workflows-for-backend-and-frontend)
-   - [1. CI Workflow for Frontend](#1-ci-workflow-for-frontend)
-   - [2. CI Workflow for Backend](#2-ci-workflow-for-backend)
-15. [Inner Loop and Outer Loop](#inner-loop-and-outer-loop)
-   - [Inner Loop](#inner-loop)
-   - [Outer Loop](#outer-loop)
-16. [Continuous Delivery (CD) Workflows for Backend and Frontend](#continuous-delivery-cd-workflows-for-backend-and-frontend)
-   - [1. CD Workflow for Frontend](#1-cd-workflow-for-frontend)
-   - [2. CD Workflow for Backend](#2-cd-workflow-for-backend)
-17. [Key Features and Benefits of BigDawgBanks CI/CD for Frontend/Backend](#key-features-and-benefits-of-bigdawgbanks-cicd-for-frontendbackend)
-18. [GitHub Hardening Strategy](#github-hardening-strategy)
-   - [1.1 Branch Protection Rules](#11-branch-protection-rules)
-   - [1.2 Dependabot](#12-dependabot)
-   - [1.3 CodeQL Analysis](#13-codeql-analysis)
-   - [1.4 OSSF Scorecard](#14-ossf-scorecard)
-   - [1.5 Secret Scanning & Push Protection](#15-secret-scanning--push-protection)
-   - [1.6 CODEOWNERS](#16-codeowners)
-19. [Secrets Management](#secrets-management)
-   - [2.1 Azure Key Vault](#21-azure-key-vault)
-20. [Implemented Security Practices](#implemented-security-practices)
-   - [3.1 Practices from OpenSSF](#31-practices-from-openssf)
-   - [3.2 Practices from SAFECode](#32-practices-from-safecode)
-21. [Metrics and Results](#metrics-and-results)
-22. [Challenges and Lessons Learned](#challenges-and-lessons-learned)
-   - [Challenges](#challenges)
-   - [Lessons Learned](#lessons-learned)
-23. [Future Recommendations](#future-recommendations)
-24. [References](#references)
-25. [Service Level Agreement (SLA)](#service-level-agreement-sla)
-   - [1. SLA Definition](#1-sla-definition)
-26. [Service Level Objectives (SLOs)](#service-level-objectives-slos)
-   - [1. SLO Definitions](#1-slo-definitions)
-27. [Service Level Indicators (SLIs)](#service-level-indicators-slis)
-   - [1. SLI Definitions](#1-sli-definitions)
-28. [Monitoring Strategy Design](#monitoring-strategy-design)
-   - [1. Monitoring Strategy](#1-monitoring-strategy)
-29. [Incident Response Design](#incident-response-design)
-   - [1. Incident Response Plan](#1-incident-response-plan)
-30. [Site Reliability Engineering Design](#site-reliability-engineering-design)
-   - [1. SRE Design](#1-sre-design)
+10. [Data Flow Diagram](#data-flow-diagram)
+    - [External Entities](#external-entities)
+    - [Processes](#processes)
+    - [Data Stores](#data-stores)
+    - [External Systems](#external-systems)
+    - [Data Flow Steps](#data-flow-steps)
+    - [Key Features](#key-features-of-the-dfd)
+11. [Twelve-Factor App Principles in BigDawgBank](#twelve-factor-app-principles-in-bigdawgbank)
+    - [I. Codebase](#i-codebase)
+    - [II. Dependencies](#ii-dependencies)
+    - [III. Config](#iii-config)
+    - [IV. Backing Services](#iv-backing-services)
+    - [V. Build, Release, Run](#v-build-release-run)
+    - [VI. Processes](#vi-processes)
+    - [VII. Port Binding](#vii-port-binding)
+    - [VIII. Concurrency](#viii-concurrency)
+    - [IX. Disposability](#ix-disposability)
+    - [X. Dev/Prod Parity](#x-devprod-parity)
+    - [XI. Logs](#xi-logs)
+    - [XII. Admin Processes](#xii-admin-processes)
+12. [SCRUM Methodology and Devops Collaboration](#scrum-methodology)
+13. [Modularization Strategy](#modularization-strategy)
+    - [Description](#description)
+    - [Key Decisions](#key-decisions)
+    - [Naming Conventions](#naming-conventions)
+    - [Implementation](#implementation)
+    - [Team Collaboration](#team-collaboration)
+    - [Conclusion](#conclusion)
+14. [Git Feature Branch Strategy](#git-feature-branch-strategy)
+    - [1. Description of Git Feature Branch Strategy](#1-description-of-git-feature-branch-strategy)
+15. [Continuous Integration (CI) Workflows for Backend and Frontend](#continuous-integration-ci-workflows-for-backend-and-frontend)
+    - [1. CI Workflow for Frontend](#1-ci-workflow-for-frontend)
+    - [2. CI Workflow for Backend](#2-ci-workflow-for-backend)
+16. [Inner Loop and Outer Loop](#inner-loop-and-outer-loop)
+    - [Inner Loop](#inner-loop)
+    - [Outer Loop](#outer-loop)
+17. [Continuous Delivery (CD) Workflows for Backend and Frontend](#continuous-delivery-cd-workflows-for-backend-and-frontend)
+    - [1. CD Workflow for Frontend](#1-cd-workflow-for-frontend)
+    - [2. CD Workflow for Backend](#2-cd-workflow-for-backend)
+18. [Key Features and Benefits of BigDawgBanks CI/CD for Frontend/Backend](#key-features-and-benefits-of-bigdawgbanks-cicd-for-frontendbackend)
+19. [GitHub Hardening Strategy](#github-hardening-strategy)
+    - [1.1 Branch Protection Rules](#11-branch-protection-rules)
+    - [1.2 Dependabot](#12-dependabot)
+    - [1.3 CodeQL Analysis](#13-codeql-analysis)
+    - [1.4 OSSF Scorecard](#14-ossf-scorecard)
+    - [1.5 Secret Scanning & Push Protection](#15-secret-scanning--push-protection)
+    - [1.6 CODEOWNERS](#16-codeowners)
+20. [Secrets Management](#secrets-management)
+    - [2.1 Azure Key Vault](#21-azure-key-vault)
+21. [Implemented Security Practices](#implemented-security-practices)
+    - [3.1 Practices from OpenSSF](#31-practices-from-openssf)
+    - [3.2 Practices from SAFECode](#32-practices-from-safecode)
+22. [Metrics and Results](#metrics-and-results)
+23. [Challenges and Lessons Learned](#challenges-and-lessons-learned)
+    - [Challenges](#challenges)
+    - [Lessons Learned](#lessons-learned)
+24. [Future Recommendations](#future-recommendations)
+25. [References](#references)
+26. [Service Level Agreement (SLA)](#service-level-agreement-sla)
+    - [1. SLA Definition](#1-sla-definition)
+27. [Service Level Objectives (SLOs)](#service-level-objectives-slos)
+    - [1. SLO Definitions](#1-slo-definitions)
+28. [Service Level Indicators (SLIs)](#service-level-indicators-slis)
+    - [1. SLI Definitions](#1-sli-definitions)
+29. [Monitoring Strategy Design](#monitoring-strategy-design)
+    - [1. Monitoring Strategy](#1-monitoring-strategy)
+30. [Incident Response Design](#incident-response-design)
+    - [1. Incident Response Plan](#1-incident-response-plan)
+31. [Site Reliability Engineering Design](#site-reliability-engineering-design)
+    - [1. SRE Design](#1-sre-design)
 
+
+## Product Planning
+
+The Product Owner oversees the planning phase of the product, ensuring all aspects of the product vision, roadmap, and requirements are well-documented.
+
+### 1. Product Vision & Mission Statements
+#### **Product Vision**
+Big Dawg Bank aims to be the trusted partner for secure, seamless, and accessible banking—empowering small businesses, professionals, and individuals to take control of their finances anytime, anywhere.
+
+#### **Product Mission**
+To deliver a modern digital banking solution that prioritizes user needs by offering real-time insights, advanced security features, and automated tools, all while fostering trust and efficiency.
+
+---
+
+### 2. Product Vision Board
+![Product Vision Board](./images/Product_Vision.jpeg)
+
+---
+
+### 3. Minimum Viable Product (MVP)
+#### **Definition**
+The MVP for Big Dawg Bank will focus on delivering core functionality that addresses essential user and admin needs while ensuring security and scalability. This includes:
+- A user-friendly admin portal for seamless management of users and permissions.
+- A secure user portal for managing accounts, performing money transfers, and viewing dashboards.
+- Enhanced security with biometric authentication and robust password management.
+
+#### **Requirements**
+Admin Portal:
+- Manage users: View, create, update, and delete user accounts.
+- Assign user roles and permissions for secure account management.
+- Monitor system activity and generate basic reports.
+
+User Portal:
+- Registration: Enable secure and intuitive account creation for users.
+- Login: Support biometric authentication and password-based secure login.
+- Account Management: View account balances, transaction history, and personalized financial insights.
+- Money Transfers: Perform secure peer-to-peer and external money transfers with transaction tracking.
+- Dashboards: Provide real-time insights into account activity and financial performance.
+
+---
+
+### 4. Objectives and Key Results (OKRs):
+
+Objectives and Key Results (OKRs)
+
+Objective 1: Enhance User Experience
+- KR 1.1: Reduce user onboarding time by 30% by introducing pre-filled forms and automated validations.
+- KR 1.2: Deliver a mobile-first responsive design accessible across all devices and screen sizes.
+- KR 1.3: Ensure the application loads in under 2.5 seconds for 95% of users.
+- KR 1.4: Provide real-time feedback for money transfers and account operations with live status updates.
+- KR 1.5: Achieve a 98% user satisfaction rate through surveys and feedback loops.
+
+Objective 2: Strengthen Security
+- KR 2.1: Encrypt all sensitive data using AES-256 standards and secure APIs for data exchange.
+- KR 2.2: Implement biometric authentication and multi-factor authentication (MFA) for all user logins.
+- KR 2.3: Ensure zero reported security vulnerabilities post-launch through active monitoring.
+- KR 2.4: Conduct monthly vulnerability assessments and penetration testing.
+- KR 2.5: Automate 95% of security monitoring and incident alerting using integrated tools.
+
+Objective 3: Optimize Performance
+- KR 3.1: Achieve 99.95% uptime in production environments.
+- KR 3.2: Support 250 concurrent users during peak loads without degradation in performance.
+- KR 3.3: Automate dynamic scaling to handle traffic spikes exceeding 80% capacity.
+- KR 3.4: Optimize database queries, achieving an average query response time of <50ms.
+- KR 3.5: Reduce API response times to <800ms for all endpoints.
+
+Objective 4: Foster Collaboration
+- KR 4.1: Fully integrate Slack with Azure Boards and GitHub for streamlined notifications and communication.
+- KR 4.2: Maintain a 95% participation rate in bi-weekly stand-up meetings.
+- KR 4.3: Automate milestone notifications to stakeholders via Slack and email.
+- KR 4.4: Share detailed sprint reports with stakeholders weekly to ensure transparency.
+- KR 4.5: Conduct retrospectives after every sprint and implement at least three actionable improvements per cycle.
+
+Objective 5: Streamline Deployment
+- KR 5.1: Deploy updates to the development and staging environments in under 7 minutes.
+- KR 5.2: Achieve 100% pass rate on automated tests for all deployments.
+- KR 5.3: Automate rollbacks for failed deployments within 30 seconds of detection.
+- KR 5.4: Launch the MVP to production on schedule, meeting 100% of functional and security requirements.
+- KR 5.5: Reduce deployment-related errors by 60% through improved CI/CD pipelines.
+
+---
 
 ## BigDawgBank Functional and Non-Functional Requirements
 
@@ -1678,6 +1773,66 @@ The BigDawgBank application adheres to the Twelve-Factor App methodology to ensu
 - Example: Database migrations and other administrative tasks are executed using GitHub Actions workflows, ensuring that they are run in a controlled and repeatable manner.
 
 By adhering to the Twelve-Factor App principles, the BigDawgBank application ensures a scalable, maintainable, and portable architecture that can be easily deployed and managed across different environments.
+
+---
+
+## Scrum Methodology
+
+The Product Owner adopts the Scrum methodology to ensure the project follows agile principles, allowing flexibility and collaboration.
+
+### 1. Backlog Grooming
+- Session to refine and prioritize the backlog with input from the Cloud Architect.
+- **Deliverable**: [Click Here](https://github.com/user-attachments/assets/79102738-8d94-456d-83a1-d398cb8976d5)
+
+---
+
+### 2. Sprint Planning
+- Collaborate with the team to define sprint goals and assign tasks.
+- **Deliverable**: [Click Here](https://github.com/user-attachments/assets/62e52f59-9051-4e77-a7d2-2da49745e9e7)
+
+---
+
+### 3. Daily Scrum/Standup
+- Conduct at least three stand-up meetings to track progress and resolve blockers.
+- **Deliverables**:
+
+  - [Daily Scrum 1](https://github.com/user-attachments/assets/d831bbf6-f219-4165-a821-f2f32df31e09)
+
+  - [Daily Scrum 2](https://github.com/user-attachments/assets/15d52ee1-8494-4108-85e4-c47f8de9388a)
+
+  - [Daily Scrum 3](https://github.com/user-attachments/assets/3f85c4cf-0e50-4f63-8def-ebc4f672bc7a)
+
+
+---
+
+### 5. Sprint Retrospective
+- Use Azure DevOps retrospective tools to analyze successes and areas for improvement.
+- **Deliverable**: (https://dev.azure.com/BigDawgBank/Big%20Dawg%20Bank/_apps/hub/ms-devlabs.team-retrospectives.home#teamId=c38adc75-dacf-4a4b-940a-8c608421f8b3&boardId=d87d64e1-1bda-4e80-a172-a81683d610a2)
+
+---
+
+## DevOps Collaboration
+
+### 1. Integration of Collaboration Tools
+To enhance team productivity and ensure efficient communication, the following integrations have been implemented:
+- GitHub & Azure DevOps:
+Enables tracking of pull requests and backlog items, ensuring that development progress aligns with project goals. This integration provides a unified view of code changes and work items, streamlining collaboration between development and project management teams.
+- Slack & Azure DevOps:
+Automates notifications for task updates, such as status changes, comments, and assignments. Team members are promptly informed of developments, reducing delays and ensuring accountability across sprints.
+- Slack & GitHub:
+Keeps the team informed about code changes and pull requests. Notifications in Slack allow developers to quickly review, discuss, and merge changes, fostering a collaborative coding environment.
+- Slack & Zoom:
+Simplifies meeting management by enabling the scheduling and tracking of virtual meetings directly through Slack. This integration ensures smooth coordination of stand-ups, retrospectives, and ad hoc discussions.
+
+### 2. Benefits of Integrated Collaboration
+- Real-time updates and notifications across platforms improve transparency and decision-making.
+- Reduced manual effort in tracking project updates, allowing the team to focus on core tasks.
+- Centralized communication ensures that all stakeholders stay aligned on project progress and deadlines.
+- Seamless meeting management encourages team participation and collaboration.
+
+### 2. Monitoring and Alerts
+- **Azure Monitoring Alerts**: Collaborate with the SRE to connect monitoring alerts with Slack.
+- **Deliverable**: [Collaboration Strategy Documentation](#)
 
 ---
 
