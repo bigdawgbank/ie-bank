@@ -251,8 +251,8 @@ jobs:
 
       - name: Run API Tests
         run: |
-          newman run ./tests/postman/collection.json \
-            -e ./tests/postman/uat.json \
+          newman run ./backend/tests/postman/collection.json \
+            -e ./backend/tests/postman/uat.json \
             --env-var "BACKEND_API_URL=${{ vars.VUE_APP_ROOT_API }}" \
             --env-var "ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }}" \
             --env-var "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}"
