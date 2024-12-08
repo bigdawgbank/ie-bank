@@ -1,153 +1,181 @@
-# Site Reliability Engineer Documentation
+# **Site Reliability Engineer Documentation**
 
-The Site Reliability Engineer (SRE) ensures the reliability, efficiency, and scalability of the software systems by applying engineering principles to IT operations. This includes defining SLAs, SLOs, and SLIs, designing monitoring strategies, and preparing incident response plans.
-
----
-
-## Service Level Agreement (SLA)
-
-### 1. SLA Definition
-
-**Description**:
-
-The SLA defines the expected levels of service provided to the end-users for the current version of the application. The commitments are as follows:
-
-- **Uptime Guarantee**: The application will maintain a minimum **99.9% availability per month**, ensuring downtime does not exceed 43 minutes and 49 seconds in a month.
-- **Response Time**: Backend API responses will maintain a maximum response time of **less than 300ms for 95% of requests**, measured monthly.
-- **Support Availability**: High-priority incidents (e.g., service outages) will be addressed and resolved within **1 hour** of detection, ensuring minimal impact on end-users.
-- **Compensation Policy**: In the event of SLA violations, the company will provide service credits proportionate to the downtime or degraded performance experienced by the users.
+The Site Reliability Engineer (SRE) ensures the reliability, efficiency, and scalability of software systems by applying engineering principles to IT operations. This includes defining SLAs, SLOs, and SLIs, designing monitoring strategies, and preparing incident response plans.
 
 ---
 
-## Service Level Objectives (SLOs)
+## **1. Service Level Agreement (SLA)**
 
-### 1. SLO Definitions
+### SLA Definition
+The SLA defines the commitments to end-users regarding the application's performance, availability, and support.
 
-**Description**:
-
-To ensure the SLA is met, the following five Service Level Objectives (SLOs) have been defined:
-
-1. **Application Availability**: Maintain an uptime of **99.9%** for the application on a monthly basis.
-2. **Error Rate**: Keep the system error rate below **1%** for all user requests monthly.
-3. **API Response Time**: Ensure the average API response time is **less than 200ms**, measured hourly.
-4. **HTTP 5xx Error Rate**: Maintain a maximum HTTP 5xx error rate of **less than 0.5%** daily.
-5. **Critical Incident Resolution Time**: Resolve high-priority incidents within **1 hour** of detection.
+**Commitments:**
+- **Uptime Guarantee:** 99.9% availability per month, ensuring downtime does not exceed 43 minutes and 49 seconds monthly.
+- **Response Time:** Backend API responses will maintain a maximum response time of less than 300ms for 95% of requests, measured monthly.
+- **Support Availability:** High-priority incidents (e.g., service outages) will be resolved within 1 hour of detection.
+- **Compensation Policy:** In case of SLA violations, service credits proportionate to downtime or degraded performance will be provided.
 
 ---
 
-## Service Level Indicators (SLIs)
+## **2. Service Level Objectives (SLOs)**
 
-### 1. SLI Definitions
+### SLO Definitions
+SLOs are measurable targets to ensure the SLA commitments are achieved.
 
-**Description**:
-
-To measure the achievement of the SLOs, the following five Service Level Indicators (SLIs) have been defined:
-
-1. **Application Availability**:
-   - **Indicator**: Percentage uptime measured using the ratio of successful requests (`requests.success == true`) to total requests from Application Insights logs.
-2. **Error Rate**:
-   - **Indicator**: The percentage of failed requests (`requests.success == false`) against total requests, calculated daily.
-3. **Average API Response Time**:
-   - **Indicator**: The average duration of all incoming requests (`requests.duration`), measured hourly.
-4. **HTTP 5xx Error Rate**:
-   - **Indicator**: The percentage of HTTP 5xx errors (`requests.resultCode startswith "5"`) against total requests, calculated daily.
-5. **Incident Resolution Time**:
-   - **Indicator**: The time elapsed between incident detection and resolution, monitored via incident management tools.
+**Defined Objectives:**
+1. **Application Availability:** Maintain 99.9% uptime on a monthly basis.
+2. **Error Rate:** Keep system error rates below 1% for all user requests monthly.
+3. **API Response Time:** Ensure average API response time is less than 200ms, measured hourly.
+4. **HTTP 5xx Error Rate:** Maintain a maximum HTTP 5xx error rate of less than 0.5%, calculated daily.
+5. **Critical Incident Resolution Time:** Resolve high-priority incidents within 1 hour of detection.
 
 ---
 
-## Monitoring Strategy Design
+## **3. Service Level Indicators (SLIs)**
 
-### 1. Monitoring Strategy
+### SLI Definitions
+SLIs are specific metrics to measure the achievement of SLOs.
 
-**Description**:
-
-To ensure the application’s performance, availability, and reliability, the following monitoring strategy has been implemented:
-
-- **Monitoring Tools**:
-  - **Azure Application Insights**: Used for application performance monitoring, capturing telemetry data such as requests, exceptions, dependencies, and custom events.
-  - **Azure Log Analytics Workspace**: Centralizes logs from various sources for in-depth analysis.
-
-- **Metrics and Logs**:
-  - Key metrics and logs are collected and visualized in Azure Workbooks, including:
-    - Application availability
-    - Server response times
-    - Failed request rates
-    - Exception counts
-    - Dependency durations
-
-- **Alerts**:
-  - Configured alerts for critical performance indicators:
-    - **Availability Alerts**: Triggered when uptime drops below 99.9%.
-    - **Error Rate Alerts**: Triggered when error rates exceed 1%.
-    - **Response Time Alerts**: Triggered when average response times exceed 200ms.
-
-- **Log Analysis**:
-  - Implemented log queries using Kusto Query Language (KQL) to identify trends and potential issues.
+**Defined SLIs:**
+1. **Application Availability:**
+   - **Indicator:** Percentage uptime, calculated as the ratio of successful requests (`requests.success == true`) to total requests, measured via Application Insights logs.
+2. **Error Rate:**
+   - **Indicator:** The percentage of failed requests (`requests.success == false`) to total requests, measured daily.
+3. **API Response Time:**
+   - **Indicator:** Average response time of all incoming requests (`requests.duration`), measured hourly.
+4. **HTTP 5xx Error Rate:**
+   - **Indicator:** Percentage of HTTP 5xx errors (`requests.resultCode startswith "5"`) to total requests, measured daily.
+5. **Incident Resolution Time:**
+   - **Indicator:** Time elapsed between incident detection and resolution, tracked via incident management tools.
 
 ---
 
-## Incident Response Design
+## **4. Monitoring Strategy Design**
 
-### 1. Incident Response Plan
+### Monitoring Strategy
+A comprehensive monitoring strategy ensures the application meets SLAs and SLOs.
 
-**Description**:
+**Tools Used:**
+- **Azure Application Insights:** For monitoring performance, requests, exceptions, and dependencies.
+- **Azure Log Analytics Workspace:** Centralized log management and analysis.
 
-A comprehensive incident response plan has been designed to handle system failures effectively:
+**Metrics and Logs:**
+- Key performance indicators like uptime, error rates, response times, and exception counts are visualized in **Azure Workbooks**.
 
-- **Incident Detection**:
-  - Utilize monitoring tools and configured alerts to detect incidents promptly.
-- **Incident Triage**:
-  - Incidents are classified based on severity levels:
-    - **P1 (Critical)**: Complete service outage or major functionality failure.
-    - **P2 (High)**: Significant degradation affecting multiple users.
-    - **P3 (Medium)**: Minor issues affecting a small subset of users.
+**Alerts Configured:**
+1. **Availability Alerts:** Triggered when uptime drops below 99.9%.
+2. **Error Rate Alerts:** Triggered when error rates exceed 1%.
+3. **Response Time Alerts:** Triggered when average response times exceed 200ms.
 
-- **Incident Resolution**:
-  - **P1 Incidents**: Aim to resolve within **1 hour**.
-  - **Resolution Steps**:
-    - Immediate notification to the SRE team.
-    - Diagnose the issue using logs and metrics.
-    - Implement fixes or rollback to the last stable state.
-
-- **Post-Incident Review**:
-  - Conduct root cause analysis for all P1 and P2 incidents.
-  - Document findings and implement measures to prevent recurrence.
-
-- **Communication Plan**:
-  - Keep stakeholders informed during and after incidents.
-  - Provide updates on resolution status and any user impact.
+**Log Analysis:**
+- Use **Kusto Query Language (KQL)** to query logs for trends and issues.
 
 ---
 
-## Site Reliability Engineering Design
+## **5. Incident Response Design**
 
-### 1. SRE Design
-
-**Description**:
-
-The SRE design focuses on scalability, automation, and resilience:
-
-- **Automation**:
-  - **Infrastructure as Code (IaC)**: Use Bicep templates for consistent and repeatable deployments across environments.
-  - **CI/CD Pipelines**: Implement GitHub Actions workflows to automate build, test, and deployment processes.
-
-- **Resilience**:
-  - **Fault-Tolerant Architecture**: Design the application to handle failures gracefully, including retry logic and fallback mechanisms.
-  - **Redundancy**: Utilize Azure's availability zones and regions to distribute services.
-
-- **Scalability**:
-  - **Auto-Scaling**: Configure auto-scaling rules for Azure App Services and databases based on performance metrics.
-  - **Resource Monitoring**: Continuously monitor resource utilization (CPU, memory) to adjust capacity proactively.
-
-- **Collaboration**:
-  - Work closely with development and operations teams to integrate SRE principles throughout the development lifecycle.
-  - Conduct regular meetings to review performance metrics and address potential issues.
-
-- **Continuous Improvement**:
-  - Use data from monitoring and incidents to drive improvements in the system.
-  - Implement feedback loops to refine SLOs and SLIs as needed.
+### Incident Response Plan
+The incident response plan outlines how we or I will handle failures efficiently, minimizing downtime and impact on users.
 
 ---
 
-**Note**: This documentation serves as a living document and should be reviewed and updated regularly to reflect changes in requirements or the operational environment.
+### **Incident Detection**
+
+Detection begins with the monitoring tools configured in the Monitoring Strategy. Alerts are set up in **Azure Application Insights** to notify the team in real-time when predefined thresholds are breached.
+
+- **How Notifications Work:**
+  1. Alerts trigger when specific thresholds are violated (e.g., error rate > 1%, uptime < 99.9%).
+  2. The alert system sends messages directly to the **team’s dedicated Slack channel** via the configured **Slack webhook URL**.
+  3. Notifications include:
+     - Name of the alert (e.g., `uptimeAlert-dev`).
+     - The severity level (e.g., P1, P2).
+     - A brief description of the issue.
+     - A link to the relevant logs or metrics in Azure Application Insights for further investigation.
+
+---
+
+### **Incident Triage**
+
+Once the alert is received in the Slack channel:
+1. **Triage Process:**
+   - Determine the severity level:
+     - **P1 (Critical):** Complete outage or major failure impacting all users.
+     - **P2 (High):** Significant degradation affecting multiple users.
+     - **P3 (Medium):** Minor issues affecting a small subset of users.
+   - Assign an incident lead who will coordinate the response efforts.
+
+2. **Tools for Diagnosis:**
+   - Use linked Azure Workbooks for visualizing the data.
+   - Query detailed logs in **Azure Log Analytics Workspace** using KQL.
+   - Examine metrics such as `requests.duration`, `requests.success`, and dependency failure rates.
+
+---
+
+### **Incident Resolution**
+
+For P1 and P2 incidents:
+1. **Immediate Actions:**
+   - Notify the relevant stakeholders through Slack and email.
+   - The incident lead coordinates with team members to:
+     - Diagnose the root cause using metrics, logs, and dashboards.
+     - Apply immediate fixes, such as:
+       - Restarting services.
+       - Scaling resources if under capacity.
+       - Rolling back recent deployments if identified as the cause.
+2. **Incident Timelines:**
+   - **P1 incidents** are targeted for resolution within **1 hour**.
+   - Detailed steps for resolution are logged in the incident management tool.
+
+---
+
+### **Post-Incident Review**
+
+After resolution:
+1. **Root Cause Analysis (RCA):**
+   - Conduct RCA for all **P1 and P2** incidents to identify the root cause and contributing factors.
+   - Document findings in a shared knowledge base for future reference.
+
+2. **Preventive Measures:**
+   - Implement permanent fixes to address root causes.
+   - Update SLIs, SLOs, and monitoring alerts to prevent recurrence.
+
+---
+
+### **Communication Plan**
+
+During and after incidents:
+1. **Stakeholder Updates:**
+   - The SRE team provides regular updates in the Slack channel for ongoing incidents.
+   - After resolution, a summary is shared, including:
+     - Incident details (what happened and when).
+     - Resolution steps taken.
+     - Impact on users.
+     - Measures to prevent recurrence.
+
+2. **End-User Communication:**
+   - For major incidents, inform end-users via the application’s status page or email notifications.
+
+**[Incident Response Design in Design Document](#incident-response-design)**
+
+---
+
+## **6. Site Reliability Engineering Design**
+
+### SRE Design Principles
+**Automation:**
+- **Infrastructure as Code (IaC):** Use Bicep templates for repeatable deployments.
+- **CI/CD Pipelines:** Automate build, test, and deployment processes using GitHub Actions.
+
+**Resilience:**
+- Fault-tolerant architecture with retry logic and fallback mechanisms.
+- Redundant services deployed across Azure availability zones.
+
+**Scalability:**
+- Auto-scaling rules for Azure App Services and databases.
+- Monitor CPU and memory usage to adjust capacity proactively.
+
+**Collaboration:**
+- Work closely with development and operations teams to integrate SRE practices.
+
+**Continuous Improvement:**
+- Use monitoring data and incident insights to refine SLAs, SLOs, and SLIs
