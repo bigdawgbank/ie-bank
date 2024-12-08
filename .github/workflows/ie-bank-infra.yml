@@ -73,6 +73,7 @@ jobs:
         resourceGroupName: ${{ env.RESOURCE_GROUP_DEV }}
         template: infra/main.bicep
         parameters: infra/parameters/dev.parameters.json
+          slackWebhookUrl=${{ secrets.SLACK_WEBHOOK_URL }}
           branch=${{ github.ref_name }}
           repositoryUrl=https://github.com/bigdawgbank/ie-bank 
           appServiceAPIEnvVarENV=${{ vars.ENV }} 
@@ -121,6 +122,7 @@ jobs:
         template: infra/main.bicep
         parameters: infra/parameters/uat.parameters.json
           branch=${{ github.ref_name }}
+          slackWebhookUrl=${{ secrets.SLACK_WEBHOOK_URL }}
           repositoryUrl=https://github.com/bigdawgbank/ie-bank 
           appServiceAPIEnvVarENV=${{ vars.ENV }} 
           appServiceAPIEnvVarDBHOST=${{ vars.DBHOST }} 
@@ -166,6 +168,7 @@ jobs:
         template: infra/main.bicep
         parameters: infra/parameters/prod.parameters.json
           branch=${{ github.ref_name }}
+          slackWebhookUrl=${{ secrets.SLACK_WEBHOOK_URL }}
           repositoryUrl=https://github.com/bigdawgbank/ie-bank 
           appServiceAPIEnvVarENV=${{ vars.ENV }} 
           appServiceAPIEnvVarDBHOST=${{ vars.DBHOST }} 
@@ -219,7 +222,8 @@ jobs:
           resourceGroupName: ${{ env.RESOURCE_GROUP_DEV }}
           template: ./infra/main.bicep
           parameters: >
-            ./infra/parameters/dev.parameters.json 
+            ./infra/parameters/dev.parameters.json
+            slackWebhookUrl=${{ secrets.SLACK_WEBHOOK_URL }}
             branch=${{ github.ref_name }}
             repositoryUrl=https://github.com/bigdawgbank/ie-bank 
             appServiceAPIEnvVarENV=${{ vars.ENV }} 
@@ -259,6 +263,7 @@ jobs:
           template: ./infra/main.bicep
           parameters: >
             ./infra/parameters/uat.parameters.json
+            slackWebhookUrl=${{ secrets.SLACK_WEBHOOK_URL }}
             repositoryUrl=https://github.com/bigdawgbank/ie-bank 
             branch=${{ github.ref_name }} 
             appServiceAPIEnvVarENV=${{ vars.ENV}} 
@@ -297,6 +302,7 @@ jobs:
           template: ./infra/main.bicep
           parameters: >
             ./infra/parameters/prod.parameters.json
+            slackWebhookUrl=${{ secrets.SLACK_WEBHOOK_URL }}
             repositoryUrl=https://github.com/bigdawgbank/ie-bank
             branch=${{ github.ref_name }}
             appServiceAPIEnvVarENV=${{ vars.ENV}}
