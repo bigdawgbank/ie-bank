@@ -42,17 +42,16 @@ jwt_manager.init_app(app)
 bcrypt.init_app(app)
 
 # Configure logging to Azure Application Insights
-if os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING"):
+connection_str = os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING")
+if connection_str:
     logger = logging.getLogger(__name__)
-    logger.addHandler(AzureLogHandler(
-        connection_string=f'InstrumentationKey={os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING")}')
-    )
+    logger.addHandler(AzureLogHandler(connection_string=connection_str))
     logger.setLevel(logging.INFO)
 
     # Configure OpenCensus Flask middleware
     middleware = FlaskMiddleware(
         app,
-        exporter=AzureExporter(connection_string=f'InstrumentationKey={os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING")}'),
+        exporter=AzureExporter(connection_string=connection_str),
         sampler=ProbabilitySampler(rate=1.0)
     )
 
