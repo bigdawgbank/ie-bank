@@ -155,7 +155,7 @@ class BankTransfer:
         transfer_success = True
         return transfer_success
 
-
+      
 class ExchangeRate:
     def get_exchange_rate(self, from_currency, to_currency):
         if from_currency == to_currency:

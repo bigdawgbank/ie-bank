@@ -5,6 +5,12 @@
     "environmentType": {
       "value": "nonprod"
     },
+    "environment": {
+      "value": "prod"
+    },
+    "slackWebhookUrl": {
+      "value": "https://hooks.slack.com/services/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"
+    },
     "postgreSQLServerName": {
       "value": "dkumlin-dbsrv-prod"
     },
