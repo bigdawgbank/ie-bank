@@ -12,11 +12,11 @@ The BigDawg IE Bank Application builds upon the success of the previous IE Bank 
 
 ## Role Documentation
 
-This section serves to provide each role the ability to navigate to their specific page and document all of the information relevant to their tasks/work done for our Banking application. The documentation should be updated and maintained consistently throughout the project's lifecycle. This structure ensures that each individual team member can express their workings without interference and with ease. A large majority of the documentation can be found in the [Cloud Architect](./CloudArchitect.md), with more specific role-based documentation residing within the role pages. 
+This section serves to provide each role the ability to navigate to their specific page and document all of the information relevant to their tasks/work done for our Banking application. The documentation should be updated and maintained consistently throughout the project's lifecycle. This structure ensures that each individual team member can express their workings without interference and with ease. A large majority of the documentation can be found in the [Cloud Architect](./CloudArchitect.md) page , with more specific role-based documentation residing within the role pages. 
 
 
 ### Cloud Architect
-Designs and implements scalable cloud solutions and CI/CD pipelines.
+Designs and implements scalable cloud solutions and ensures best pracitces.
 - [Cloud Architect](./CloudArchitect.md)
 
 ### Product Owner
