@@ -35,7 +35,7 @@ The BigDawg IE Bank Application builds upon the previous IE Bank Application dev
      - [Static Web App for Frontend](#static-web-app-for-frontend)
    - [4. Operational Excellence Pillar](#4-operational-excellence-pillar)
    - [5. Performance Efficiency Pillar](#5-performance-efficiency-pillar)
-5. [Test Driven Design(TDD)](#test-driven-designtdd)
+5. [Test Driven Design(TDD)](#test-driven-developmentTDD)
 6. [Release Strategy](#release-strategy)
    - [Development (Dev)](#development-dev)
    - [User Acceptance Testing (UAT)](#user-acceptance-testing-uat)
@@ -1073,6 +1073,137 @@ The Following Table highlights our TTD approach by showcasing the various tests 
 | **FR11: Secure Password Handling** | As a developer, I want all passwords to be securely hashed so that user data is protected from breaches. | [test_create_user](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/unit/test_auth_model.py#L70) |
 
 We can see the immense focus our team had on ensuring the authentication aspect of our application was completely robust and error free. By adopting TDD, the BigDawgBank application ensures that all functional requirements are met with high code quality and reliability. The focus on writing tests before code helped our Fullstack team define clear requirements, catch issues early, and promote maintainable and modular code. This approach has proven to be effective in delivering a robust and secure banking application for our users.
+
+### Use of Postman for API Testing
+
+**Description**  
+Postman is used extensively for testing the APIs of the BigDawgBank application. It allows us to automate the testing process, ensuring that our APIs are functioning correctly and meeting the specified requirements. By integrating Postman into our TDD workflow, we can validate the behavior of our APIs and catch these kinds of issues early in the development process.
+
+### Postman Collections
+
+Postman collections are used to group related API requests together. Each collection contains multiple requests, along with tests that validate the responses. For the BigDawgBank application, we have created a collection named "IE Bank" that includes various API endpoints such as login, accounts, and users.
+
+#### 1. Login:
+- **Method**: POST
+- **URL**: `{{API_URL}}/login`
+- **Description**: This endpoint is used to authenticate users. It accepts a username and password as form data and returns a JWT token upon successful authentication.
+- **Tests**:
+  - Verify that the response status code is 200.
+  - Check that the response contains a token.
+  - Save the token to the environment for use in subsequent requests.
+
+#### 2. Accounts:
+- **Method**: GET
+- **URL**: `{{API_URL}}/accounts`
+- **Description**: This endpoint retrieves a list of accounts associated with the authenticated user. It requires a bearer token for authentication.
+- **Tests**:
+  - Verify that the response status code is 200.
+  - Check that the response contains an array of accounts.
+
+#### 3. Users:
+- **Method**: GET
+- **URL**: `{{API_URL}}/users`
+- **Description**: This endpoint retrieves a list of users. It requires a bearer token for authentication.
+- **Tests**:
+  - Verify that the response status code is 200.
+  - Check that the response contains an array of users.
+
+#### 4. Users (Unauthorized):
+- **Method**: GET
+- **URL**: `{{API_URL}}/users`
+- **Description**: This endpoint attempts to retrieve a list of users without authentication. It is used to test the unauthorized access scenario.
+- **Tests**:
+  - Verify that the response status code is 401.
+  - Check that the response contains an error message.
+
+### Postman Environments
+
+Postman environments allow us to manage different sets of variables for different environments (e.g., Development, UAT, Production). This enables us to run the same collection of tests against different environments without modifying the requests.
+
+**Example Environment Configuration**  
+```json
+{
+  "name": "UAT Environment",
+  "values": [
+    {
+      "key": "API_URL",
+      "value": "{{BACKEND_API_URL}}",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "ADMIN_USERNAME",
+      "value": "{{ADMIN_USERNAME}}",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "ADMIN_PASSWORD",
+      "value": "{{ADMIN_PASSWORD}}",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "JWT_TOKEN",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    }
+  ]
+}
+```
+#### Explanation of Environment Variables
+
+**API_URL:**
+The base URL for the API endpoints. This variable allows us to switch between different environments (e.g., Development, UAT, Production) by changing the value of API_URL.
+
+**ADMIN_USERNAME:**
+The username for the admin user. This variable is used in the login request to authenticate the admin user.
+
+**ADMIN_PASSWORD:**
+The password for the admin user. This variable is used in the login request to authenticate the admin user.
+
+**JWT_TOKEN:**
+The JWT token obtained from the login request. This variable is used in subsequent requests to authenticate the user.
+
+### Integration with CI/CD Pipeline
+
+**Automated Testing with Newman**
+Newman, the command-line companion for Postman, is used to run Postman collections as part of our CI/CD pipeline. This ensures that our API tests are executed automatically whenever changes are made to the codebase:
+```yml
+test-uat-api:
+  needs: deploy-uat
+  runs-on: ubuntu-latest
+  environment:
+    name: "UAT"
+  steps:
+    - uses: actions/checkout@v3
+
+    - name: Install Newman
+      run: npm install -g newman
+
+    - name: Run API Tests
+      run: |
+        newman run [collection.json](http://_vscodecontentref_/0) \
+          -e [uat.json](http://_vscodecontentref_/1) \
+          --env-var "BACKEND_API_URL=${{ vars.VUE_APP_ROOT_API }}" \
+          --env-var "ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }}" \
+          --env-var "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}"
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: uat-api-test-results
+        path: newman/
+```
+
+### Benefits of Using Postman for TDD
+
+**Automated Testing:** Postman allows us to automate the testing of our APIs, ensuring that they function correctly and meet the specified requirements.
+**Environment Management:** By using Postman environments, we can easily switch between different environments (e.g., Development, UAT, Production) without modifying the tests.
+**Integration with CI/CD:** Integrating Postman with our CI/CD pipeline ensures that our API tests are executed automatically, providing early feedback on the quality of our APIs.
+**Comprehensive Testing:** Postman supports a wide range of tests, including status code checks, response structure validation, and data validation, ensuring comprehensive testing of our APIs.
 
 ---
 
