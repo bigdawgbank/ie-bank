@@ -2381,8 +2381,6 @@ During and after incidents:
 2. **End-User Communication:**
    - For major incidents, inform end-users via the application’s status page or email notifications.
 
-**[Incident Response Design in Design Document](#incident-response-design)**
-
 ---
 
 ## **6. Site Reliability Engineering Design**
