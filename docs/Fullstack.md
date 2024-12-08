@@ -26,7 +26,7 @@ The CI workflow for the frontend application automates the validation of code ch
      - Pull requests targeting the `main` branch.  
    - This ensures that changes to the frontend are validated at key integration points.
 
-   ```yml
+   ```
       on:
       push:
       paths:
@@ -47,7 +47,7 @@ The CI workflow for the frontend application automates the validation of code ch
    ```yml
      - uses: actions/checkout@v3
    ```
-   
+
 3. **Set Up Node.js**  
    - The workflow sets up the Node.js environment using the `actions/setup-node@v3` action.  
    - Ensures compatibility by specifying `NODE_VERSION` as `18.x`.
