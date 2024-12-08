@@ -96,15 +96,12 @@ jobs:
           inlineScript: |
             echo "Attempting to access key vault: ${{ env.KEY_VAULT_NAME_DEV }}"
 
-            # Get and store values
             username=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_USERNAME }} --vault-name ${{ env.KEY_VAULT_NAME_DEV }} --query value -o tsv)
             password=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_PASSWORD0 }} --vault-name ${{ env.KEY_VAULT_NAME_DEV }} --query value -o tsv)
 
-            # Debug: Check if we got values (don't print actual values)
             if [ -n "$username" ]; then echo "Username was retrieved"; else echo "Username is empty"; fi
             if [ -n "$password" ]; then echo "Password was retrieved"; else echo "Password is empty"; fi
 
-            # Set outputs
             echo "username=$username" >> $GITHUB_OUTPUT
             echo "password=$password" >> $GITHUB_OUTPUT
 
@@ -121,7 +118,7 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker build -t ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:${{ steps.image-version.outputs.version }} backend/ 
+          docker build -t ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:${{ steps.image-version.outputs.version }} backend/
           docker tag ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:${{ steps.image-version.outputs.version }} ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:latest
           docker push ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:${{ steps.image-version.outputs.version }}
           docker push ${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:latest
@@ -143,6 +140,15 @@ jobs:
         with:
           app-name: ${{ env.BACKEND_WEBAPP_DEV }}
           images: "${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:${{ needs.build-dev.outputs.image-version }}"
+
+      # -----------------------------------------------------
+      # NEW STEP ADDED: Configure Application Insights Connection String in Dev
+      - name: Configure App Settings (Dev)
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az webapp config appsettings set --resource-group ${{ env.RESOURCE_GROUP_DEV }} --name ${{ env.BACKEND_WEBAPP_DEV }} --settings APPLICATIONINSIGHTS_CONNECTION_STRING=${{ secrets.APPLICATIONINSIGHTS_CONNECTION_STRING }}
+      # -----------------------------------------------------
 
   build-uat:
     needs: [check-changes]
@@ -188,15 +194,12 @@ jobs:
           inlineScript: |
             echo "Attempting to access key vault: ${{ env.KEY_VAULT_NAME_UAT }}"
 
-            # Get and store values
             username=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_USERNAME }} --vault-name ${{ env.KEY_VAULT_NAME_UAT }} --query value -o tsv)
             password=$(az keyvault secret show --name ${{ env.KEY_VAULT_SECRET_ACR_PASSWORD0 }} --vault-name ${{ env.KEY_VAULT_NAME_UAT }} --query value -o tsv)
 
-            # Debug: Check if we got values (don't print actual values)
             if [ -n "$username" ]; then echo "Username was retrieved"; else echo "Username is empty"; fi
             if [ -n "$password" ]; then echo "Password was retrieved"; else echo "Password is empty"; fi
 
-            # Set outputs
             echo "username=$username" >> $GITHUB_OUTPUT
             echo "password=$password" >> $GITHUB_OUTPUT
 
@@ -213,7 +216,7 @@ jobs:
 
       - name: Build and Push Docker Image (UAT)
         run: |
-          docker build -t ${{ env.CONTAINER_REGISTRY_SERVER_URL_UAT }}/${{ env.IMAGE_NAME_UAT }}:${{ steps.image-version.outputs.version }} backend/ 
+          docker build -t ${{ env.CONTAINER_REGISTRY_SERVER_URL_UAT }}/${{ env.IMAGE_NAME_UAT }}:${{ steps.image-version.outputs.version }} backend/
           docker tag ${{ env.CONTAINER_REGISTRY_SERVER_URL_UAT }}/${{ env.IMAGE_NAME_UAT }}:${{ steps.image-version.outputs.version }} ${{ env.CONTAINER_REGISTRY_SERVER_URL_UAT }}/${{ env.IMAGE_NAME_UAT }}:latest
           docker push ${{ env.CONTAINER_REGISTRY_SERVER_URL_UAT }}/${{ env.IMAGE_NAME_UAT }}:${{ steps.image-version.outputs.version }}
           docker push ${{ env.CONTAINER_REGISTRY_SERVER_URL_UAT }}/${{ env.IMAGE_NAME_UAT }}:latest
@@ -237,6 +240,15 @@ jobs:
         with:
           app-name: ${{ env.BACKEND_WEBAPP_UAT }}
           images: "${{ env.CONTAINER_REGISTRY_SERVER_URL_UAT }}/${{ env.IMAGE_NAME_UAT }}:${{ needs.build-uat.outputs.image-version }}"
+
+      # -----------------------------------------------------
+      # NEW STEP ADDED: Configure Application Insights Connection String in UAT
+      - name: Configure App Settings (UAT)
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az webapp config appsettings set --resource-group ${{ env.RESOURCE_GROUP_UAT }} --name ${{ env.BACKEND_WEBAPP_UAT }} --settings APPLICATIONINSIGHTS_CONNECTION_STRING=${{ secrets.APPLICATIONINSIGHTS_CONNECTION_STRING }}
+      # -----------------------------------------------------
 
   test-uat-api:
     needs: deploy-uat
@@ -328,7 +340,7 @@ jobs:
   deploy-prod:
     if: (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true) || (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    needs: [build-prod, test-uat-api] # Requires UAT deployment to succeed
+    needs: [build-prod, test-uat-api]
     environment:
       name: PROD
     steps:
@@ -342,3 +354,12 @@ jobs:
         with:
           app-name: ${{ env.BACKEND_WEBAPP_PROD }}
           images: "${{ env.CONTAINER_REGISTRY_SERVER_URL_PROD }}/${{ env.IMAGE_NAME_PROD }}:${{ needs.build-prod.outputs.image-version }}"
+
+      # -----------------------------------------------------
+      # NEW STEP ADDED: Configure Application Insights Connection String in PROD
+      - name: Configure App Settings (PROD)
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az webapp config appsettings set --resource-group ${{ env.RESOURCE_GROUP_PROD }} --name ${{ env.BACKEND_WEBAPP_PROD }} --settings APPLICATIONINSIGHTS_CONNECTION_STRING=${{ secrets.APPLICATIONINSIGHTS_CONNECTION_STRING }}
+      # -----------------------------------------------------
