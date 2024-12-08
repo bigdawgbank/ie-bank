@@ -1,0 +1,29 @@
+{
+  "name": "UAT Environment",
+  "values": [
+    {
+      "key": "API_URL",
+      "value": "{{BACKEND_API_URL}}",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "ADMIN_USERNAME",
+      "value": "{{ADMIN_USERNAME}}",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "ADMIN_PASSWORD",
+      "value": "{{ADMIN_PASSWORD}}",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "JWT_TOKEN",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    }
+  ]
+}
