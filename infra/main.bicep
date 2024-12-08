@@ -6,6 +6,7 @@
 param environmentType string = 'nonprod'
 
 param userAlias string = 'dkumlin'
+
 @description('The PostgreSQL Server name')
 @minLength(3)
 @maxLength(24)
@@ -32,9 +33,10 @@ param staticWebAppName string = 'ie-bank-dev'
 param appServiceAPIAppName string = 'ie-bank-api-dev'
 
 @description('The Azure location where the resources will be deployed')
-param location string = resourceGroup().location
+param location string = resourceGroup().location // Dynamically uses the resource group's location
 
-param staticWebbAppLocation string = 'westeurope'
+@description('The location for the Static Web App')
+param staticWebAppLocation string = 'westeurope'
 
 @description('The value for the environment variable ENV')
 param appServiceAPIEnvVarENV string
@@ -77,10 +79,6 @@ param keyVaultName string = 'dkmulin-kv-dev'
 @description('Role assignments for the Key Vault')
 param keyVaultRoleAssignments array = []
 
-var acrUsernameSecretName = 'acr-username'
-var acrPassword0SecretName = 'acr-password0'
-var acrPassword1SecretName = 'acr-password1'
-
 @description('The name of the Log Analytics Workspace')
 param logAnalyticsWorkspaceName string
 
@@ -90,28 +88,17 @@ param appInsightsName string
 @description('branch being deployed')
 param branch string
 
-@description('The Github URL used for the static web app')
+@description('The GitHub URL used for the static web app')
 param repositoryUrl string = 'https://github.com/bigdawgbank/ie-bank'
 
+@description('Slack webhook URL for alert notifications')
+param slackWebhookUrl string
+
+@description('Environment name (e.g., dev, uat, prod)')
+param environment string
+
 var logAnalyticsWorkspaceId = resourceId('Microsoft.OperationalInsights/workspaces', logAnalyticsWorkspaceName)
-
-var skuName = (environmentType == 'prod') ? 'B1' : 'B1' //modify according to desired capacity
-
-module keyVault 'modules/keyvault.bicep' = {
-  name: 'keyVault'
-  params: {
-    keyVaultName: keyVaultName
-    location: location
-    roleAssignments: keyVaultRoleAssignments
-  }
-}
-
-resource keyVaultReference 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-  name: keyVaultName
-  dependsOn: [
-    keyVault
-  ]
-}
+var skuName = (environmentType == 'prod') ? 'B1' : 'B1'
 
 // Use Key Vault for administrator login password later
 module postgresSQLServerModule 'modules/postgre-sql-server.bicep' = {
@@ -146,6 +133,27 @@ module logAnalytics 'modules/azure-log-analytics.bicep' = {
     name: logAnalyticsWorkspaceName
   }
 }
+
+module keyVault 'modules/keyvault.bicep' = {
+  name: 'keyVault'
+  params: {
+    keyVaultName: keyVaultName
+    location: location
+    roleAssignments: keyVaultRoleAssignments
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+  }
+  dependsOn: [
+    logAnalytics
+  ]
+}
+
+resource keyVaultReference 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: keyVaultName
+  dependsOn: [
+    keyVault
+  ]
+}
+
 module appInsights 'modules/app-insights.bicep' = {
   name: 'appInsights'
   params: {
@@ -175,9 +183,9 @@ module containerRegistryModule 'modules/container-registry.bicep' = {
     name: containerRegistryName
     location: location
     keyVaultResourceId: resourceId('Microsoft.KeyVault/vaults', keyVaultName)
-    keyVaultSecretNameAdminUsername: acrUsernameSecretName
-    keyVaultSecretNameAdminPassword0: acrPassword0SecretName
-    keyVaultSecretNameAdminPassword1: acrPassword1SecretName
+    keyVaultSecretNameAdminUsername: 'acr-username'
+    keyVaultSecretNameAdminPassword0: 'acr-password0'
+    keyVaultSecretNameAdminPassword1: 'acr-password1'
   }
   dependsOn: [
     keyVault
@@ -192,12 +200,12 @@ module appServiceBE 'modules/app-service-be.bicep' = {
     location: location
     appServicePlanId: appServicePlanModule.outputs.appServicePlanId
     containerRegistryName: containerRegistryName
-    dockerRegistryServerUserName: keyVaultReference.getSecret(acrUsernameSecretName)
-    dockerRegistryServerPassword: keyVaultReference.getSecret(acrPassword0SecretName)
+    dockerRegistryServerUserName: keyVaultReference.getSecret('acr-username')
+    dockerRegistryServerPassword: keyVaultReference.getSecret('acr-password0')
     dockerRegistryImageTag: dockerRegistryImageTag
     dockerRegistryImageName: dockerRegistryImageName
-    instrumentationKey: appInsights.outputs.insightsConnectionString
-    insightsConnectionString: appInsights.outputs.instrumentationKey
+    instrumentationKey: appInsights.outputs.instrumentationKey
+    insightsConnectionString: appInsights.outputs.insightsConnectionString
     appSettings: [
       {
         name: 'ENV'
@@ -247,7 +255,7 @@ module appServiceFE 'modules/app-service-fe.bicep' = {
     staticWebAppName: staticWebAppName
     branch: branch
     repositoryUrl: repositoryUrl
-    staticWebbAppLocation: staticWebbAppLocation
+    staticWebbAppLocation: staticWebAppLocation
     instrumentationKey: appInsights.outputs.instrumentationKey
     insightsConnectionString: appInsights.outputs.insightsConnectionString
   }
@@ -261,3 +269,13 @@ module appServiceFE 'modules/app-service-fe.bicep' = {
 output frontendAppHostName string = appServiceFE.outputs.staticWebAppDefaultHostname
 output backendAppHostName string = appServiceBE.outputs.backendAppHostName
 output keyVaultResourceId string = keyVault.outputs.keyVaultResourceId
+
+// Call the alerts.bicep module
+module alertsModule './modules/alerts.bicep' = {
+  name: 'alertsModule'
+  params: {
+    appInsightsName: resourceId('Microsoft.Insights/components', appInsightsName)
+    slackWebhookUrl: slackWebhookUrl
+    environment: environment
+  }
+}

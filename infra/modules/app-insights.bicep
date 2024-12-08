@@ -22,6 +22,16 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
-output id string = appInsights.id
+module workbook 'workbook.bicep' = {
+  name: 'workbook'
+  params: {
+    location: location
+    sourceId: appInsights.id
+  }
+}
+
+output id string = appInsights.id 
 output instrumentationKey string = appInsights.properties.InstrumentationKey
 output insightsConnectionString string = appInsights.properties.ConnectionString
+
+

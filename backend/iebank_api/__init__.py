@@ -5,6 +5,11 @@ from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
+from opencensus.ext.azure.log_exporter import AzureLogHandler
+from opencensus.ext.azure.trace_exporter import AzureExporter
+from opencensus.ext.flask.flask_middleware import FlaskMiddleware
+from opencensus.trace.samplers import ProbabilitySampler
+import logging
 
 load_dotenv()
 app = Flask(__name__)
@@ -13,7 +18,6 @@ app = Flask(__name__)
 db = SQLAlchemy()
 jwt_manager = JWTManager()
 bcrypt = Bcrypt()
-
 
 # Your environment config loading stays the same
 if os.getenv("ENV") == "local":
@@ -36,6 +40,20 @@ else:
 db.init_app(app)
 jwt_manager.init_app(app)
 bcrypt.init_app(app)
+
+# Configure logging to Azure Application Insights
+connection_str = os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING")
+if connection_str:
+    logger = logging.getLogger(__name__)
+    logger.addHandler(AzureLogHandler(connection_string=connection_str))
+    logger.setLevel(logging.INFO)
+
+    # Configure OpenCensus Flask middleware
+    middleware = FlaskMiddleware(
+        app,
+        exporter=AzureExporter(connection_string=connection_str),
+        sampler=ProbabilitySampler(rate=1.0)
+    )
 
 # Import models
 from iebank_api.models import Account, User
