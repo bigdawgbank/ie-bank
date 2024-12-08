@@ -1562,8 +1562,61 @@ Although there were initial disagreements, the rationale behind this approach be
 
 ## Git Feature Branch Strategy
 
-### 1. Description of Git Feature Branch Strategy
-- **Description**: Document the Git feature branch strategy implemented for the project. Include the configuration applied to GitHub to enforce this strategy and explain how it aligns with the DevOps principles of the project.
+## Git Feature Branch Strategy
+
+### Description of Git Feature Branch Strategy
+- **Description**: The Git feature branch strategy is implemented to ensure a structured and efficient workflow for developing new features, fixing bugs, and maintaining the codebase. This strategy involves creating separate branches for each feature or bug fix, which are then merged into the main branch after thorough testing and code review.
+
+1. **Main Branch**:
+- The main branch contains the stable, production-ready code.
+- Direct commits to the main branch are restricted to ensure stability. Code reviews need to be requested then approved in order to merge to main.
+
+2. **Develop Branch**:
+- The feature/develop branch serves as an integration branch for features and bug fixes.
+- It is used for testing and validation before merging into the main branch.
+
+3. **Feature Branches**:
+- Feature branches are created from the main branch.
+- Naming convention: feat/<feature-name>.
+- Used for developing new features or enhancements.
+
+4. **Bugfix Branches**:
+Although we don´t have any bugfix branches, we would fix any bugs inside the feature branch before merging to main.
+If we were to have bugfix branches, this would be our strategy:
+- Bugfix branches are created from the develop/f branch.
+- Naming convention: bugfix/<bug-description>.
+- Used for fixing bugs and issues.
+
+5. **Release Branches**:
+Although, we also don´t have any release branches at the moment, they could be used in the future using the following strategy:
+- Release branches are created from the develop branch.
+- Naming convention: release/<version-number>.
+- Used for preparing a new production release, including final testing and bug fixes.
+
+### Configuration Applied to GitHub
+1. **Branch Protection Rules**:
+- Enable branch protection rules for the main and develop branches to prevent direct commits.
+- Require pull request reviews before merging.
+- Enforce status checks to pass before merging (e.g., CI tests).
+
+2. **Pull Request Workflow**:
+- All changes must be submitted via pull requests (PRs).
+- PRs must be reviewed and approved by at least one other team member.
+- Automated tests must pass before a PR can be merged.
+
+3. **Commit Signing**:
+- Enforce signed commits to ensure the authenticity and integrity of the code.
+
+4. **Automated Testing**:
+- Integrate CI/CD pipelines to automatically run tests on each PR.
+- Use GitHub Actions to automate the build, test, and deployment processes.
+
+### Alignment with DevOps Principles
+- **Collaboration**: The feature branch strategy promotes collaboration by allowing multiple developers to work on different features simultaneously without conflicts.
+- **Continuous Integration**: Automated testing and CI pipelines ensure that code changes are continuously integrated and tested, maintaining code quality.
+- **Continuous Delivery**: The strategy supports continuous delivery by enabling frequent, reliable releases through structured branching and automated deployments.
+- **Version Control**: The use of branches for features, bug fixes, and releases ensures a clear version control history, making it easier to track changes and roll back if necessary.
+- **Security**: Branch protection rules and commit signing enhance the security of the codebase by preventing unauthorized changes and ensuring code integrity.
 
 ---
 
