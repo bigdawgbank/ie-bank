@@ -35,7 +35,7 @@ The BigDawg IE Bank Application builds upon the previous IE Bank Application dev
      - [Static Web App for Frontend](#static-web-app-for-frontend)
    - [4. Operational Excellence Pillar](#4-operational-excellence-pillar)
    - [5. Performance Efficiency Pillar](#5-performance-efficiency-pillar)
-5. [Test Driven Design(TDD)](#test-driven-developmentTDD)
+5. [Test Driven Development(TDD)](#test-driven-developmentTDD)
 6. [Release Strategy](#release-strategy)
    - [Development (Dev)](#development-dev)
    - [User Acceptance Testing (UAT)](#user-acceptance-testing-uat)
@@ -463,7 +463,37 @@ We have implemented Azure Workbook to provide a flexible canvas for data analysi
 ![Cloud Architecture Diagram](./images/Infra_Architecture_Design.drawio.png)
 
 
-### INPUT DESCRIPTION HERE
+### Use of JWTs (JSON Web Tokens)
+
+**Description**  
+We are using JWTs to ensure secure authentication and authorization within the BigDawgBank application. They provide a compact and self-contained way to transmit information between parties as a JSON object. This information can be verified and trusted because it is digitally signed. 
+
+**How JWTs are Used**
+
+1. **User Authentication**:
+   - When a user logs in, the backend Flask application verifies the user's credentials.
+   - Upon successful authentication, the server generates a JWT containing the user's information and signs it with a secret key.
+   - The JWT is then sent back to the client (frontend) as part of the response.
+
+2. **Token Storage**:
+   - The client stores the JWT, typically in local storage or a cookie, for subsequent requests.
+
+3. **Authorization**:
+   - For each subsequent request to a protected endpoint, the client includes the JWT in the Authorization header as a Bearer token.
+   - The backend application extracts the token from the request header and verifies its signature using the secret key.
+   - If the token is valid, the server processes the request and grants access to the protected resource.
+
+4. **Token Expiry and Refresh**:
+   - JWTs have an expiration time (`exp` claim) to enhance security.
+   - When the token expires, the client must re-authenticate to obtain a new token.
+
+**Benefits of Using JWTs**:
+- **Stateless Authentication**: JWTs are self-contained, eliminating the need for server-side session storage.
+- **Scalability**: Stateless nature allows easy scaling of the application across multiple servers.
+- **Security**: JWTs are signed and optionally encrypted, ensuring data integrity and confidentiality.
+- **Flexibility**: JWTs can carry custom claims, allowing for flexible and fine-grained access control.
+
+By leveraging JWTs, the BigDawgBank application ensures secure and efficient authentication and authorization, enhancing the overall security and user experience.
 
 ---
 
