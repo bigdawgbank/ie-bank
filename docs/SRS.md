@@ -1562,8 +1562,6 @@ Although there were initial disagreements, the rationale behind this approach be
 
 ## Git Feature Branch Strategy
 
-## Git Feature Branch Strategy
-
 ### Description of Git Feature Branch Strategy
 - **Description**: The Git feature branch strategy is implemented to ensure a structured and efficient workflow for developing new features, fixing bugs, and maintaining the codebase. This strategy involves creating separate branches for each feature or bug fix, which are then merged into the main branch after thorough testing and code review.
 
