@@ -810,7 +810,7 @@ For more detailed Documentation of the Security in BigDawgBank, please refer to 
   - The BigDawgBank team fosters a culture of financial responsibility by regularly reviewing budget, expenses, and cost tracking. This ensures that all team members are aware of the financial implications of their decisions.
 
 - **CO:02.** Create and maintain a cost model. A cost model should estimate the initial cost, run rates, and ongoing costs.
-  - A cost model is maintained to estimate initial costs, run rates, and ongoing costs. This helps in planning and budgeting for the project.
+  - BigDawgBank has not yet implemented this
 
 - **CO:03.** Collect and review cost data. Data collection should capture daily costs.
   - Cost data is collected and reviewed regularly to capture daily costs. This helps in identifying areas where cost savings can be achieved.
@@ -819,7 +819,7 @@ For more detailed Documentation of the Security in BigDawgBank, please refer to 
   - Spending guardrails are set to ensure that the project stays within budget. This includes setting limits on spending for different components and environments.
 
 - **CO:05.** Get the best rates from providers.
-  - The team negotiates with providers to get the best rates for services. This includes leveraging reserved instances and other cost-saving options offered by Azure.
+  - Our team negotiates with providers to get the best rates for services. This includes leveraging reserved instances and other cost-saving options offered by Azure.
 
 - **CO:06.** Align usage to billing increments.
   - Usage is aligned to billing increments to ensure that resources are used efficiently and costs are minimized.
@@ -828,10 +828,10 @@ For more detailed Documentation of the Security in BigDawgBank, please refer to 
   - Component costs are optimized by selecting cost-effective options for each component. For example, using Azure Static Web Apps for the frontend minimizes hosting costs.
 
 - **CO:08.** Optimize environment costs. Align spending to prioritize preproduction, production, operations, and disaster recovery environments.
-  - Environment costs are optimized by aligning spending to prioritize preproduction, production, operations, and disaster recovery environments. This ensures that resources are allocated efficiently.
+  - Environment costs are optimized by aligning spending to prioritize development, Testing and production. This ensures that resources are allocated efficiently.
 
 - **CO:09.** Optimize flow costs. Align the cost of each flow with flow priority.
-  - Flow costs are optimized by aligning the cost of each flow with its priority. This ensures that critical flows receive the necessary resources while minimizing costs for less critical flows.
+  - Flow costs are optimized by aligning the cost of each flow with its priority. This ensures that critical flows receive the necessary resources while minimizing costs for less critical flows, for example, more of BigDawgBanks resources will be allocated to bettering the auth and transfer flows.
 
 - **CO:10.** Optimize data costs.
   - Data costs are optimized by implementing retention policies for logs and backups. This helps in managing storage costs effectively.
