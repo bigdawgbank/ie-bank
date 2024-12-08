@@ -1,6 +1,7 @@
 import pytest
 from iebank_api import app
 import json
+from unittest.mock import patch, mock_open
 
 def test_create_account(testing_client, register_and_authenticate):
     headers = {"Authorization": f"Bearer {register_and_authenticate}"}
@@ -139,8 +140,8 @@ def test_bank_transfer_process_route(testing_client, register_and_authenticate):
     THEN check the response is valid
     """
     headers = {"Authorization": f"Bearer {register_and_authenticate}"}
-    sender_account_name = "Adrian checkin account"
-    recipient_account_name = "Daniel checkin account"
+    sender_account_name = "Adrian checking account"
+    recipient_account_name = "Daniel checking account"
     response = testing_client.post("/accounts", 
                                   json={"name": sender_account_name, "currency": "€", "country": "Spain", "balance": 1000.0}, 
                                   headers=headers)
@@ -154,7 +155,6 @@ def test_bank_transfer_process_route(testing_client, register_and_authenticate):
     # Extract the account ID
     from_account_id = sender_account_data['id']
 
-    
     response_recipient_account = testing_client.get(f"/accounts/{recipient_account_name}", headers=headers)
     # Parse the JSON response
     recipient_account_data = response_recipient_account.get_json()
@@ -202,7 +202,51 @@ def test_wire_transfer_money_route(testing_client, register_and_authenticate):
     )
     assert response.status_code == 200
     response_data = response.get_json()
-    assert response_data["message"] == "Transfer successful"
+    assert response_data["message"] == "Wire Transfer successful"
     assert response_data["receipt"]["sender_account_id"] == from_account_id
     assert response_data["receipt"]["recipient_account_id"] == recipient_account_data["id"]
     assert response_data["receipt"]["amount"] == 100.0
+
+@patch('builtins.open', new_callable=mock_open, read_data='{"exchange_rate": {"USD_TO_EURO_EXCHANGE_RATE": "0.95"}}')
+def test_get_exchange_rate_usd_to_eur(mock_file, testing_client, register_and_authenticate):
+    headers = {"Authorization": f"Bearer {register_and_authenticate}"}
+    response = testing_client.get("/exchangerate?from_currency=$&to_currency=€", headers=headers)
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data['from_currency'] == '$'
+    assert data['to_currency'] == '€'
+    assert data['exchange_rate'] == 0.95
+
+@patch('builtins.open', new_callable=mock_open, read_data='{"exchange_rate": {"USD_TO_EURO_EXCHANGE_RATE": "0.95"}}')
+def test_get_exchange_rate_eur_to_usd(mock_file, testing_client, register_and_authenticate):
+    headers = {"Authorization": f"Bearer {register_and_authenticate}"}
+    response = testing_client.get("/exchangerate?from_currency=€&to_currency=$", headers=headers)
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data['from_currency'] == '€'
+    assert data['to_currency'] == '$'
+    assert data['exchange_rate'] == round(1 / 0.95, 2)
+
+def test_get_exchange_rate_missing_from_currency(testing_client, register_and_authenticate):
+    headers = {"Authorization": f"Bearer {register_and_authenticate}"}
+    response = testing_client.get("/exchangerate?to_currency=USD", headers=headers)
+    assert response.status_code == 400
+    data = response.get_json()
+    assert 'error' in data
+
+def test_get_exchange_rate_missing_to_currency(testing_client, register_and_authenticate):
+    headers = {"Authorization": f"Bearer {register_and_authenticate}"}
+    response = testing_client.get("/exchangerate?from_currency=USD", headers=headers)
+    assert response.status_code == 400
+    data = response.get_json()
+    assert 'error' in data
+
+@patch('iebank_api.models.os.getenv')
+def test_get_exchange_rate_same_currency(mock_getenv, testing_client, register_and_authenticate):
+    headers = {"Authorization": f"Bearer {register_and_authenticate}"}
+    response = testing_client.get("/exchangerate?from_currency=USD&to_currency=USD", headers=headers)
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data['from_currency'] == 'USD'
+    assert data['to_currency'] == 'USD'
+    assert data['exchange_rate'] == 1

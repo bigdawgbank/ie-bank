@@ -53,7 +53,7 @@
 
                 <b-form-group
                   id="form-amount-group"
-                  label="Amount:"
+                  label="Origin Amount:"
                   label-for="form-amount-input"
                 >
                   <b-form-input
@@ -63,6 +63,32 @@
                     placeholder="Enter amount"
                     min="0"
                     required
+                  ></b-form-input>
+                </b-form-group>
+
+                <b-form-group
+                  id="form-exchange-rate-group"
+                  label="Exchange Rate:"
+                  label-for="form-exchange-rate-input"
+                >
+                  <b-form-input
+                    id="form-exchange-rate-input"
+                    v-model.number="this.exchangeRate"
+                    type="text"
+                    readonly
+                  ></b-form-input>
+                </b-form-group>
+
+                <b-form-group
+                  id="form-converted-amount-group"
+                  label="Converted Amount:"
+                  label-for="form-converted-amount-input"
+                >
+                  <b-form-input
+                    id="form-converted-amount-input"
+                    v-model.number="this.convertedAmount"
+                    type="text"
+                    readonly
                   ></b-form-input>
                 </b-form-group>
 
@@ -84,7 +110,7 @@
 </template>
 
 <script>
-import { transferService, accountService } from "../api";
+import { transferService, accountService, exchangeRateService } from "../api";
 
 export default {
   name: "Transfer",
@@ -99,6 +125,8 @@ export default {
       message: "",
       alertVariant: "danger",
       accounts: [],
+      exchangeRate: 1,
+      convertedAmount: 0,
     };
   },
   methods: {
@@ -111,6 +139,34 @@ export default {
         console.error("Error fetching accounts:", error);
       }
     },
+
+    async fetchExchangeRate() {
+
+      if (!this.transferForm.sender_account_id || !this.transferForm.recipient_account_id) {
+          return;
+        }
+
+      try {
+        const senderAccount = this.accounts.find(account => account.id === this.transferForm.sender_account_id);
+        const recipientAccount = this.accounts.find(account => account.id === this.transferForm.recipient_account_id);
+
+        
+        const response = await exchangeRateService.getExchangeRate(senderAccount.currency, recipientAccount.currency);
+        this.exchangeRate = response.exchange_rate;
+        this.calculateConvertedAmmount();
+      } catch (error) {
+        console.error("Error fetching exchange rate:", error);
+      }
+    },
+
+    async calculateConvertedAmmount() {
+      try {
+        this.convertedAmount = this.transferForm.amount * this.exchangeRate;
+      } catch (error) {
+        console.error("Error calculating converted ammount:", error);
+      }
+    },
+
     async onSubmit(e) {
       e.preventDefault();
 
@@ -118,35 +174,39 @@ export default {
         const response = await transferService.transferMoney(this.transferForm);
 
         // Show success message
-        this.message = "Transfer successful!";
+        this.message = `
+          Transfer successful!<br>Receipt:
+          <ul>
+            <li>Sender Account ID: ${response.receipt.sender_account_id}</li>
+            <li>Recipient Account ID: ${response.receipt.recipient_account_id}</li>
+            <li>Amount: ${response.receipt.amount}</li>
+            <li>Timestamp: ${response.receipt.timestamp}</li>
+          </ul>
+        `;
         this.alertVariant = "success";
         this.showMessage = true;
 
         // Emit change to parent component
         this.$emit("transfer-completed");
 
-        // Display receipt
-        this.message += `
-            <br>Receipt:
-            <ul>
-              <li>Sender Account ID: ${response.receipt.sender_account_id}</li>
-              <li>Recipient Account ID: ${response.receipt.recipient_account_id}</li>
-              <li>Amount: ${response.receipt.amount}</li>
-              <li>Timestamp: ${response.receipt.timestamp}</li>
-            </ul>
-          `;
       } catch (error) {
         // Show error message
-        this.message = error.message || "Transfer failed";
+        this.message = "Transfer failed. Please try again.";
+        // this.message = "Error: " + error.text;
         this.alertVariant = "danger";
         this.showMessage = true;
-
-        // Hide error after 3 seconds
-        setTimeout(() => {
-          this.showMessage = false;
-        }, 3000);
       }
+
+      // Hide message after 3 seconds
+      setTimeout(() => {
+        this.showMessage = false;
+      }, 3000);
     },
+  },
+  watch: {
+    'transferForm.sender_account_id': 'fetchExchangeRate',
+    'transferForm.recipient_account_id': 'fetchExchangeRate',
+    'transferForm.amount': 'calculateConvertedAmmount',
   },
   mounted() {
     this.fetchAccounts();
@@ -173,4 +233,3 @@ export default {
   width: 80%; /* Adjust the width as needed */
 }
 </style>
-
