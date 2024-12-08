@@ -115,14 +115,7 @@ node-version: ${{ env.NODE_VERSION }}
 working-directory: ${{ env.APP_LOCATION }}
 run: npm install
 ```
-5. **Run Tests**  
-   - Frontend tests are executed to verify the integrity and functionality of changes.
-```yml
-- name: Run Tests
-working-directory: ${{ env.APP_LOCATION }}
-run: npm test
-```
-6. **Build Application**  
+5. **Build Application**  
    - The application is built using `npm run build`, creating an optimized production build ready for deployment.
 ```yml
 - name: Build Application
@@ -369,7 +362,7 @@ The outer loop refers to the integration, testing, and deployment workflow.
 2. **Continuous Deployment (CD)**:
    - **Deployed Backend Using Docker**: Deployed the backend application using Docker containers to ensure consistency and scalability.
    - **Deployed Frontend to Static Web App**: Deployed the frontend application to our ie-bank Azure Static Web App for efficient and scalable hosting.
-   - **Environment Configuration**: Managed environment-specific configurations and secrets using tools such as Azure Key Vault and GitHub Secrets.).
+   - **Environment Configuration**: Managed environment-specific configurations and secrets using tools such as Azure Key Vault and GitHub Secrets.
 
 ---
 
@@ -425,7 +418,7 @@ The production environment is used for the live application, serving end-users.
 ### 1. CD Workflow for Frontend
 
 **Description**  
-This workflow automates the deployment of the frontend application to the **Development**, **UAT**, and **Production** environments.
+This workflow automates the deployment of the frontend application to the **Development**, **UAT**, and **Production** environments. The build and deploy steps are combined into a single job to ensure that the deployment uses the exact build artifacts generated in the same job, reducing the risk of discrepancies.
 
 **Workflow Steps**  
 
@@ -466,7 +459,7 @@ This workflow automates the deployment of the frontend application to the **Deve
 ### 2. CD Workflow for Backend
 
 **Description**  
-The backend CD workflow handles automated deployments to the **Development**, **UAT**, and **Production** environments for the backend services.
+The CD workflow for the backend application automates the deployment of the built backend services to different environments (Development, UAT, and Production). The build and deploy steps are combined into a single job to ensure that the deployment uses the exact build artifacts generated in the same job, reducing the risk of discrepancies.
 
 **Workflow Steps**  
 

@@ -1325,6 +1325,8 @@ The production environment is used for the live application, serving end-users.
 - **Environment**: Production
 - Deployments proceed only after successful UAT testing and require either a pull request merge to the `main` branch or manual approval.
 
+![Infra_workflow](./images/Infra_workflow.png)
+
 ### Challenges in Implementation
 - **Validation Process**:
   - Initial attempts to use `az deployment sub validate` for subscription-level validation did not suit the resource group-based deployment model.
@@ -1829,14 +1831,7 @@ node-version: ${{ env.NODE_VERSION }}
 working-directory: ${{ env.APP_LOCATION }}
 run: npm install
 ```
-5. **Run Tests**  
-   - Frontend tests are executed to verify the integrity and functionality of changes.
-```yml
-- name: Run Tests
-working-directory: ${{ env.APP_LOCATION }}
-run: npm test
-```
-6. **Build Application**  
+5. **Build Application**  
    - The application is built using `npm run build`, creating an optimized production build ready for deployment.
 ```yml
 - name: Build Application
@@ -1940,7 +1935,7 @@ The outer loop refers to the integration, testing, and deployment workflow.
 ### 1. CD Workflow for Frontend
 
 **Description**  
-This workflow automates the deployment of the frontend application to the **Development**, **UAT**, and **Production** environments.
+This workflow automates the deployment of the frontend application to the **Development**, **UAT**, and **Production** environments. The build and deploy steps are combined into a single job to ensure that the deployment uses the exact build artifacts generated in the same job, reducing the risk of discrepancies.
 
 **Workflow Steps**  
 
@@ -1979,7 +1974,7 @@ This workflow automates the deployment of the frontend application to the **Deve
 ---
 
 ### 2. CD Workflow for Backend
-
+The CD workflow for the backend application automates the deployment of the built backend services to different environments (Development, UAT, and Production). The build and deploy steps are combined into a single job to ensure that the deployment uses the exact build artifacts generated in the same job, reducing the risk of discrepancies.
 **Workflow Steps**  
 
 #### Build and Deploy to Development  
