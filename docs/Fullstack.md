@@ -91,47 +91,54 @@ The backend CI workflow validates changes to backend services by running tests a
    - The workflow runs on:
      - Push events to the `backend/**` directory across all branches.
      - Pull requests targeting the `main` branch.
-```yml
-   on:
-   push:
-      paths: 
-         - "backend/**"
-      branches:
-         - "*"
-   pull_request:
-      branches: [ "main" ]
-      paths:
-         - "backend/**"
-```
+   ```yml
+      on:
+      push:
+         paths: 
+            - "backend/**"
+         branches:
+            - "*"
+      pull_request:
+         branches: [ "main" ]
+         paths:
+            - "backend/**"
+   ```
 2. **Checkout Code**  
    - Similar to the frontend workflow, this retrieves the latest code for validation.
+
    ```yml
     - uses: actions/checkout@v3
    ```
+
 3. **Set Up Python Environment**  
    - Python 3.11 is configured using `actions/setup-python@v3`.  
    - Compatibility with the application is maintained.
+
    ```yml
     - name: Set up Python 3.11
       uses: actions/setup-python@v3
       with:
        python-version: "3.11"
    ```
+
 4. **Install Dependencies**  
    - Backend dependencies are installed using `pip install -r backend/requirements.txt`.
+
    ```yml
     - name: Install dependencies
       run: pip install -r backend/requirements.txt
    ```
+
 5. **Run Linting and Tests**  
    - `flake8` is used for code linting, ensuring adherence to Python coding standards.  
    - `pytest` runs backend unit tests to validate API routes and business logic.
+
    ```yml
     - name: Lint with flake8
       run: 
-      pip install flake8 pytest
-      flake8 backend/ --count --select=E9,F63,F7,F82 --show-source --statistics
-      flake8 backend/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+         pip install flake8 pytest
+         flake8 backend/ --count --select=E9,F63,F7,F82 --show-source --statistics
+         flake8 backend/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: python -m pytest -v
    ```
