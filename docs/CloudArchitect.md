@@ -1078,42 +1078,63 @@ The production environment is used for the live application, serving end-users.
 ### Infrastructure Release Strategy
 - **Description**: Document the infrastructure release strategy, including the use of IaC tools (e.g., Bicep templates, ARM templates) and GitHub Actions workflows. Detail the process for provisioning and updating infrastructure in each environment:
 
-The infrastructure release strategy for the BigDawgBank application ensures a structured and secure deployment process across different environments. This strategy leverages Infrastructure as Code (IaC) tools such as Bicep templates and GitHub Actions workflows to automate the provisioning and updating of infrastructure.
+The infrastructure release strategy for the BigDawgBank application ensures a structured and secure deployment process across different environments. This strategy leverages Infrastructure as Code (IaC) tools such as Bicep templates and GitHub Actions workflows to automate the provisioning and updating of infrastructure. Our CI/CD strategy for managing Azure infrastructure as code follows a structured pipeline to ensure quality, consistency, and reliability across Development, UAT (User Acceptance Testing), and Production environments. This strategy is implemented using GitHub Actions, with workflows designed for both Continuous Integration (CI) and Continuous Delivery (CD), ensuring seamless infrastructure deployment while maintaining code quality and security standards.
 
----
+### Continuous Integration (CI) Process
+- **Check for Changes**: 
+  - The process begins with a `check-changes` job that identifies modifications to infrastructure files in the `infra` directory. 
+  - If changes are detected, the pipeline triggers a build job.
+
+- **Validation Steps**: 
+  - **Bicep Linter (`az bicep build`)**:
+    - Validates the syntax of the templates to ensure adherence to best practices and syntax rules.
+  - **Security Analysis (Checkov)**:
+    - Scans templates for vulnerabilities, providing early feedback to developers.
+  - These tasks help maintain a high standard of quality in the infrastructure code.
+
+### Continuous Delivery (CD) Process
+- **Validation Steps**:
+  - Each environment (Development, UAT, and Production) has a dedicated validation step (`validate_X_template`, where X refers to the step in question).
+  - Uses **Azure Resource Manager (ARM) templates** in Validate mode to simulate deployments without applying changes.
+  - **Resource Drift Detection (`az deployment group what-if`)**:
+    - Ensures alignment between the desired and actual resource states.
 
 ### Development Environment
 The development environment is used for experimental deployments and testing infrastructure configurations.
 - **Environment**: Development
-- **CI/CD Pipeline**: The `ie-bank-infra.yml` workflow is triggered on pushes to any branch except pull request branches.
-- **Steps**:
-  - **Template Validation**: The Bicep template is validated using the `azure/arm-deploy@v1` action to ensure the template is syntactically correct.
-  - **Detect Resource Drift**: The `az deployment group what-if` command is used to detect resource drift between the current deployment and the new one.
-  - **Deployment**: The infrastructure is deployed to the Azure resource group for the development environment using the `azure/arm-deploy@v1` action.
-
----
+- Changes are applied directly after a successful validation or push.
 
 ### User Acceptance Testing (UAT) Environment
 The UAT environment is used for stakeholder testing and validation of infrastructure changes before they are released to production.
 - **Environment**: UAT
-- **CI/CD Pipeline**: The `ie-bank-infra.yml` workflow is triggered on pull requests to the `main` branch and on pushes to the `main` branch.
-- **Steps**:
-  - **Template Validation**: The Bicep template is validated using the `azure/arm-deploy@v1` action to ensure the template is syntactically correct.
-  - **Detect Resource Drift**: The `az deployment group what-if` command is used to detect resource drift between the current deployment and the new one.
-  - **Deployment**: The infrastructure is deployed to the Azure resource group for the UAT environment using the `azure/arm-deploy@v1` action.
-
----
+- Deployments are triggered by pull requests to the `main` branch or manually initiated workflows.
 
 ### Production Environment
 The production environment is used for the live application, serving end-users.
 - **Environment**: Production
-- **CI/CD Pipeline**: The `ie-bank-infra.yml` workflow is triggered when pull requests are merged to the `main` branch or on manual triggers.
-- **Steps**:
-  - **Template Validation**: The Bicep template is validated using the `azure/arm-deploy@v1` action to ensure the template is syntactically correct.
-  - **Detect Resource Drift**: The `az deployment group what-if` command is used to detect resource drift between the current deployment and the new one.
-  - **Deployment**: The infrastructure is deployed to the Azure resource group for the production environment using the `azure/arm-deploy@v1` action.
+- Deployments proceed only after successful UAT testing and require either a pull request merge to the `main` branch or manual approval.
 
----
+### Challenges in Implementation
+- **Validation Process**:
+  - Initial attempts to use `az deployment sub validate` for subscription-level validation did not suit the resource group-based deployment model.
+  - Switching to `az deployment group validate` also posed challenges with parameter handling.
+  - Solution:
+    - Discovered a method from an article ([source](https://www.tpeczek.com/2023/06/devops-practices-for-azure.html)) using `deploymentMode: Validate` to simulate deployments without changes.
+    - Enabled error detection before real deployments, streamlining the validation process and ensuring error-free deployments.
+
+- **Resource Drift Detection**:
+  - Introduced the use of `az deployment group what-if` to detect discrepancies between the actual and desired infrastructure states.
+  - This step ensures the infrastructure remains consistent with Bicep templates, avoiding errors or conflicts caused by manual changes or untracked updates ([source](https://learn.microsoft.com/en-us/cli/azure/deployment/group?view=azure-cli-latest)).
+
+### Collaboration and Alignment
+- **Team Collaboration**:
+  - Developed in collaboration with the cloud architect to align with release and repository management practices.
+- **Key Features**:
+  - Single repository structure.
+  - Clear job definitions.
+  - Automation tools for validation and security checks.
+- **Outcome**:
+  - Enhanced reliability, simplified infrastructure management, and improved team collaboration.
 
 ### Rollback Mechanisms and Disaster Recovery
 To ensure the reliability and stability of the infrastructure, the following mechanisms are in place:
