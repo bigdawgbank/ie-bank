@@ -26,20 +26,20 @@ The CI workflow for the frontend application automates the validation of code ch
      - Pull requests targeting the `main` branch.  
    - This ensures that changes to the frontend are validated at key integration points.
 
-   ```yml
-      on:
-      push:
-      paths:
-         - "frontend/**"
-      branches:
-         - "*"
-         - "!refs/pull/*"
-   pull_request:
-      branches:
-         - main
-      paths:
-         - "frontend/**"
-   ```
+```yml
+on:
+push:
+paths:
+   - "frontend/**"
+branches:
+   - "*"
+   - "!refs/pull/*"
+pull_request:
+branches:
+   - main
+paths:
+   - "frontend/**"
+```
 
 2. **Checkout Code**  
    - The `actions/checkout@v3` action is used to retrieve the latest codebase, ensuring that subsequent steps operate on the most recent changes.
