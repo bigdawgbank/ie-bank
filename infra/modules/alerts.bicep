@@ -33,7 +33,7 @@ resource uptimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
     severity: 3
     enabled: true
     scopes: [
-      appInsightsName // Pass the full resource ID from main.bicep
+      appInsightsName
     ]
     evaluationFrequency: 'PT5M'
     windowSize: 'PT15M'
@@ -47,6 +47,74 @@ resource uptimeAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
           operator: 'LessThan'
           threshold: 95
           timeAggregation: 'Average'
+        }
+      ]
+    }
+    actions: [
+      {
+        actionGroupId: slackActionGroup.id
+      }
+    ]
+  }
+}
+
+// Define Latency Alert
+resource latencyAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
+  name: 'latencyAlert-${environment}'
+  location: 'global'
+  properties: {
+    description: 'Alert when request latency exceeds threshold.'
+    severity: 2
+    enabled: true
+    scopes: [
+      appInsightsName
+    ]
+    evaluationFrequency: 'PT5M'
+    windowSize: 'PT15M'
+    criteria: {
+      'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
+      allOf: [
+        {
+          criterionType: 'StaticThresholdCriterion'
+          name: 'HighLatency'
+          metricName: 'performanceCounters/requests/duration'
+          operator: 'GreaterThan'
+          threshold: 3000 // in milliseconds
+          timeAggregation: 'Average'
+        }
+      ]
+    }
+    actions: [
+      {
+        actionGroupId: slackActionGroup.id
+      }
+    ]
+  }
+}
+
+// Define Error Rate Alert
+resource errorRateAlert 'microsoft.insights/metricAlerts@2018-03-01' = {
+  name: 'errorRateAlert-${environment}'
+  location: 'global'
+  properties: {
+    description: 'Alert when error rate exceeds acceptable threshold.'
+    severity: 1
+    enabled: true
+    scopes: [
+      appInsightsName
+    ]
+    evaluationFrequency: 'PT5M'
+    windowSize: 'PT15M'
+    criteria: {
+      'odata.type': 'Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria'
+      allOf: [
+        {
+          criterionType: 'StaticThresholdCriterion'
+          name: 'HighErrorRate'
+          metricName: 'requests/failed'
+          operator: 'GreaterThan'
+          threshold: 5 // Number of failed requests
+          timeAggregation: 'Total'
         }
       ]
     }
