@@ -75,6 +75,10 @@ jobs:
       - name: Install dependencies
         run: pip install -r backend/requirements.txt
 
+      # Added this step without removing anything else
+      - name: Install Application Insights Dependencies
+        run: pip install opencensus opencensus-ext-azure
+
       - name: Lint with flake8
         run: |
           pip install flake8 pytest
@@ -141,14 +145,11 @@ jobs:
           app-name: ${{ env.BACKEND_WEBAPP_DEV }}
           images: "${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:${{ needs.build-dev.outputs.image-version }}"
 
-      # -----------------------------------------------------
-      # NEW STEP ADDED: Configure Application Insights Connection String in Dev
       - name: Configure App Settings (Dev)
         uses: azure/CLI@v1
         with:
           inlineScript: |
             az webapp config appsettings set --resource-group ${{ env.RESOURCE_GROUP_DEV }} --name ${{ env.BACKEND_WEBAPP_DEV }} --settings APPLICATIONINSIGHTS_CONNECTION_STRING=${{ secrets.APPLICATIONINSIGHTS_CONNECTION_STRING }}
-      # -----------------------------------------------------
 
   build-uat:
     needs: [check-changes]
@@ -172,6 +173,11 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r backend/requirements.txt
+
+      # No deletion, only addition. If needed, we can also add same step here if required.
+      # If we want to ensure opencensus is always installed before lint/test steps, we can add again:
+      # - name: Install Application Insights Dependencies
+      #   run: pip install opencensus opencensus-ext-azure
 
       - name: Lint with flake8
         run: |
@@ -241,14 +247,11 @@ jobs:
           app-name: ${{ env.BACKEND_WEBAPP_UAT }}
           images: "${{ env.CONTAINER_REGISTRY_SERVER_URL_UAT }}/${{ env.IMAGE_NAME_UAT }}:${{ needs.build-uat.outputs.image-version }}"
 
-      # -----------------------------------------------------
-      # NEW STEP ADDED: Configure Application Insights Connection String in UAT
       - name: Configure App Settings (UAT)
         uses: azure/CLI@v1
         with:
           inlineScript: |
             az webapp config appsettings set --resource-group ${{ env.RESOURCE_GROUP_UAT }} --name ${{ env.BACKEND_WEBAPP_UAT }} --settings APPLICATIONINSIGHTS_CONNECTION_STRING=${{ secrets.APPLICATIONINSIGHTS_CONNECTION_STRING }}
-      # -----------------------------------------------------
 
   test-uat-api:
     needs: deploy-uat
@@ -296,6 +299,10 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r backend/requirements.txt
+
+      # If needed here too, can add:
+      # - name: Install Application Insights Dependencies
+      #   run: pip install opencensus opencensus-ext-azure
 
       - name: Lint with flake8
         run: |
@@ -355,11 +362,8 @@ jobs:
           app-name: ${{ env.BACKEND_WEBAPP_PROD }}
           images: "${{ env.CONTAINER_REGISTRY_SERVER_URL_PROD }}/${{ env.IMAGE_NAME_PROD }}:${{ needs.build-prod.outputs.image-version }}"
 
-      # -----------------------------------------------------
-      # NEW STEP ADDED: Configure Application Insights Connection String in PROD
       - name: Configure App Settings (PROD)
         uses: azure/CLI@v1
         with:
           inlineScript: |
             az webapp config appsettings set --resource-group ${{ env.RESOURCE_GROUP_PROD }} --name ${{ env.BACKEND_WEBAPP_PROD }} --settings APPLICATIONINSIGHTS_CONNECTION_STRING=${{ secrets.APPLICATIONINSIGHTS_CONNECTION_STRING }}
-      # -----------------------------------------------------
