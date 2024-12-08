@@ -5,48 +5,31 @@ from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
-from opencensus.ext.azure.log_exporter import AzureLogHandler  # Already imported
-import logging  # <-- Added import for logging
 
 load_dotenv()
 app = Flask(__name__)
 
-# -----------------------------------------------------
-# NEW CODE ADDED HERE: Set up logger for Application Insights
-connection_string = os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING")
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-if connection_string:
-    # If we have a connection string, send logs to Application Insights
-    logger.addHandler(AzureLogHandler(connection_string=connection_string))
-else:
-    # Fallback: if no connection string, log to console
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
-    logger.addHandler(ch)
-# -----------------------------------------------------
-
-# Create extensions
+# Create extensions first
 db = SQLAlchemy()
 jwt_manager = JWTManager()
 bcrypt = Bcrypt()
 
+
 # Your environment config loading stays the same
 if os.getenv("ENV") == "local":
-    logger.info("Running in local mode")
+    print("Running in local mode")
     app.config.from_object("config.LocalConfig")
 elif os.getenv("ENV") == "dev":
-    logger.info("Running in development mode")
+    print("Running in development mode")
     app.config.from_object("config.DevelopmentConfig")
 elif os.getenv("ENV") == "ghci":
-    logger.info("Running in GitHub mode")
+    print("Running in github mode")
     app.config.from_object("config.GithubCIConfig")
 elif os.getenv("ENV") == "uat":
-    logger.info("Running in UAT mode")
-    app.config.from_object("config.GithubCIConfig")
+    print("Running in uat mode")
+    app.config.from_object("config.UATConfig")
 else:
-    logger.info("Running in production mode")
+    print("Running in production mode")
     app.config.from_object("config.ProductionConfig")
 
 # Initialize extensions with app
@@ -57,17 +40,21 @@ bcrypt.init_app(app)
 # Import models
 from iebank_api.models import Account, User
 
+# Create tables and initialize admin in a single context
 with app.app_context():
     db.create_all()
+
     try:
-        admin_email = os.getenv("ADMIN_EMAIL", "admin@admin.com")
-        admin_user = User.query.filter_by(email=admin_email).first()
+        # Check if admin user exists
+        admin_user = User.query.filter_by(
+            email=os.getenv("ADMIN_EMAIL", "admin@admin.com")
+        ).first()
 
         if not admin_user:
             print("Creating admin user...")
             admin_user = User(
                 username="admin",
-                email=admin_email,
+                email=os.getenv("ADMIN_EMAIL", "admin@admin.com"),
                 password=os.getenv("ADMIN_PASSWORD", "Password1234"),
                 role="admin",
             )
@@ -81,5 +68,4 @@ with app.app_context():
         db.session.rollback()
 
 CORS(app, supports_credentials=True)
-
 from iebank_api import routes
