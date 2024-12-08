@@ -140,5 +140,12 @@ Simplifies meeting management by enabling the scheduling and tracking of virtual
 - Seamless meeting management encourages team participation and collaboration.
 
 ### 2. Monitoring and Alerts
-- **Azure Monitoring Alerts**: Collaborate with the SRE to connect monitoring alerts with Slack.
-- **Deliverable**: [Collaboration Strategy Documentation](#)
+**Azure Monitoring Alerts**  
+To ensure the reliability and performance of the BigDawgBank application, we have implemented a comprehensive monitoring and alerting strategy using Azure Monitor. This strategy includes setting up alerts that notify the team of any issues in real-time, allowing for prompt resolution and minimal downtime.
+
+**Integration with Slack**  
+Alerts are connected to Slack through a Slack Action Group defined in the Bicep file. The `slackActionGroup` resource is configured with a `webhookReceivers` section, where the `serviceUri` is set to the Slack webhook URL. When an alert (such as `uptimeAlert`) is triggered, it uses this action group to send a notification to Slack via the specified webhook.
+
+**SLACK_WEBHOOK_URL Secret**
+The SLACK_WEBHOOK_URL is a GitHub secret used to securely store the Slack webhook URL required for sending alerts to Slack. This secret is referenced in the Bicep file and passed as the slackWebhookUrl parameter during deployments. By storing the webhook URL in GitHub secrets, we ensure it remains confidential and is not exposed in the source code. This integration allows alerts, such as uptimeAlert, to trigger notifications via Slack without revealing sensitive information.
+

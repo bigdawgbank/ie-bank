@@ -6,7 +6,7 @@ Welcome to the BigDawg IE Bank Application Documentation Page!
 
 ## Project Full Design Document
 Please click here to view the full Design Document covering every aspect of our application:
-- [Design Document](./SRS.md)
+- [Design Document](./Design_Doc.md)
 
 ---
 

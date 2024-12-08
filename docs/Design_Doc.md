@@ -590,6 +590,11 @@ We are using JWTs to ensure secure authentication and authorization within the B
 
 By leveraging JWTs, the BigDawgBank application ensures secure and efficient authentication and authorization, enhancing the overall security and user experience.
 
+### **SLACK_WEBHOOK_URL Secret**
+The SLACK_WEBHOOK_URL is a GitHub secret used to securely store the Slack webhook URL required for sending alerts to Slack. This secret is referenced in the Bicep file and passed as the slackWebhookUrl parameter during deployments. By storing the webhook URL in GitHub secrets, we ensure it remains confidential and is not exposed in the source code. This integration allows alerts, such as uptimeAlert, to trigger notifications via Slack without revealing sensitive information.
+
+By securely managing the SLACK_WEBHOOK_URL as a GitHub secret, we maintain the confidentiality of sensitive information while enabling seamless integration with Slack for real-time alert notifications
+
 ---
 
 # Environment Design
