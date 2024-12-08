@@ -145,8 +145,20 @@ run: python -m pytest -v
 ---
 
 ## Test/Behavior-Driven Development Strategy
-A Precise Description of this can be found in the Cloud Architect Page:
-- [TTD](./CloudArchitect.md#test-driven-designtdd)
+   
+For developping our BigDawgBank Application, our team decided to adopt a more Test-Driven Development(TTD) approach in order to ensure the highest code quality, maintainability and reliability possible. TDD involves writing tests before writing the actual code, which helped in defining clear requirements and catching any of our issues early in the development process. We chose this approach over Behavior Driven Design (BDD) due to its focus on the technical aspects of the code and its ability to provide immediate feedback to our Fullstack developers. Our cycle involved first developping robust tests based on our precise User stories in the Azure Devops backlog which were developped in accordance with the new requirements of our application. After various meetings, it was agreed that the most important aspects to be tested was the authentication and the transaction process between accounts. This was because we strive for optimal user security in transport and account management considering the sensitivity of information within a bank.
+
+The Following Table highlights our TTD approach by showcasing the various tests we implemented, along with the Functional Requirements that they were deveopped for and the related user story for said FR:
+
+| **Functional Requirement (FR)** | **User Story** | **Test** |
+|---------------------------------|----------------|----------|
+| **FR05: New User Registration** | As a new user, I want to register for an account so that I can access the system. | [test_create_user](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/unit/test_auth_model.py#L30) |
+| **FR06: Invalid Repeated Email Check** | As an admin, I want users who are creating more than one user to not be allowed the use of the same email when creating another one. | [test_user_unique_email](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/unit/test_auth_model.py#L50), [test_register_duplicate_user](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py#L70) |
+| **FR08: Secure User Login** | As a user, I want to log in securely so that I can access my account. | [test_protected_route](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py#L90), [test_authentication_required](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py#L110), [test_login_failure](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_auth.py#L130) |
+| **FR10: Money Transfer** | As a user, I want to transfer money to other accounts so that I can make payments easily. | [test_bank_transfer_process_route](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/functional/test_routes.py#L50), [test_bank_transfer_object_process](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/unit/test_bank_transfer_object.py#L10) |
+| **FR11: Secure Password Handling** | As a developer, I want all passwords to be securely hashed so that user data is protected from breaches. | [test_create_user](https://github.com/bigdawgbank/ie-bank/blob/main/backend/tests/unit/test_auth_model.py#L70) |
+
+We can see the immense focus our team had on ensuring the authentication aspect of our application was completely robust and error free. By adopting TDD, the BigDawgBank application ensures that all functional requirements are met with high code quality and reliability. The focus on writing tests before code helped our Fullstack team define clear requirements, catch issues early, and promote maintainable and modular code. This approach has proven to be effective in delivering a robust and secure banking application for our users.
 
 ---
 
@@ -180,8 +192,49 @@ The outer loop refers to the integration, testing, and deployment workflow.
 ---
 
 ## Release Strategy
-Please refer to the Cloud Architect Release Strategy Section:
-- [Release Strategy](./CloudArchitect.md#release-strategy)
+The release strategy for the BigDawgBank application is designed to ensure a smooth and secure deployment process across different environments. This strategy aligns with the DevOps checklist and GitHub Security best practices, including the enforcement of branch protection rules to prevent direct pushes to the `main` branch.
+   
+---
+
+### Development (Dev)
+The development environment is used for initial development and testing of new features. The following practices are implemented:
+- **Environment**: Development
+- **CI/CD Pipeline**: The `ie-bank-frontend.yml` and `ie-bank-backend.yml` workflows are triggered on pushes to any branch except pull request branches. This ensures that changes are tested in isolation before being merged.
+- **Steps**:
+   - Code is checked out and dependencies are installed.
+   - Linting and testing are performed to ensure code quality.
+   - Docker images are built and pushed to the development container registry.
+   - The application is deployed to the Azure Web App for the development environment.
+
+![Dev](./images/Dev_workflow.png)
+
+---
+
+### User Acceptance Testing (UAT)
+The UAT environment is used for stakeholder testing and validation of new features before they are released to production.
+- **Environment**: UAT
+- **CI/CD Pipeline**: The `ie-bank-frontend.yml` and `ie-bank-backend.yml` workflows are triggered on pull requests to the `main` branch and on pushes to the `main` branch, however pushes to the main branch aren't allowed due to the appropriate branch protection rules.
+- **Steps**:
+   - Code is checked out and dependencies are installed.
+   - Linting and testing are performed to ensure code quality.
+   - Docker images are built and pushed to the UAT container registry.
+   - The application is deployed to the Azure Web App for the UAT environment.
+
+![UAT](./images/UAT_Workflow.png)
+
+---
+
+### Production (Prod)
+The production environment is used for the live application, serving end-users.
+- **Environment**: Production
+- **CI/CD Pipeline**: The `ie-bank-frontend.yml` and `ie-bank-backend.yml` workflows are triggered when pull requests are merged to the `main` branch or on manual triggers.
+- **Steps**:
+   - Code is checked out and dependencies are installed.
+   - Linting and testing are performed to ensure code quality.
+   - Docker images are built and pushed to the production container registry.
+   - The application is deployed to the Azure Web App for the production environment.
+
+![PROD](./images/Prod_workflow.png)
 
 ---
 
@@ -269,7 +322,7 @@ The backend CD workflow handles automated deployments to the **Development**, **
 
 ---
 
-## Key Features and Benefits of BigDawgBanks CI/CD
+## Key Features and Benefits of BigDawgBanks CI/CD for Frontend/Backend
 
 - **End-to-End Automation**  
   Both frontend and backend CI/CD pipelines are fully automated, reducing manual intervention and ensuring consistency.

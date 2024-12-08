@@ -1076,7 +1076,6 @@ The production environment is used for the live application, serving end-users.
 ---
 
 ### Infrastructure Release Strategy
-- **Description**: Document the infrastructure release strategy, including the use of IaC tools (e.g., Bicep templates, ARM templates) and GitHub Actions workflows. Detail the process for provisioning and updating infrastructure in each environment:
 
 The infrastructure release strategy for the BigDawgBank application ensures a structured and secure deployment process across different environments. This strategy leverages Infrastructure as Code (IaC) tools such as Bicep templates and GitHub Actions workflows to automate the provisioning and updating of infrastructure. Our CI/CD strategy for managing Azure infrastructure as code follows a structured pipeline to ensure quality, consistency, and reliability across Development, UAT (User Acceptance Testing), and Production environments. This strategy is implemented using GitHub Actions, with workflows designed for both Continuous Integration (CI) and Continuous Delivery (CD), ensuring seamless infrastructure deployment while maintaining code quality and security standards.
 
