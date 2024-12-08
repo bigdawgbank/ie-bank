@@ -1,7 +1,9 @@
 from flask import Flask, jsonify, request
+from flask_jwt_extended import jwt_required, get_jwt_identity  # Added these imports
 from iebank_api import app, db
-from iebank_api.models import Account
+from iebank_api.models import Account, User, BankTransfer  # Added `User` and `BankTransfer` import
 from iebank_api.__init__ import logger  # Use the logger configured in __init__.py
+from datetime import datetime, timezone  # Added missing imports for datetime and timezone
 
 
 @app.route("/accounts", methods=["POST"])
