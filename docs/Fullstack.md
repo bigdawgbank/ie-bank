@@ -152,8 +152,30 @@ A Precise Description of this can be found in the Cloud Architect Page:
 
 ## Inner Loop and Outer Loop
 
-### 1. Definition of Inner and Outer Loop
-- **Description**: Define and document the inner loop (developer’s local development workflow) and outer loop (integration, testing, and deployment workflow).
+### Inner Loop
+
+The inner loop refers to the developer’s local development workflow.
+
+1. **Code Development**: For writing and editing our code, we are using Visual Studio Code.
+2. **Local Testing**: Ran Unit and Functional tests locally to ensure the code changes worked as expected.
+3. **Debugging**: Debugged the code to fix any issues found during local testing. Simply used built-in VSC python debugger to add breakpoints etc..
+4. **Version Control**: Created new branch for each new feature in our ie-bank Git Repository. Committed code changes in said branches before merging to main.
+5. **Build and Run Locally**: Built and ran the application locally to verify the changes in a real environment.
+6. **Used Docker for Debugging**: Utilized Docker to run and debug the application in a containerized environment, ensuring consistency with the production environment.
+
+### Outer Loop
+
+The outer loop refers to the integration, testing, and deployment workflow.
+
+1. **Continuous Integration (CI)**:
+   - **Build Automation**: Application automatically builds when changes are pushed to the repository.
+   - **Automated Testing**: Tests are automatically ran to ensure code quality and functionality.
+   - **Docker Image Creation**: Built Docker image for the backend.
+
+2. **Continuous Deployment (CD)**:
+   - **Deployed Backend Using Docker**: Deployed the backend application using Docker containers to ensure consistency and scalability.
+   - **Deployed Frontend to Static Web App**: Deployed the frontend application to our ie-bank Azure Static Web App for efficient and scalable hosting.
+   - **Environment Configuration**: Managed environment-specific configurations and secrets using tools such as Azure Key Vault and GitHub Secrets.).
 
 ---
 
