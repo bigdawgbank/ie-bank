@@ -26,7 +26,7 @@ The CI workflow for the frontend application automates the validation of code ch
      - Pull requests targeting the `main` branch.  
    - This ensures that changes to the frontend are validated at key integration points.
 
-   ```
+   ```yml
       on:
       push:
       paths:
@@ -59,21 +59,21 @@ The CI workflow for the frontend application automates the validation of code ch
    ```
 4. **Install Dependencies**  
    - Dependencies are installed via `npm install` to ensure all required packages are available for testing and building.
-```yml
+   ```yml
      - name: Install Dependencies
       working-directory: ${{ env.APP_LOCATION }}
       run: npm install
    ```
 5. **Run Tests**  
    - Frontend tests are executed to verify the integrity and functionality of changes.
-```yml
+   ```yml
       - name: Run Tests
       working-directory: ${{ env.APP_LOCATION }}
       run: npm test
    ```
 6. **Build Application**  
    - The application is built using `npm run build`, creating an optimized production build ready for deployment.
-```yml
+   ```yml
       - name: Build Application
       working-directory: ${{ env.APP_LOCATION }}
       run: npm run build
@@ -128,11 +128,10 @@ The backend CI workflow validates changes to backend services by running tests a
    - `pytest` runs backend unit tests to validate API routes and business logic.
    ```yml
    - name: Lint with flake8
-   run: |
+   run: 
       pip install flake8 pytest
       flake8 backend/ --count --select=E9,F63,F7,F82 --show-source --statistics
       flake8 backend/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-
    - name: Test with pytest
    run: python -m pytest -v
    ```
