@@ -143,6 +143,8 @@ jobs:
         with:
           app-name: ${{ env.BACKEND_WEBAPP_DEV }}
           images: "${{ env.CONTAINER_REGISTRY_SERVER_URL_DEV }}/${{ env.IMAGE_NAME_DEV }}:${{ needs.build-dev.outputs.image-version }}"
+          env: |
+            APPLICATIONINSIGHTS_CONNECTION_STRING=${{ vars.APPLICATIONINSIGHTS_CONNECTION_STRING }}
 
   build-uat:
     needs: [check-changes]
@@ -237,6 +239,8 @@ jobs:
         with:
           app-name: ${{ env.BACKEND_WEBAPP_UAT }}
           images: "${{ env.CONTAINER_REGISTRY_SERVER_URL_UAT }}/${{ env.IMAGE_NAME_UAT }}:${{ needs.build-uat.outputs.image-version }}"
+          env: |
+            APPLICATIONINSIGHTS_CONNECTION_STRING=${{ vars.APPLICATIONINSIGHTS_CONNECTION_STRING }}
 
   test-uat-api:
     needs: deploy-uat
@@ -342,3 +346,5 @@ jobs:
         with:
           app-name: ${{ env.BACKEND_WEBAPP_PROD }}
           images: "${{ env.CONTAINER_REGISTRY_SERVER_URL_PROD }}/${{ env.IMAGE_NAME_PROD }}:${{ needs.build-prod.outputs.image-version }}"
+          env: |
+            APPLICATIONINSIGHTS_CONNECTION_STRING=${{ vars.APPLICATIONINSIGHTS_CONNECTION_STRING }}
