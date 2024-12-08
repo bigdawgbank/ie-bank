@@ -149,3 +149,5 @@ Alerts are connected to Slack through a Slack Action Group defined in the Bicep 
 **SLACK_WEBHOOK_URL Secret**
 The SLACK_WEBHOOK_URL is a GitHub secret used to securely store the Slack webhook URL required for sending alerts to Slack. This secret is referenced in the Bicep file and passed as the slackWebhookUrl parameter during deployments. By storing the webhook URL in GitHub secrets, we ensure it remains confidential and is not exposed in the source code. This integration allows alerts, such as uptimeAlert, to trigger notifications via Slack without revealing sensitive information.
 
+**Product Roadmap**
+https://github.com/orgs/bigdawgbank/projects/1
