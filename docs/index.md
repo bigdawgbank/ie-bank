@@ -4,23 +4,24 @@ Welcome to the BigDawg IE Bank Application Documentation Page!
 
 ---
 
-## Project Description
-
-The BigDawg IE Bank Application builds upon the success of the previous IE Bank Application developed during the first phase of the project. For the next phase, we aim to deliver a **Minimum Viable Product (MVP)** that includes additional features like the Admin Portal which is a user management system enabling administrators to create, update, and delete users, User Portal Enhancements which include Registration forms, bank account linking, and money transfer functionalities and Secure Deployment, which entails following DevOps best practices to automate CI/CD pipelines and ensure a robust DTAP (Development, Test, Acceptance, Production) workflow. This project emphasizes modularity, scalability, and security, ensuring compliance with financial industry standards and providing seamless user experiences.
+## Project Full Design Document
+Please click here to view the full Design Document covering every aspect of our application:
+- [Design Document](./Design_Doc.md)
 
 ---
 
 ## Role Documentation
 
-This section serves to provide each role the ability to navigate to their specific page and document all of the information relevant to their tasks/work done for our Banking application. The documentation should be updated and maintained consistently throughout the project's lifecycle. This structure ensures that each individual team member can express their workings without interference and with ease.
+Here is where you can find more role specific documentation rather than searching through our design document. This section also serves to provide each role the ability to navigate to their specific page and document all of the information relevant to their tasks/work done for our Banking application. The documentation should be updated and maintained consistently throughout the project's lifecycle along with the main design document. This structure ensures that each individual team member can express their workings without interference and with ease, with the Cloud architect documenting their changes in the main doc. A large majority of the documentation can be found in the [Cloud Architect](./CloudArchitect.md) page , with more specific role-based documentation residing within the role pages. 
+
+
+### Cloud Architect
+Designs and implements scalable cloud solutions and ensures best pracitces.
+- [Cloud Architect](./CloudArchitect.md)
 
 ### Product Owner
 Defines the product backlog and ensures the product aligns with business needs.
 - [Product Owner](./PO.md)
-
-### Cloud Architect
-Designs and implements scalable cloud solutions and CI/CD pipelines.
-- [Cloud Architect](./CloudArchitect.md)
 
 ### Cloud Full Stack Developer
 Develops frontend and backend features using Vue.js and Flask.
@@ -32,7 +33,7 @@ Implements Infrastructure as Code using Bicep templates.
 
 ### Cybersecurity Engineer
 Secures the application and ensures compliance with security standards.
-- [Cybersecurity Engineer](./Cybersecuirty.md)
+- [Cybersecurity Engineer](./Cybersecurity.md)
 
 ### Site Reliability Engineer
 Monitors system performance and ensures application reliability.

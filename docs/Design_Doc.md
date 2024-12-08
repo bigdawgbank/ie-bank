@@ -1,13 +1,26 @@
-# Cloud Architect Documentation 
+# BigDawg Bank Design Document
 
-The Cloud Architect is responsible for designing and implementing scalable, reliable, and cost-effective cloud solutions that align with business and user needs. The role encompasses architecture design, infrastructure setup, collaboration with the team on implementation plans, and ensuring proper documentation throughout the project lifecycle.
+The BigDawg IE Bank Application builds upon the previous IE Bank Application developed during the first phase of the project. For the next phase, we aim to deliver a substantially more upgraded **Minimum Viable Product (MVP)** that includes additional features like the Admin Portal which is a user management system enabling administrators to create, update, and delete users, User Portal Enhancements which include Registration and log in with JWT authentication, bank account linking, and money transfer functionalities, and Secure Deployment, which entails following DevOps best practices to automate CI/CD pipelines and ensure a robust DTAP (Development, Test, Acceptance, Production) workflow. Through fostering a culture of care and collaboration over the past months, the team has produced a project exactly showcasing what was proimised. The BigDawgbank Application emphasizes modularity, scalability, and security, ensuring compliance with financial industry standards and providing a seamless, secure and simple user experience. We will take a deep dive into the various design aspects that have been introduced and masterfully brought to life by the team here at BigDawgbank. 
 
----
 
 ## Table of Contents
 
-1. [BigDawgBank Functional and Non-Functional Requirements](#bigdawgbank-functional-and-non-functional-requirements)
-2. [Infrastructure Architecture Design](#infrastructure-architecture-design)
+1. [Product Planning](#product-planning)
+   - [1. Product Vision & Mission Statements](#1-product-vision--mission-statements)
+     - [Product Vision](#product-vision)
+     - [Product Mission](#product-mission)
+   - [2. Product Vision Board](#2-product-vision-board)
+   - [3. Minimum Viable Product (MVP)](#3-minimum-viable-product-mvp)
+     - [Definition](#definition)
+     - [Requirements](#requirements)
+   - [4. Objectives and Key Results (OKRs)](#4-objectives-and-key-results-okrs)
+     - [Objective 1: Enhance User Experience](#objective-1-enhance-user-experience)
+     - [Objective 2: Strengthen Security](#objective-2-strengthen-security)
+     - [Objective 3: Optimize Performance](#objective-3-optimize-performance)
+     - [Objective 4: Foster Collaboration](#objective-4-foster-collaboration)
+     - [Objective 5: Streamline Deployment](#objective-5-streamline-deployment)
+2. [BigDawgBank Functional and Non-Functional Requirements](#bigdawgbank-functional-and-non-functional-requirements)
+3. [Infrastructure Architecture Design](#infrastructure-architecture-design)
    - [GitHub](#github)
    - [App Service for Containers](#app-service-for-containers)
    - [App Service Plan](#app-service-plan)
@@ -19,7 +32,7 @@ The Cloud Architect is responsible for designing and implementing scalable, reli
    - [Application Insights](#application-insights)
    - [Azure Workbook](#azure-workbook)
    - [Infra Architecture Design Diagram](#infra-architecture-design-diagram)
-3. [Environment Design](#environment-design)
+4. [Environment Design](#environment-design)
    - [Description](#description)
    - [Environments](#environments)
      - [Development Environment](#development-environment)
@@ -29,22 +42,22 @@ The Cloud Architect is responsible for designing and implementing scalable, reli
    - [Continuous Delivery](#continuous-delivery)
    - [GitHub Secrets](#github-secrets)
    - [GitHub Variables](#github-variables)
-4. [Well-Architected Framework Design](#well-architected-framework-design)
+5. [Well-Architected Framework Design](#well-architected-framework-design)
    - [1. Reliability Pillar](#1-reliability-pillar)
    - [2. Security Pillar](#2-security-pillar)
    - [3. Cost Optimization Pillar](#3-cost-optimization-pillar)
      - [Static Web App for Frontend](#static-web-app-for-frontend)
    - [4. Operational Excellence Pillar](#4-operational-excellence-pillar)
    - [5. Performance Efficiency Pillar](#5-performance-efficiency-pillar)
-5. [Test Driven Design(TDD)](#test-driven-designtdd)
-6. [Release Strategy](#release-strategy)
+6. [Test Driven Development(TDD)](#test-driven-developmenttdd)
+7. [Release Strategy](#release-strategy)
    - [Development (Dev)](#development-dev)
    - [User Acceptance Testing (UAT)](#user-acceptance-testing-uat)
    - [Production (Prod)](#production-prod)
    - [Infrastructure Release Strategy](#infrastructure-release-strategy)
    - [Rollback Mechanisms and Disaster Recovery](#rollback-mechanisms-and-disaster-recovery)
-7. [Use Case and Sequential Model Design](#use-case-and-sequential-model-design)
-8. [Entity Relationship Diagram](#entity-relationship-diagram)
+8. [Use Case and Sequential Model Design](#use-case-and-sequential-model-design)
+9. [Entity Relationship Diagram](#entity-relationship-diagram)
    - [Users Table](#users-table)
    - [Accounts Table](#accounts-table)
    - [Bank Transfers Logical Entity](#bank-transfers-logical-entity)
@@ -52,26 +65,158 @@ The Cloud Architect is responsible for designing and implementing scalable, reli
      - [User to Account](#user-to-account)
      - [Account to Bank Transfers](#account-to-bank-transfers)
    - [Key Features](#key-features-of-the-ER)
-9. [Data Flow Diagram](#data-flow-diagram)
-   - [External Entities](#external-entities)
-   - [Processes](#processes)
-   - [Data Stores](#data-stores)
-   - [External Systems](#external-systems)
-   - [Data Flow Steps](#data-flow-steps)
-   - [Key Features](#key-features-of-the-dfd)
-10. [Twelve-Factor App Principles in BigDawgBank](#twelve-factor-app-principles-in-bigdawgbank)
-   - [I. Codebase](#i-codebase)
-   - [II. Dependencies](#ii-dependencies)
-   - [III. Config](#iii-config)
-   - [IV. Backing Services](#iv-backing-services)
-   - [V. Build, Release, Run](#v-build-release-run)
-   - [VI. Processes](#vi-processes)
-   - [VII. Port Binding](#vii-port-binding)
-   - [VIII. Concurrency](#viii-concurrency)
-   - [IX. Disposability](#ix-disposability)
-   - [X. Dev/Prod Parity](#x-devprod-parity)
-   - [XI. Logs](#xi-logs)
-   - [XII. Admin Processes](#xii-admin-processes)
+10. [Data Flow Diagram](#data-flow-diagram)
+    - [External Entities](#external-entities)
+    - [Processes](#processes)
+    - [Data Stores](#data-stores)
+    - [External Systems](#external-systems)
+    - [Data Flow Steps](#data-flow-steps)
+    - [Key Features](#key-features-of-the-dfd)
+11. [Twelve-Factor App Principles in BigDawgBank](#twelve-factor-app-principles-in-bigdawgbank)
+    - [I. Codebase](#i-codebase)
+    - [II. Dependencies](#ii-dependencies)
+    - [III. Config](#iii-config)
+    - [IV. Backing Services](#iv-backing-services)
+    - [V. Build, Release, Run](#v-build-release-run)
+    - [VI. Processes](#vi-processes)
+    - [VII. Port Binding](#vii-port-binding)
+    - [VIII. Concurrency](#viii-concurrency)
+    - [IX. Disposability](#ix-disposability)
+    - [X. Dev/Prod Parity](#x-devprod-parity)
+    - [XI. Logs](#xi-logs)
+    - [XII. Admin Processes](#xii-admin-processes)
+12. [SCRUM Methodology and Devops Collaboration](#scrum-methodology)
+13. [Modularization Strategy](#modularization-strategy)
+    - [Description](#description)
+    - [Key Decisions](#key-decisions)
+    - [Naming Conventions](#naming-conventions)
+    - [Implementation](#implementation)
+    - [Team Collaboration](#team-collaboration)
+    - [Conclusion](#conclusion)
+14. [Git Feature Branch Strategy](#git-feature-branch-strategy)
+    - [1. Description of Git Feature Branch Strategy](#1-description-of-git-feature-branch-strategy)
+15. [Continuous Integration (CI) Workflows for Backend and Frontend](#continuous-integration-ci-workflows-for-backend-and-frontend)
+    - [1. CI Workflow for Frontend](#1-ci-workflow-for-frontend)
+    - [2. CI Workflow for Backend](#2-ci-workflow-for-backend)
+16. [Inner Loop and Outer Loop](#inner-loop-and-outer-loop)
+    - [Inner Loop](#inner-loop)
+    - [Outer Loop](#outer-loop)
+17. [Continuous Delivery (CD) Workflows for Backend and Frontend](#continuous-delivery-cd-workflows-for-backend-and-frontend)
+    - [1. CD Workflow for Frontend](#1-cd-workflow-for-frontend)
+    - [2. CD Workflow for Backend](#2-cd-workflow-for-backend)
+18. [Key Features and Benefits of BigDawgBanks CI/CD for Frontend/Backend](#key-features-and-benefits-of-bigdawgbanks-cicd-for-frontendbackend)
+19. [GitHub Hardening Strategy](#github-hardening-strategy)
+    - [1.1 Branch Protection Rules](#11-branch-protection-rules)
+    - [1.2 Dependabot](#12-dependabot)
+    - [1.3 CodeQL Analysis](#13-codeql-analysis)
+    - [1.4 OSSF Scorecard](#14-ossf-scorecard)
+    - [1.5 Secret Scanning & Push Protection](#15-secret-scanning--push-protection)
+    - [1.6 CODEOWNERS](#16-codeowners)
+20. [Secrets Management](#secrets-management)
+    - [2.1 Azure Key Vault](#21-azure-key-vault)
+21. [Implemented Security Practices](#implemented-security-practices)
+    - [3.1 Practices from OpenSSF](#31-practices-from-openssf)
+    - [3.2 Practices from SAFECode](#32-practices-from-safecode)
+22. [Metrics and Results](#metrics-and-results)
+23. [Challenges and Lessons Learned](#challenges-and-lessons-learned)
+    - [Challenges](#challenges)
+    - [Lessons Learned](#lessons-learned)
+24. [Future Recommendations](#future-recommendations)
+25. [References](#references)
+26. [Service Level Agreement (SLA)](#service-level-agreement-sla)
+    - [1. SLA Definition](#1-sla-definition)
+27. [Service Level Objectives (SLOs)](#service-level-objectives-slos)
+    - [1. SLO Definitions](#1-slo-definitions)
+28. [Service Level Indicators (SLIs)](#service-level-indicators-slis)
+    - [1. SLI Definitions](#1-sli-definitions)
+29. [Monitoring Strategy Design](#monitoring-strategy-design)
+    - [1. Monitoring Strategy](#1-monitoring-strategy)
+30. [Incident Response Design](#incident-response-design)
+    - [1. Incident Response Plan](#1-incident-response-plan)
+31. [Site Reliability Engineering Design](#site-reliability-engineering-design)
+    - [1. SRE Design](#1-sre-design)
+
+
+## Product Planning
+
+The Product Owner oversees the planning phase of the product, ensuring all aspects of the product vision, roadmap, and requirements are well-documented.
+
+### 1. Product Vision & Mission Statements
+#### **Product Vision**
+Big Dawg Bank aims to be the trusted partner for secure, seamless, and accessible banking—empowering small businesses, professionals, and individuals to take control of their finances anytime, anywhere.
+
+#### **Product Mission**
+To deliver a modern digital banking solution that prioritizes user needs by offering real-time insights, advanced security features, and automated tools, all while fostering trust and efficiency.
+
+---
+
+### 2. Product Vision Board
+![Product Vision Board](./images/Product_Vision.jpeg)
+
+---
+
+### 3. Minimum Viable Product (MVP)
+#### **Definition**
+The MVP for Big Dawg Bank will focus on delivering core functionality that addresses essential user and admin needs while ensuring security and scalability. This includes:
+- A user-friendly admin portal for seamless management of users and permissions.
+- A secure user portal for managing accounts, performing money transfers, and viewing dashboards.
+- Enhanced security with biometric authentication and robust password management.
+
+#### **Requirements**
+Admin Portal:
+- Manage users: View, create, update, and delete user accounts.
+- Assign user roles and permissions for secure account management.
+- Monitor system activity and generate basic reports.
+
+User Portal:
+- Registration: Enable secure and intuitive account creation for users.
+- Login: Support biometric authentication and password-based secure login.
+- Account Management: View account balances, transaction history, and personalized financial insights.
+- Money Transfers: Perform secure peer-to-peer and external money transfers with transaction tracking.
+- Dashboards: Provide real-time insights into account activity and financial performance.
+
+---
+
+### 4. Objectives and Key Results (OKRs):
+
+Objectives and Key Results (OKRs)
+
+Objective 1: Enhance User Experience
+- KR 1.1: Reduce user onboarding time by 30% by introducing pre-filled forms and automated validations.
+- KR 1.2: Deliver a mobile-first responsive design accessible across all devices and screen sizes.
+- KR 1.3: Ensure the application loads in under 2.5 seconds for 95% of users.
+- KR 1.4: Provide real-time feedback for money transfers and account operations with live status updates.
+- KR 1.5: Achieve a 98% user satisfaction rate through surveys and feedback loops.
+
+Objective 2: Strengthen Security
+- KR 2.1: Encrypt all sensitive data using AES-256 standards and secure APIs for data exchange.
+- KR 2.2: Implement biometric authentication and multi-factor authentication (MFA) for all user logins.
+- KR 2.3: Ensure zero reported security vulnerabilities post-launch through active monitoring.
+- KR 2.4: Conduct monthly vulnerability assessments and penetration testing.
+- KR 2.5: Automate 95% of security monitoring and incident alerting using integrated tools.
+
+Objective 3: Optimize Performance
+- KR 3.1: Achieve 99.95% uptime in production environments.
+- KR 3.2: Support 250 concurrent users during peak loads without degradation in performance.
+- KR 3.3: Automate dynamic scaling to handle traffic spikes exceeding 80% capacity.
+- KR 3.4: Optimize database queries, achieving an average query response time of <50ms.
+- KR 3.5: Reduce API response times to <800ms for all endpoints.
+
+Objective 4: Foster Collaboration
+- KR 4.1: Fully integrate Slack with Azure Boards and GitHub for streamlined notifications and communication.
+- KR 4.2: Maintain a 95% participation rate in bi-weekly stand-up meetings.
+- KR 4.3: Automate milestone notifications to stakeholders via Slack and email.
+- KR 4.4: Share detailed sprint reports with stakeholders weekly to ensure transparency.
+- KR 4.5: Conduct retrospectives after every sprint and implement at least three actionable improvements per cycle.
+
+Objective 5: Streamline Deployment
+- KR 5.1: Deploy updates to the development and staging environments in under 7 minutes.
+- KR 5.2: Achieve 100% pass rate on automated tests for all deployments.
+- KR 5.3: Automate rollbacks for failed deployments within 30 seconds of detection.
+- KR 5.4: Launch the MVP to production on schedule, meeting 100% of functional and security requirements.
+- KR 5.5: Reduce deployment-related errors by 60% through improved CI/CD pipelines.
+
+---
 
 ## BigDawgBank Functional and Non-Functional Requirements
 
@@ -413,7 +558,42 @@ We have implemented Azure Workbook to provide a flexible canvas for data analysi
 ![Cloud Architecture Diagram](./images/Infra_Architecture_Design.drawio.png)
 
 
-### INPUT DESCRIPTION HERE
+### Use of JWTs (JSON Web Tokens)
+
+**Description**  
+We are using JWTs to ensure secure authentication and authorization within the BigDawgBank application. They provide a compact and self-contained way to transmit information between parties as a JSON object. This information can be verified and trusted because it is digitally signed. 
+
+**How JWTs are Used**
+
+1. **User Authentication**:
+   - When a user logs in, the backend Flask application verifies the user's credentials.
+   - Upon successful authentication, the server generates a JWT containing the user's information and signs it with a secret key.
+   - The JWT is then sent back to the client (frontend) as part of the response.
+
+2. **Token Storage**:
+   - The client stores the JWT, typically in local storage or a cookie, for subsequent requests.
+
+3. **Authorization**:
+   - For each subsequent request to a protected endpoint, the client includes the JWT in the Authorization header as a Bearer token.
+   - The backend application extracts the token from the request header and verifies its signature using the secret key.
+   - If the token is valid, the server processes the request and grants access to the protected resource.
+
+4. **Token Expiry and Refresh**:
+   - JWTs have an expiration time (`exp` claim) to enhance security.
+   - When the token expires, the client must re-authenticate to obtain a new token.
+
+**Benefits of Using JWTs**:
+- **Stateless Authentication**: JWTs are self-contained, eliminating the need for server-side session storage.
+- **Scalability**: Stateless nature allows easy scaling of the application across multiple servers.
+- **Security**: JWTs are signed and optionally encrypted, ensuring data integrity and confidentiality.
+- **Flexibility**: JWTs can carry custom claims, allowing for flexible and fine-grained access control.
+
+By leveraging JWTs, the BigDawgBank application ensures secure and efficient authentication and authorization, enhancing the overall security and user experience.
+
+### **SLACK_WEBHOOK_URL Secret**
+The SLACK_WEBHOOK_URL is a GitHub secret used to securely store the Slack webhook URL required for sending alerts to Slack. This secret is referenced in the Bicep file and passed as the slackWebhookUrl parameter during deployments. By storing the webhook URL in GitHub secrets, we ensure it remains confidential and is not exposed in the source code. This integration allows alerts, such as uptimeAlert, to trigger notifications via Slack without revealing sensitive information.
+
+By securely managing the SLACK_WEBHOOK_URL as a GitHub secret, we maintain the confidentiality of sensitive information while enabling seamless integration with Slack for real-time alert notifications
 
 ---
 
@@ -1024,6 +1204,137 @@ The Following Table highlights our TTD approach by showcasing the various tests 
 
 We can see the immense focus our team had on ensuring the authentication aspect of our application was completely robust and error free. By adopting TDD, the BigDawgBank application ensures that all functional requirements are met with high code quality and reliability. The focus on writing tests before code helped our Fullstack team define clear requirements, catch issues early, and promote maintainable and modular code. This approach has proven to be effective in delivering a robust and secure banking application for our users.
 
+### Use of Postman for API Testing
+
+**Description**  
+Postman is used extensively for testing the APIs of the BigDawgBank application. It allows us to automate the testing process, ensuring that our APIs are functioning correctly and meeting the specified requirements. By integrating Postman into our TDD workflow, we can validate the behavior of our APIs and catch these kinds of issues early in the development process.
+
+### Postman Collections
+
+Postman collections are used to group related API requests together. Each collection contains multiple requests, along with tests that validate the responses. For the BigDawgBank application, we have created a collection named "IE Bank" that includes various API endpoints such as login, accounts, and users.
+
+#### 1. Login:
+- **Method**: POST
+- **URL**: `{{API_URL}}/login`
+- **Description**: This endpoint is used to authenticate users. It accepts a username and password as form data and returns a JWT token upon successful authentication.
+- **Tests**:
+  - Verify that the response status code is 200.
+  - Check that the response contains a token.
+  - Save the token to the environment for use in subsequent requests.
+
+#### 2. Accounts:
+- **Method**: GET
+- **URL**: `{{API_URL}}/accounts`
+- **Description**: This endpoint retrieves a list of accounts associated with the authenticated user. It requires a bearer token for authentication.
+- **Tests**:
+  - Verify that the response status code is 200.
+  - Check that the response contains an array of accounts.
+
+#### 3. Users:
+- **Method**: GET
+- **URL**: `{{API_URL}}/users`
+- **Description**: This endpoint retrieves a list of users. It requires a bearer token for authentication.
+- **Tests**:
+  - Verify that the response status code is 200.
+  - Check that the response contains an array of users.
+
+#### 4. Users (Unauthorized):
+- **Method**: GET
+- **URL**: `{{API_URL}}/users`
+- **Description**: This endpoint attempts to retrieve a list of users without authentication. It is used to test the unauthorized access scenario.
+- **Tests**:
+  - Verify that the response status code is 401.
+  - Check that the response contains an error message.
+
+### Postman Environments
+
+Postman environments allow us to manage different sets of variables for different environments (e.g., Development, UAT, Production). This enables us to run the same collection of tests against different environments without modifying the requests.
+
+**Example Environment Configuration**  
+```json
+{
+  "name": "UAT Environment",
+  "values": [
+    {
+      "key": "API_URL",
+      "value": "{{BACKEND_API_URL}}",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "ADMIN_USERNAME",
+      "value": "{{ADMIN_USERNAME}}",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "ADMIN_PASSWORD",
+      "value": "{{ADMIN_PASSWORD}}",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "JWT_TOKEN",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    }
+  ]
+}
+```
+#### Explanation of Environment Variables
+
+**API_URL:**
+The base URL for the API endpoints. This variable allows us to switch between different environments (e.g., Development, UAT, Production) by changing the value of API_URL.
+
+**ADMIN_USERNAME:**
+The username for the admin user. This variable is used in the login request to authenticate the admin user.
+
+**ADMIN_PASSWORD:**
+The password for the admin user. This variable is used in the login request to authenticate the admin user.
+
+**JWT_TOKEN:**
+The JWT token obtained from the login request. This variable is used in subsequent requests to authenticate the user.
+
+### Integration with CI/CD Pipeline
+
+**Automated Testing with Newman**
+Newman, the command-line companion for Postman, is used to run Postman collections as part of our CI/CD pipeline. This ensures that our API tests are executed automatically whenever changes are made to the codebase:
+```yml
+test-uat-api:
+  needs: deploy-uat
+  runs-on: ubuntu-latest
+  environment:
+    name: "UAT"
+  steps:
+    - uses: actions/checkout@v3
+
+    - name: Install Newman
+      run: npm install -g newman
+
+    - name: Run API Tests
+      run: |
+        newman run [collection.json](http://_vscodecontentref_/0) \
+          -e [uat.json](http://_vscodecontentref_/1) \
+          --env-var "BACKEND_API_URL=${{ vars.VUE_APP_ROOT_API }}" \
+          --env-var "ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }}" \
+          --env-var "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}"
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: uat-api-test-results
+        path: newman/
+```
+
+### Benefits of Using Postman for TDD
+
+**Automated Testing:** Postman allows us to automate the testing of our APIs, ensuring that they function correctly and meet the specified requirements.
+**Environment Management:** By using Postman environments, we can easily switch between different environments (e.g., Development, UAT, Production) without modifying the tests.
+**Integration with CI/CD:** Integrating Postman with our CI/CD pipeline ensures that our API tests are executed automatically, providing early feedback on the quality of our APIs.
+**Comprehensive Testing:** Postman supports a wide range of tests, including status code checks, response structure validation, and data validation, ensuring comprehensive testing of our APIs.
+
 ---
 
 ## Release Strategy
@@ -1076,6 +1387,7 @@ The production environment is used for the live application, serving end-users.
 ---
 
 ### Infrastructure Release Strategy
+- **Description**: Document the infrastructure release strategy, including the use of IaC tools (e.g., Bicep templates, ARM templates) and GitHub Actions workflows. Detail the process for provisioning and updating infrastructure in each environment:
 
 The infrastructure release strategy for the BigDawgBank application ensures a structured and secure deployment process across different environments. This strategy leverages Infrastructure as Code (IaC) tools such as Bicep templates and GitHub Actions workflows to automate the provisioning and updating of infrastructure. Our CI/CD strategy for managing Azure infrastructure as code follows a structured pipeline to ensure quality, consistency, and reliability across Development, UAT (User Acceptance Testing), and Production environments. This strategy is implemented using GitHub Actions, with workflows designed for both Continuous Integration (CI) and Continuous Delivery (CD), ensuring seamless infrastructure deployment while maintaining code quality and security standards.
 
@@ -1112,6 +1424,8 @@ The UAT environment is used for stakeholder testing and validation of infrastruc
 The production environment is used for the live application, serving end-users.
 - **Environment**: Production
 - Deployments proceed only after successful UAT testing and require either a pull request merge to the `main` branch or manual approval.
+
+![Infra_workflow](./images/Infra_workflow.png)
 
 ### Challenges in Implementation
 - **Validation Process**:
@@ -1284,51 +1598,51 @@ The Data Flow Diagram (DFD) illustrates the interaction between users, admins, p
 
 ### External Entities
 1. **Bank User**
-   - Represents the end users of the application (e.g., customers performing transactions or viewing accounts).
+  - Represents the end users of the application (e.g., customers performing transactions or viewing accounts).
 2. **Bank Admin**
-   - Represents administrative users with elevated privileges for managing users and accounts.
+  - Represents administrative users with elevated privileges for managing users and accounts.
 
 ---
 
 ### Processes
 1. **Authentication**
-   - Handles user login and session management.
-   - Input: Login credentials (username, password).
-   - Output: JWT Token issued to the user for session management.
+  - Handles user login and session management.
+  - Input: Login credentials (username, password).
+  - Output: JWT Token issued to the user for session management.
 2. **Registration**
-   - Handles new user sign-ups.
-   - Input: Registration details (username, email, password).
-   - Output: New user created in the Users Database with a default account in the Accounts Database.
+  - Handles new user sign-ups.
+  - Input: Registration details (username, email, password).
+  - Output: New user created in the Users Database with a default account in the Accounts Database.
 3. **User Management**
-   - Allows Bank Admin to perform CRUD (Create, Read, Update, Delete) operations on users.
-   - Input: Admin requests to manage users.
-   - Output: Updates made to the Users Database.
+  - Allows Bank Admin to perform CRUD (Create, Read, Update, Delete) operations on users.
+  - Input: Admin requests to manage users.
+  - Output: Updates made to the Users Database.
 4. **Account Management**
-   - Handles operations such as account creation, updates, and retrieval.
-   - Input: User or Admin requests for account-related operations.
-   - Output: Updates to the Accounts Database.
+  - Handles operations such as account creation, updates, and retrieval.
+  - Input: User or Admin requests for account-related operations.
+  - Output: Updates to the Accounts Database.
 5. **Bank Transfer**
-   - Facilitates money transfers between user accounts.
-   - Input: Transfer request specifying sender account, recipient account, and amount.
-   - Output: Updated balances in the Accounts Database and a new transfer record in the Transfers Database.
+  - Facilitates money transfers between user accounts.
+  - Input: Transfer request specifying sender account, recipient account, and amount.
+  - Output: Updated balances in the Accounts Database and a new transfer record in the Transfers Database.
 
 ---
 
 ### Data Stores
 1. **Users Database**
-   - Stores user credentials, hashed passwords, roles, and metadata.
+  - Stores user credentials, hashed passwords, roles, and metadata.
 2. **Accounts Database**
-   - Stores account details such as balance, currency, status, and associated user.
+  - Stores account details such as balance, currency, status, and associated user.
 3. **Transfers Database**
-   - Logs bank transfers, including sender, recipient, amount, and timestamp.
+  - Logs bank transfers, including sender, recipient, amount, and timestamp.
 
 ---
 
 ### External Systems
 1. **JWT System**
-   - Used for authentication and authorization through token-based sessions.
+  - Used for authentication and authorization through token-based sessions.
 2. **Email Service (Optional)**
-   - Sends email notifications for registrations, transactions, or account updates.
+  - Sends email notifications for registrations, transactions, or account updates.
 
 ---
 
@@ -1376,12 +1690,12 @@ The Data Flow Diagram (DFD) illustrates the interaction between users, admins, p
 - **Steps**:
   1. The user initiates a money transfer by specifying the sender account, recipient account, and amount.
   2. The **Bank Transfer** process validates:
-     - The sender account belongs to the user.
-     - Sufficient balance exists in the sender account.
-     - The recipient account is valid.
+    - The sender account belongs to the user.
+    - Sufficient balance exists in the sender account.
+    - The recipient account is valid.
   3. If valid:
-     - The sender's balance is debited, and the recipient's balance is credited in the **Accounts Database**.
-     - A record of the transfer is created in the **Transfers Database**.
+    - The sender's balance is debited, and the recipient's balance is credited in the **Accounts Database**.
+    - A record of the transfer is created in the **Transfers Database**.
 
 
 ### Key Features of the DFD
@@ -1466,3 +1780,787 @@ The BigDawgBank application adheres to the Twelve-Factor App methodology to ensu
 By adhering to the Twelve-Factor App principles, the BigDawgBank application ensures a scalable, maintainable, and portable architecture that can be easily deployed and managed across different environments.
 
 ---
+
+## Scrum Methodology
+
+The Product Owner adopts the Scrum methodology to ensure the project follows agile principles, allowing flexibility and collaboration.
+
+### 1. Backlog Grooming
+- Session to refine and prioritize the backlog with input from the Cloud Architect.
+- **Deliverable**: [Click Here](https://github.com/user-attachments/assets/79102738-8d94-456d-83a1-d398cb8976d5)
+
+---
+
+### 2. Sprint Planning
+- Collaborate with the team to define sprint goals and assign tasks.
+- **Deliverable**: [Click Here](https://github.com/user-attachments/assets/62e52f59-9051-4e77-a7d2-2da49745e9e7)
+
+---
+
+### 3. Daily Scrum/Standup
+- Conduct at least three stand-up meetings to track progress and resolve blockers.
+- **Deliverables**:
+
+  - [Daily Scrum 1](https://github.com/user-attachments/assets/d831bbf6-f219-4165-a821-f2f32df31e09)
+
+  - [Daily Scrum 2](https://github.com/user-attachments/assets/15d52ee1-8494-4108-85e4-c47f8de9388a)
+
+  - [Daily Scrum 3](https://github.com/user-attachments/assets/3f85c4cf-0e50-4f63-8def-ebc4f672bc7a)
+
+
+---
+
+### 5. Sprint Retrospective
+- Use Azure DevOps retrospective tools to analyze successes and areas for improvement.
+- **Deliverable**: (https://dev.azure.com/BigDawgBank/Big%20Dawg%20Bank/_apps/hub/ms-devlabs.team-retrospectives.home#teamId=c38adc75-dacf-4a4b-940a-8c608421f8b3&boardId=d87d64e1-1bda-4e80-a172-a81683d610a2)
+
+---
+
+## DevOps Collaboration
+
+### 1. Integration of Collaboration Tools
+To enhance team productivity and ensure efficient communication, the following integrations have been implemented:
+- GitHub & Azure DevOps:
+Enables tracking of pull requests and backlog items, ensuring that development progress aligns with project goals. This integration provides a unified view of code changes and work items, streamlining collaboration between development and project management teams.
+- Slack & Azure DevOps:
+Automates notifications for task updates, such as status changes, comments, and assignments. Team members are promptly informed of developments, reducing delays and ensuring accountability across sprints.
+- Slack & GitHub:
+Keeps the team informed about code changes and pull requests. Notifications in Slack allow developers to quickly review, discuss, and merge changes, fostering a collaborative coding environment.
+- Slack & Zoom:
+Simplifies meeting management by enabling the scheduling and tracking of virtual meetings directly through Slack. This integration ensures smooth coordination of stand-ups, retrospectives, and ad hoc discussions.
+
+### 2. Benefits of Integrated Collaboration
+- Real-time updates and notifications across platforms improve transparency and decision-making.
+- Reduced manual effort in tracking project updates, allowing the team to focus on core tasks.
+- Centralized communication ensures that all stakeholders stay aligned on project progress and deadlines.
+- Seamless meeting management encourages team participation and collaboration.
+
+### 2. Monitoring and Alerts
+- **Azure Monitoring Alerts**: Collaborate with the SRE to connect monitoring alerts with Slack.
+- **Deliverable**: [Collaboration Strategy Documentation](#)
+
+---
+
+## Modularization Strategy
+
+---
+
+### Description
+Our modularization strategy focuses on isolating resources that do not have a parent-child relationship into separate module files within a directory named `modules`. This approach ensures simplicity and ease of interaction for team members working with the infrastructure. The main file, `main.bicep`, triggers the deployment of resources defined in the modules folder.
+
+### Key Decisions
+1. **Single Repository**:
+   - We decided to keep all infrastructure code in a single repository rather than splitting it into separate repositories for Azure components, Backend, and Frontend. This decision simplifies the process for team members who need to interact with the infrastructure.
+
+2. **Small Number of Modules**:
+   - Given the relatively small number of modules, we maintained a flat structure with standardized and coherent file naming. This organization keeps the structure easy to navigate and manage.
+
+3. **Future Scalability**:
+   - If the project grows significantly in terms of resources and modules, we will consider classifying the modules one layer deeper under categories like Azure components, Backend, and Frontend.
+
+### Naming Conventions
+To ensure clarity and consistency, we standardized the naming conventions for project files:
+- **Lowercase Letters with Hyphens**:
+  - All file names use lowercase letters with hyphens (-) to separate words for readability.
+- **Bicep Suffix**:
+  - File names end with the `.bicep` suffix to indicate Bicep templates.
+- **Descriptive Names**:
+  - Each name starts with a descriptor that identifies the resource or functionality (e.g., `app-service-plan.bicep` for the service plan).
+  - Related resources are grouped with shared prefixes (e.g., `app-service-be.bicep` for backend and `app-service-fe.bicep` for frontend).
+  - Specific distinctions are made where necessary, such as between `postgre-sql-db.bicep` and `postgre-sql-server.bicep`, ensuring compact yet informative naming across the project.
+
+### Implementation
+- **Main File**:
+  - The `main.bicep` file serves as the entry point, orchestrating the deployment of various resources by referencing the module files.
+- **Modules Directory**:
+  - The `modules` directory contains individual Bicep files for each resource, such as `app-service-plan.bicep`, `app-service-be.bicep`, `app-service-fe.bicep`, `postgre-sql-server.bicep`, and `postgre-sql-db.bicep`.
+
+### Team Collaboration
+This decision was made after discussions with the cloud architect and the full-stack developer, who emphasized the importance of keeping the structure straightforward and avoiding unnecessary organizational complexity. This approach aligns with our decision to merge all three repositories into one, ensuring consistency across the project.
+
+### Conclusion
+Although there were initial disagreements, the rationale behind this approach became clear, highlighting its potential to improve team members' understanding of the infrastructure repository. Ultimately, this was a team decision, prioritizing clarity and simplicity, especially since this exercise was conducted during a sprint.
+
+---
+
+## Git Feature Branch Strategy
+
+### Description of Git Feature Branch Strategy
+- **Description**: The Git feature branch strategy is implemented to ensure a structured and efficient workflow for developing new features, fixing bugs, and maintaining the codebase. This strategy involves creating separate branches for each feature or bug fix, which are then merged into the main branch after thorough testing and code review.
+
+1. **Main Branch**:
+- The main branch contains the stable, production-ready code.
+- Direct commits to the main branch are restricted to ensure stability. Code reviews need to be requested then approved in order to merge to main.
+
+2. **Develop Branch**:
+- The feature/develop branch serves as an integration branch for features and bug fixes.
+- It is used for testing and validation before merging into the main branch.
+
+3. **Feature Branches**:
+- Feature branches are created from the main branch.
+- Naming convention: feat/<feature-name>.
+- Used for developing new features or enhancements.
+
+4. **Bugfix Branches**:
+Although we don´t have any bugfix branches, we would fix any bugs inside the feature branch before merging to main.
+If we were to have bugfix branches, this would be our strategy:
+- Bugfix branches are created from the develop/f branch.
+- Naming convention: bugfix/<bug-description>.
+- Used for fixing bugs and issues.
+
+5. **Release Branches**:
+Although, we also don´t have any release branches at the moment, they could be used in the future using the following strategy:
+- Release branches are created from the develop branch.
+- Naming convention: release/<version-number>.
+- Used for preparing a new production release, including final testing and bug fixes.
+
+### Configuration Applied to GitHub
+1. **Branch Protection Rules**:
+- Enable branch protection rules for the main and develop branches to prevent direct commits.
+- Require pull request reviews before merging.
+- Enforce status checks to pass before merging (e.g., CI tests).
+
+2. **Pull Request Workflow**:
+- All changes must be submitted via pull requests (PRs).
+- PRs must be reviewed and approved by at least one other team member.
+- Automated tests must pass before a PR can be merged.
+
+3. **Commit Signing**:
+- Enforce signed commits to ensure the authenticity and integrity of the code.
+
+4. **Automated Testing**:
+- Integrate CI/CD pipelines to automatically run tests on each PR.
+- Use GitHub Actions to automate the build, test, and deployment processes.
+
+### Alignment with DevOps Principles
+- **Collaboration**: The feature branch strategy promotes collaboration by allowing multiple developers to work on different features simultaneously without conflicts.
+- **Continuous Integration**: Automated testing and CI pipelines ensure that code changes are continuously integrated and tested, maintaining code quality.
+- **Continuous Delivery**: The strategy supports continuous delivery by enabling frequent, reliable releases through structured branching and automated deployments.
+- **Version Control**: The use of branches for features, bug fixes, and releases ensures a clear version control history, making it easier to track changes and roll back if necessary.
+- **Security**: Branch protection rules and commit signing enhance the security of the codebase by preventing unauthorized changes and ensuring code integrity.
+
+---
+
+## Continuous Integration (CI) Workflows for Backend and Frontend
+
+### 1. CI Workflow for Frontend
+
+**Workflow Steps**  
+
+1. **Trigger**  
+   - The workflow is triggered on:
+     - Push events to the `frontend/**` directory across all branches.
+     - Pull requests targeting the `main` branch.  
+   - This ensures that changes to the frontend are validated at key integration points.
+
+```yml
+on:
+push:
+paths:
+   - "frontend/**"
+branches:
+   - "*"
+   - "!refs/pull/*"
+pull_request:
+branches:
+   - main
+paths:
+   - "frontend/**"
+```
+
+2. **Checkout Code**  
+   - The `actions/checkout@v3` action is used to retrieve the latest codebase, ensuring that subsequent steps operate on the most recent changes.
+
+```yml
+- uses: actions/checkout@v3
+```
+
+3. **Set Up Node.js**  
+   - The workflow sets up the Node.js environment using the `actions/setup-node@v3` action.  
+   - Ensures compatibility by specifying `NODE_VERSION` as `18.x`.
+```yml
+- name: Set up Node.js
+uses: actions/setup-node@v3
+with:
+node-version: ${{ env.NODE_VERSION }}
+```
+4. **Install Dependencies**  
+   - Dependencies are installed via `npm install` to ensure all required packages are available for testing and building.
+```yml
+- name: Install Dependencies
+working-directory: ${{ env.APP_LOCATION }}
+run: npm install
+```
+5. **Build Application**  
+   - The application is built using `npm run build`, creating an optimized production build ready for deployment.
+```yml
+- name: Build Application
+working-directory: ${{ env.APP_LOCATION }}
+run: npm run build
+```
+---
+
+### 2. CI Workflow for Backend
+
+**Workflow Steps**  
+
+1. **Trigger**  
+   - The workflow runs on:
+     - Push events to the `backend/**` directory across all branches.
+     - Pull requests targeting the `main` branch.
+```yml
+on:
+push:
+   paths: 
+      - "backend/**"
+   branches:
+      - "*"
+pull_request:
+   branches: [ "main" ]
+   paths:
+      - "backend/**"
+```
+2. **Checkout Code**  
+   - Similar to the frontend workflow, this retrieves the latest code for validation.
+
+```yml
+- uses: actions/checkout@v3
+```
+
+3. **Set Up Python Environment**  
+   - Python 3.11 is configured using `actions/setup-python@v3`.  
+   - Compatibility with the application is maintained.
+
+```yml
+- name: Set up Python 3.11
+uses: actions/setup-python@v3
+with:
+   python-version: "3.11"
+```
+
+4. **Install Dependencies**  
+   - Backend dependencies are installed using `pip install -r backend/requirements.txt`.
+
+```yml
+- name: Install dependencies
+run: pip install -r backend/requirements.txt
+```
+
+5. **Run Linting and Tests**  
+   - `flake8` is used for code linting, ensuring adherence to Python coding standards.  
+   - `pytest` runs backend unit tests to validate API routes and business logic.
+
+```yml
+- name: Lint with flake8
+run: 
+   pip install flake8 pytest
+   flake8 backend/ --count --select=E9,F63,F7,F82 --show-source --statistics
+   flake8 backend/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+- name: Test with pytest
+run: python -m pytest -v
+```
+---
+
+## Inner Loop and Outer Loop
+
+### Inner Loop
+
+The inner loop refers to the developer’s local development workflow.
+
+1. **Code Development**: For writing and editing our code, we are using Visual Studio Code.
+2. **Local Testing**: Ran Unit and Functional tests locally to ensure the code changes worked as expected.
+3. **Debugging**: Debugged the code to fix any issues found during local testing. Simply used built-in VSC python debugger to add breakpoints etc..
+4. **Version Control**: Created new branch for each new feature in our ie-bank Git Repository. Committed code changes in said branches before merging to main.
+5. **Build and Run Locally**: Built and ran the application locally to verify the changes in a real environment.
+6. **Used Docker for Debugging**: Utilized Docker to run and debug the application in a containerized environment, ensuring consistency with the production environment.
+
+### Outer Loop
+
+The outer loop refers to the integration, testing, and deployment workflow.
+
+1. **Continuous Integration (CI)**:
+   - **Build Automation**: Application automatically builds when changes are pushed to the repository.
+   - **Automated Testing**: Tests are automatically ran to ensure code quality and functionality.
+   - **Docker Image Creation**: Built Docker image for the backend.
+
+2. **Continuous Deployment (CD)**:
+   - **Deployed Backend Using Docker**: Deployed the backend application using Docker containers to ensure consistency and scalability.
+   - **Deployed Frontend to Static Web App**: Deployed the frontend application to our ie-bank Azure Static Web App for efficient and scalable hosting.
+   - **Environment Configuration**: Managed environment-specific configurations and secrets using tools such as Azure Key Vault and GitHub Secrets.).
+
+---
+
+## Continuous Delivery (CD) Workflows for Backend and Frontend
+
+### 1. CD Workflow for Frontend
+
+**Description**  
+This workflow automates the deployment of the frontend application to the **Development**, **UAT**, and **Production** environments. The build and deploy steps are combined into a single job to ensure that the deployment uses the exact build artifacts generated in the same job, reducing the risk of discrepancies.
+
+**Workflow Steps**  
+
+#### Build and Deploy to Development  
+
+1. **Setup Node.js and Build**  
+   - Configures Node.js and builds the application using `npm run build`.
+
+2. **Login to Azure and Deploy**  
+   - Authenticates with Azure using `azure/login@v2`.  
+   - Retrieves a static web app deployment token using `az staticwebapp secrets list`.  
+   - Deploys the application to the development static web app using `Azure/static-web-apps-deploy@v1`.
+
+#### Build and Deploy to UAT  
+
+1. **Prerequisites**  
+   - Deployment only occurs for:
+     - Pull requests.
+     - Workflow dispatch events.
+     - Pushes to the `main` branch.
+
+2. **Process**  
+   - Follows the same build and deployment steps as the development environment but targets the UAT static web app.
+
+#### Build and Deploy to Production  
+
+1. **Trigger**  
+   - Occurs when:
+     - A pull request is merged to `main`.
+     - Manual workflow dispatch events.  
+   - Ensures that only thoroughly tested code reaches production.
+
+2. **Deployment**  
+   - Similar to UAT deployment, but targeting the production static web app.
+
+---
+
+### 2. CD Workflow for Backend
+The CD workflow for the backend application automates the deployment of the built backend services to different environments (Development, UAT, and Production). The build and deploy steps are combined into a single job to ensure that the deployment uses the exact build artifacts generated in the same job, reducing the risk of discrepancies.
+**Workflow Steps**  
+
+#### Build and Deploy to Development  
+
+1. **Docker Image Build and Push**  
+   - Builds a Docker image for the backend service using `docker build`.  
+   - Pushes the image to the Azure Container Registry (ACR) for development.
+
+2. **Deploy to Azure App Service**  
+   - Deploys the Docker container to the development App Service using `azure/webapps-deploy@v2`.
+
+#### Build and Deploy to UAT  
+
+1. **Image Creation and Deployment**  
+   - Similar to the development deployment, but with:
+     - Credentials and registry specific to the UAT environment.
+     - Deployment to the UAT App Service.
+
+2. **Requirements for UAT**  
+   - Deployment is dependent on:
+     - Successful image creation.
+     - Triggered workflow dispatch or PR events.
+
+#### Build and Deploy to Production  
+
+1. **Controlled Deployment**  
+   - Triggers include:
+     - Push to `main` branch.
+     - Manual workflow dispatch.  
+   - Ensures that only stable, thoroughly tested versions are deployed.
+
+2. **Fault Tolerance and Rollback**  
+   - Ensures deployment rollback capabilities by maintaining multiple image versions in the ACR.
+
+---
+
+## Key Features and Benefits of BigDawgBanks CI/CD for Frontend/Backend
+
+- **End-to-End Automation**  
+  Both frontend and backend CI/CD pipelines are fully automated, reducing manual intervention and ensuring consistency.
+
+- **Multi-Environment Support**  
+  Separate workflows for development, UAT, and production environments ensure thorough testing before production deployment.
+
+- **Azure Integration**  
+  Leveraging Azure services (App Service, Static Web Apps, Key Vault, and Container Registry) ensures secure and scalable deployment.
+
+- **Error Detection**  
+  Early-stage testing with `flake8` and `pytest` helps identify and resolve issues before deployment.
+
+- **Version Control**  
+  Docker image tagging and ACR usage maintain clear version history for rollbacks and debugging.
+
+By combining CI/CD best practices with Azure services, **BigDawgBank** ensures a robust and efficient software delivery process.
+
+---
+
+## **1. GitHub Hardening Strategy**
+
+### **1.1 Branch Protection Rules**
+![Branch Protection](./images/Branch_Protection.png)
+- **Description:**
+  - Enforced branch protection rules on the `main` branch to ensure secure code development.
+- **Enforced Rules:**
+  - Require pull request reviews before merging.
+  - Enforce signed commits for all contributors.
+  - Require all status checks to pass before merging.
+- **Impact:**
+  - Prevented unauthorized modifications to the `main` branch.
+  - Strengthened code quality by enforcing peer reviews.
+
+---
+
+### **1.2 Dependabot**
+- **Description:**
+  - Automated monitoring of dependencies to detect vulnerabilities and keep libraries updated.
+- **Metrics:**
+  - **Alerts:** 9 open, 3 resolved.
+  - Vulnerabilities addressed include:
+    - **High:** Flask-CORS, Werkzeug ReDoS.
+    - **Moderate:** Bootstrap XSS.
+- **Impact:**
+  - Reduced risk of supply chain attacks and ensured compatibility with the latest security patches.
+
+---
+
+### **1.3 CodeQL Analysis**
+- **Description:**
+  - Integrated CodeQL workflows for semantic code analysis in both frontend (Vue.js) and backend (Python).
+- **Metrics:**
+  - Total workflows run: 139.
+  - Issues identified: 7 (5 resolved, 2 active).
+    - **High:** Flask app running in debug mode.
+    - **Medium:** Information exposure through exceptions.
+- **Impact:**
+  - Proactively identified vulnerabilities during development, reducing risks in production.
+
+---
+
+### **1.4 OSSF Scorecard**
+- **Description:**
+  - Implemented OSSF Scorecard to evaluate repository security posture.
+- **Status:**
+  - Workflow integrated; initial scores pending.
+- **Impact:**
+  - Enabled evaluation of adherence to security best practices, guiding further improvements.
+
+---
+
+### **1.5 Secret Scanning & Push Protection**
+- **Description:**
+  - Configured secret scanning to detect and block sensitive data like API keys and tokens.
+  - Enabled push protection to prevent secrets from being pushed to the repository.
+- **Impact:**
+  - Protected sensitive information from accidental exposure and minimized risk of credential leaks.
+
+---
+
+### **1.6 CODEOWNERS**
+- **Description:**
+  - Established a `CODEOWNERS` file to enforce accountability and streamline reviews.
+- **File Details:**
+  - Owners assigned for specific areas:
+    - **Frontend/Backend:** `@RestartDK`, `@ADRIANDLT`
+    - **Infra:** `@albipuliga`, `@paulopasso`
+    - **Workflows (Security):** `@Wisammad`
+  - Default owner: `@Wisammad`.
+- **Impact:**
+  - Improved review efficiency and accountability for changes in critical areas.
+
+---
+
+## **2. Secrets Management**
+
+### **2.1 Azure Key Vault**
+- **Description:**
+  - Configured Azure Key Vault for secure storage of sensitive data like API keys and database credentials.
+- **Implementation Details:**
+  - Used a Bicep template to provision the Key Vault with the following features:
+    - Role-Based Access Control (RBAC).
+    - Enabled soft delete for recovery of deleted secrets.
+    - Enabled integration with GitHub Actions workflows for automated deployment.
+- **Impact:**
+  - Protected critical credentials, minimized risk of leaks, and streamlined secure deployments.
+
+---
+
+## **3. Implemented Security Practices**
+
+### **3.1 Practices from OpenSSF**
+
+#### **1. Tools in CLI Pipeline to Detect Vulnerabilities**
+- **Implementation:**
+  - Integrated **CodeQL** and **OSSF Scorecard** into the CI/CD pipeline.
+- **Impact:**
+  - Automated vulnerability detection during development.
+
+#### **2. Keep Dependencies Reasonably Up-to-Date**
+- **Implementation:**
+  - Enabled **Dependabot** for monitoring and automatic updates of dependencies.
+- **Impact:**
+  - Reduced exposure to outdated and insecure libraries.
+
+#### **3. Do Not Push Secrets to a Repository**
+- **Implementation:**
+  - Configured **Secret Scanning** and **Push Protection** in GitHub to block secrets from entering the repository.
+- **Impact:**
+  - Prevented accidental exposure of sensitive data.
+
+#### **4. Review Before Accepting Changes**
+- **Implementation:**
+  - Established a `CODEOWNERS` file and enforced branch protection rules for peer-reviewed changes.
+- **Impact:**
+  - Improved code quality and accountability.
+
+#### **5. Regex for Input Practices**
+- **Implementation:**
+  - Used regex-based validation in the backend (Python) and frontend (Vue.js) to prevent injection attacks.
+- **Impact:**
+  - Reduced vulnerabilities like SQL injection and XSS.
+
+---
+
+### **3.2 Practices from SAFECode**
+
+#### **1. Least Privilege: Operate Using the Least Set of Privileges Necessary**
+- **Implementation:**
+  - Restricted access using Azure Key Vault’s Role-Based Access Control (RBAC).
+- **Impact:**
+  - Reduced the attack surface by enforcing least privilege access.
+
+#### **2. Design for Updating: Anticipate the Need for Future Security Updates**
+- **Implementation:**
+  - Leveraged **Dependabot** for continuous dependency updates.
+- **Impact:**
+  - Maintained a secure system with minimal effort.
+
+#### **3. Key and Certificate Management**
+- **Implementation:**
+  - Stored keys and certificates securely in Azure Key Vault.
+- **Impact:**
+  - Enhanced security and compliance with best practices.
+
+#### **4. Complete Mediation: Check Every Access to Every Object for Authorization**
+- **Implementation:**
+  - Enforced access control checks in APIs and endpoints.
+- **Impact:**
+  - Prevented unauthorized access to sensitive resources.
+
+#### **5. Use Safe, Built-in Security Features**
+- **Implementation:**
+  - Adopted built-in security features in frameworks (e.g., Python’s `secrets` module, Vue.js CSP policies).
+- **Impact:**
+  - Reduced risks from insecure custom implementations.
+
+---
+
+## **4. Metrics and Results**
+
+| **Tool**             | **Issues Found** | **Issues Resolved** | **Severity**      |
+|-----------------------|------------------|---------------------|-------------------|
+| **Dependabot**        | 12               | 3                   | High, Moderate    |
+| **CodeQL**            | 7                | 5                   | High, Medium      |
+| **Secret Scanning**   | 0                | 0                   | (No issues found) |
+
+---
+
+## **5. Challenges and Lessons Learned**
+
+### **Challenges:**
+- Setting up and debugging the OSSF Scorecard workflow.
+- Managing dependency vulnerabilities across multiple repositories.
+
+### **Lessons Learned:**
+- Automation ensures consistency and scalability in security practices.
+- Collaboration across roles (e.g., Cloud Architect, Security Engineer) is critical to success.
+
+---
+
+## **6. Future Recommendations**
+- Extend branch protection rules to feature and development branches.
+- Automate alert triage for Dependabot and CodeQL.
+- Monitor OSSF Scorecard results and improve based on recommendations.
+
+---
+
+## **7. References**
+- **CodeQL Workflow:** [View Workflow](https://github.com/bigdawgbank/ie-bank/actions/workflows/github-code-scanning/codeql)
+- **Dependabot Alerts:** [View Alerts](https://github.com/bigdawgbank/ie-bank/security/dependabot)
+- **OSSF Scorecard Workflow:** [View Workflow](https://github.com/bigdawgbank/ie-bank/actions/workflows/scorecard.yml)
+- **CODEOWNERS File:** [View CODEOWNERS](https://github.com/bigdawgbank/ie-bank/blob/main/.github/CODEOWNERS)
+- **Azure Key Vault Bicep File:** [View File](https://github.com/bigdawgbank/ie-bank/blob/main/infra/modules/keyvault.bicep)
+
+---
+
+## **1. Service Level Agreement (SLA)**
+
+### SLA Definition
+The SLA defines the commitments to end-users regarding the application's performance, availability, and support.
+
+**Commitments:**
+- **Uptime Guarantee:** 99.9% availability per month, ensuring downtime does not exceed 43 minutes and 49 seconds monthly.
+- **Response Time:** Backend API responses will maintain a maximum response time of less than 300ms for 95% of requests, measured monthly.
+- **Support Availability:** High-priority incidents (e.g., service outages) will be resolved within 1 hour of detection.
+- **Compensation Policy:** In case of SLA violations, service credits proportionate to downtime or degraded performance will be provided.
+
+---
+
+## **2. Service Level Objectives (SLOs)**
+
+### SLO Definitions
+SLOs are measurable targets to ensure the SLA commitments are achieved.
+
+**Defined Objectives:**
+1. **Application Availability:** Maintain 99.9% uptime on a monthly basis.
+2. **Error Rate:** Keep system error rates below 1% for all user requests monthly.
+3. **API Response Time:** Ensure average API response time is less than 200ms, measured hourly.
+4. **HTTP 5xx Error Rate:** Maintain a maximum HTTP 5xx error rate of less than 0.5%, calculated daily.
+5. **Critical Incident Resolution Time:** Resolve high-priority incidents within 1 hour of detection.
+
+---
+
+## **3. Service Level Indicators (SLIs)**
+
+### SLI Definitions
+SLIs are specific metrics to measure the achievement of SLOs.
+
+**Defined SLIs:**
+1. **Application Availability:**
+   - **Indicator:** Percentage uptime, calculated as the ratio of successful requests (`requests.success == true`) to total requests, measured via Application Insights logs.
+2. **Error Rate:**
+   - **Indicator:** The percentage of failed requests (`requests.success == false`) to total requests, measured daily.
+3. **API Response Time:**
+   - **Indicator:** Average response time of all incoming requests (`requests.duration`), measured hourly.
+4. **HTTP 5xx Error Rate:**
+   - **Indicator:** Percentage of HTTP 5xx errors (`requests.resultCode startswith "5"`) to total requests, measured daily.
+5. **Incident Resolution Time:**
+   - **Indicator:** Time elapsed between incident detection and resolution, tracked via incident management tools.
+
+---
+
+## **4. Monitoring Strategy Design**
+
+### Monitoring Strategy
+A comprehensive monitoring strategy ensures the application meets SLAs and SLOs.
+
+**Tools Used:**
+- **Azure Application Insights:** For monitoring performance, requests, exceptions, and dependencies.
+- **Azure Log Analytics Workspace:** Centralized log management and analysis.
+
+**Metrics and Logs:**
+- Key performance indicators like uptime, error rates, response times, and exception counts are visualized in **Azure Workbooks**.
+
+**Alerts Configured:**
+1. **Availability Alerts:** Triggered when uptime drops below 99.9%.
+2. **Error Rate Alerts:** Triggered when error rates exceed 1%.
+3. **Response Time Alerts:** Triggered when average response times exceed 200ms.
+
+**Log Analysis:**
+- Use **Kusto Query Language (KQL)** to query logs for trends and issues.
+
+---
+
+## **5. Incident Response Design**
+
+### Incident Response Plan
+The incident response plan outlines how we or I will handle failures efficiently, minimizing downtime and impact on users.
+
+---
+
+### **Incident Detection**
+
+Detection begins with the monitoring tools configured in the Monitoring Strategy. Alerts are set up in **Azure Application Insights** to notify the team in real-time when predefined thresholds are breached.
+
+- **How Notifications Work:**
+  1. Alerts trigger when specific thresholds are violated (e.g., error rate > 1%, uptime < 99.9%).
+  2. The alert system sends messages directly to the **team’s dedicated Slack channel** via the configured **Slack webhook URL**.
+  3. Notifications include:
+     - Name of the alert (e.g., `uptimeAlert-dev`).
+     - The severity level (e.g., P1, P2).
+     - A brief description of the issue.
+     - A link to the relevant logs or metrics in Azure Application Insights for further investigation.
+
+---
+
+### **Incident Triage**
+
+Once the alert is received in the Slack channel:
+1. **Triage Process:**
+   - Determine the severity level:
+     - **P1 (Critical):** Complete outage or major failure impacting all users.
+     - **P2 (High):** Significant degradation affecting multiple users.
+     - **P3 (Medium):** Minor issues affecting a small subset of users.
+   - Assign an incident lead who will coordinate the response efforts.
+
+2. **Tools for Diagnosis:**
+   - Use linked Azure Workbooks for visualizing the data.
+   - Query detailed logs in **Azure Log Analytics Workspace** using KQL.
+   - Examine metrics such as `requests.duration`, `requests.success`, and dependency failure rates.
+
+---
+
+### **Incident Resolution**
+
+For P1 and P2 incidents:
+1. **Immediate Actions:**
+   - Notify the relevant stakeholders through Slack and email.
+   - The incident lead coordinates with team members to:
+     - Diagnose the root cause using metrics, logs, and dashboards.
+     - Apply immediate fixes, such as:
+       - Restarting services.
+       - Scaling resources if under capacity.
+       - Rolling back recent deployments if identified as the cause.
+2. **Incident Timelines:**
+   - **P1 incidents** are targeted for resolution within **1 hour**.
+   - Detailed steps for resolution are logged in the incident management tool.
+
+---
+
+### **Post-Incident Review**
+
+After resolution:
+1. **Root Cause Analysis (RCA):**
+   - Conduct RCA for all **P1 and P2** incidents to identify the root cause and contributing factors.
+   - Document findings in a shared knowledge base for future reference.
+
+2. **Preventive Measures:**
+   - Implement permanent fixes to address root causes.
+   - Update SLIs, SLOs, and monitoring alerts to prevent recurrence.
+
+---
+
+### **Communication Plan**
+
+During and after incidents:
+1. **Stakeholder Updates:**
+   - The SRE team provides regular updates in the Slack channel for ongoing incidents.
+   - After resolution, a summary is shared, including:
+     - Incident details (what happened and when).
+     - Resolution steps taken.
+     - Impact on users.
+     - Measures to prevent recurrence.
+
+2. **End-User Communication:**
+   - For major incidents, inform end-users via the application’s status page or email notifications.
+
+---
+
+## **6. Site Reliability Engineering Design**
+
+### SRE Design Principles
+**Automation:**
+- **Infrastructure as Code (IaC):** Use Bicep templates for repeatable deployments.
+- **CI/CD Pipelines:** Automate build, test, and deployment processes using GitHub Actions.
+
+**Resilience:**
+- Fault-tolerant architecture with retry logic and fallback mechanisms.
+- Redundant services deployed across Azure availability zones.
+
+**Scalability:**
+- Auto-scaling rules for Azure App Services and databases.
+- Monitor CPU and memory usage to adjust capacity proactively.
+
+**Collaboration:**
+- Work closely with development and operations teams to integrate SRE practices.
+
+**Continuous Improvement:**
+- Use monitoring data and incident insights to refine SLAs, SLOs, and SLIs
+
