@@ -3,6 +3,7 @@ import string
 from datetime import datetime, timezone
 from enum import Enum
 import os
+import json
 
 from sqlalchemy import Enum as SQLAlchemyEnum
 
@@ -160,6 +161,29 @@ class ExchangeRate:
         if from_currency == to_currency:
             return 1
         
-        env_var_name = f"{from_currency}_TO_{to_currency}_EXCHANGE_RATE"
-        exchange_rate = float(os.getenv(env_var_name))
+        # Load the JSON configuration file
+        with open('currency_exchange_config.json') as config_file:
+            config = json.load(config_file)
+
+        # Translate between currency symbols to words
+        currency_symbol_to_word = {
+            '€': 'EURO',
+            '$': 'USD',
+        }
+
+        # Get the currency words
+        from_currency_word = currency_symbol_to_word[from_currency]
+        to_currency_word = currency_symbol_to_word[to_currency]
+        
+        # Get the exchange rate from the config file
+        exchange_rate_name = f"{from_currency_word}_TO_{to_currency_word}_EXCHANGE_RATE"
+        if exchange_rate_name in config['exchange_rate']:
+            exchange_rate = float(config['exchange_rate'][exchange_rate_name])
+        else:
+            # Calculate the reverse exchange rate
+            reverse_exchange_rate_name = f"{to_currency_word}_TO_{from_currency_word}_EXCHANGE_RATE"
+            reverse_exchange_rate = float(config['exchange_rate'][reverse_exchange_rate_name])
+            exchange_rate = round(1 / reverse_exchange_rate, 2)
+
         return exchange_rate
+        

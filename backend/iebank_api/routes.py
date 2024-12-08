@@ -443,9 +443,6 @@ def format_account(account: Account):
 @app.route("/transfer", methods=["POST"])
 @jwt_required()
 def transfer_money():
-    # user_id = int(get_jwt_identity())
-    # user = db.session.get(User, user_id)
-
     data = request.get_json()
     from_account_id = data.get("sender_account_id")
     to_account_id = data.get("recipient_account_id")
@@ -483,9 +480,6 @@ def transfer_money():
 @app.route("/wiretransfer", methods=["POST"])
 @jwt_required()
 def wire_transfer_money():
-    # user_id = int(get_jwt_identity())
-    # user = db.session.get(User, user_id)
-
     data = request.get_json()
     from_account_id = data.get("sender_account_id")
     recipient_account_number = data.get("recipient_account_number")
