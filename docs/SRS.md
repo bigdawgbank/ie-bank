@@ -35,7 +35,7 @@ The BigDawg IE Bank Application builds upon the previous IE Bank Application dev
      - [Static Web App for Frontend](#static-web-app-for-frontend)
    - [4. Operational Excellence Pillar](#4-operational-excellence-pillar)
    - [5. Performance Efficiency Pillar](#5-performance-efficiency-pillar)
-5. [Test Driven Development(TDD)](#test-driven-developmentTDD)
+5. [Test Driven Development(TDD)](#test-driven-developmenttdd)
 6. [Release Strategy](#release-strategy)
    - [Development (Dev)](#development-dev)
    - [User Acceptance Testing (UAT)](#user-acceptance-testing-uat)
