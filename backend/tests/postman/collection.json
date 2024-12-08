@@ -1,0 +1,209 @@
+{
+  "info": {
+    "_postman_id": "d21f6ed1-47da-45f8-8454-b8e73697b3d8",
+    "name": "IE Bank",
+    "description": "The official postman API repository for the IE Bank project for the Devops class",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "31217637"
+  },
+  "item": [
+    {
+      "name": "Login ",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Parse the response once at the beginning",
+              "const responseData = pm.response.json();",
+              "",
+              "pm.test(\"Response status code is 200\", function () {",
+              "    pm.expect(pm.response.code).to.equal(200);",
+              "});",
+              "",
+              "pm.test(\"Response has the required fields\", function () {",
+              "    pm.expect(responseData).to.be.an('object');",
+              "    pm.expect(responseData.token).to.exist;",
+              "});",
+              "",
+              "// Test if login was successful",
+              "pm.test(\"Login successful\", function() {",
+              "    pm.response.to.have.status(200);",
+              "    pm.expect(responseData).to.have.property('token');",
+              "",
+              "    // Save token to environment",
+              "    pm.environment.set('JWT_TOKEN', responseData.token);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "username",
+              "value": "{{ADMIN_USERNAME}}",
+              "type": "text"
+            },
+            {
+              "key": "email",
+              "value": "dkumlin@me.com",
+              "type": "text",
+              "disabled": true
+            },
+            {
+              "key": "password",
+              "value": "{{ADMIN_PASSWORD}}",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{API_URL}}/login",
+          "host": ["{{API_URL}}"],
+          "path": ["login"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Accounts",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// First parse the response",
+              "const responseData = pm.response.json();",
+              "",
+              "// Test status code",
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "// Test if authorization worked",
+              "pm.test(\"Request is authorized\", function() {",
+              "    pm.expect(pm.response.code).to.not.equal(401);",
+              "    pm.expect(pm.response.code).to.not.equal(403);",
+              "});",
+              "",
+              "// Test response structure",
+              "pm.test(\"Response has accounts data\", function () {",
+              "    pm.expect(responseData).to.be.an('object');",
+              "    pm.expect(responseData.accounts).to.be.an('array');",
+              "});",
+              "",
+              "// Test if accounts have required fields",
+              "pm.test(\"Accounts have required fields\", function () {",
+              "    if (responseData.accounts.length > 0) {",
+              "        const firstAccount = responseData.accounts[0];",
+              "        pm.expect(firstAccount).to.have.property('id');",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{API_URL}}/accounts",
+          "host": ["{{API_URL}}"],
+          "path": ["accounts"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Users",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{API_URL}}/users",
+          "host": ["{{API_URL}}"],
+          "path": ["users"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Users (Unauthorized)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Tests for unauthorized access to /users",
+              "const responseData = pm.response.json();",
+              "",
+              "pm.test(\"Unauthorized access should be forbidden\", function () {",
+              "    pm.response.to.have.status(401);",
+              "});",
+              "",
+              "pm.test(\"Error message exists\", function () {",
+              "    pm.expect(responseData).to.have.property('msg');",
+              "",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{API_URL}}/users",
+          "host": ["{{API_URL}}"],
+          "path": ["users"]
+        }
+      },
+      "response": []
+    }
+  ]
+}
+
